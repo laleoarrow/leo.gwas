@@ -12,7 +12,13 @@ RoxygenNote: 7.3.1
 Imports: 
     data.table,
     dplyr,
+    ggplot2,
+    ggsci,
+    ieugwasr,
+    LDlinkR,
     MungeSumstats,
+    plinkbinr,
+    TwoSampleMR,
     vroom
 Depends: 
     tidyverse

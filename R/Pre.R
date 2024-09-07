@@ -1,11 +1,9 @@
 #' Title Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
 #'
-#' @param x data.frame
+#' @param x df data.frame with CHR, BP, A2, A1 columns
 #'
-#' @return data.frame with ID column and the character counts of A1 and A2
+#' @return A df data.frame with ID column and the character counts of A1 and A2
 #' @export
-#'
-#' @examples
 get_id <- function(x) {
   x <- x %>% 
     mutate(ID = paste(CHR, BP, A2, A1, sep = ":"),
