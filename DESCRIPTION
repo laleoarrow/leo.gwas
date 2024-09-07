@@ -1,10 +1,10 @@
 Package: leo.gwas
-Title: What the Package Does (One Line, Title Case)
+Title: Layered Exploratory Omics (LEO)
 Version: 0.0.0
 Authors@R: 
     person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-0927-4468"))
-Description: Layered Exploratory Omics (LEO) for GWAS data.
+Description: Although in early development, the Layered Exploratory Omics (LEO) is a tool specifically designed for deep analysis of genomic data. It employs a multi-layered exploratory approach to help researchers uncover the complex biological information hidden behind their data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
