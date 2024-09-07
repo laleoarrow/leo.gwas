@@ -4,7 +4,7 @@ Version: 0.0.0
 Authors@R: 
     person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-0927-4468"))
-Description: Provides a set of tools for deep analysis of genomic data, focusing on GWAS. It includes functionalities for data processing, statistical analysis, and result visualization.
+Description: Layered Exploratory Omics (LEO) for GWAS data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
