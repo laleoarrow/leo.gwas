@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{mr_one_pair}
 \alias{mr_one_pair}
-\title{Title: F5: \code{perform_mr_for_one_pair} perform a MR for one pair of exp and out}
+\title{perform_mr_for_one_pair}
 \usage{
 mr_one_pair(
   dat_h,
@@ -23,14 +23,12 @@ mr_one_pair(
 \item{save_plot}{only save the plot if T, defaut T.}
 
 \item{res_dir}{dir path where the result fo MR analysis stored}
-
-\item{fig_dir}{}
 }
 \value{
 list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 }
 \description{
-Title: F5: \code{perform_mr_for_one_pair} perform a MR for one pair of exp and out
+\code{perform_mr_for_one_pair} perform a MR for one pair of exp and out
 }
 \note{
 clusterEvalQ(cl, {

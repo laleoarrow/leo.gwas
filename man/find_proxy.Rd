@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{find_proxy}
 \alias{find_proxy}
-\title{Title: F4: \code{find_proxy} finds the proxy snp for the miss iv}
+\title{find_proxy}
 \usage{
 find_proxy(
   miss_iv,
@@ -36,7 +36,7 @@ find_proxy(
 a updated missiv with \code{proxy.snp} \code{proxy.effect.allele} \code{proxy.other.allele} \code{r2} col
 }
 \description{
-Title: F4: \code{find_proxy} finds the proxy snp for the miss iv
+\code{find_proxy} finds the proxy snp for the miss iv
 }
 \note{
 this function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis

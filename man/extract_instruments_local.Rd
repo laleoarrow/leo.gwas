@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{extract_instruments_local}
 \alias{extract_instruments_local}
-\title{Title: F2: Extract instruments locally}
+\title{Extract instruments locally}
 \usage{
 extract_instruments_local(
   dat,
@@ -26,7 +26,7 @@ extract_instruments_local(
 a clumped tsmr format dataframe
 }
 \description{
-Title: F2: Extract instruments locally
+Extract instruments locally
 }
 \details{
 要求dat数据中P的列名为P

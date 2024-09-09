@@ -2,8 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{mrlap_one_pair}
 \alias{mrlap_one_pair}
-\title{Title \code{mrlap_one_pair} perform the MR-lap for one pair of exposure and outcome
-https://github.com/n-mounier/MRlap?tab=readme-ov-file}
+\title{mrlap_one_pair}
 \usage{
 mrlap_one_pair(
   exposure_data,
@@ -34,6 +33,6 @@ mrlap_one_pair(
 \item{log_path}{path to where you wanna store the ldsc log}
 }
 \description{
-Title \code{mrlap_one_pair} perform the MR-lap for one pair of exposure and outcome
-https://github.com/n-mounier/MRlap?tab=readme-ov-file
+\code{mrlap_one_pair} perform the MR-lap for one pair of exposure and outcome
+\href{https://github.com/n-mounier/MRlap?tab=readme-ov-file}{MR-lap}
 }

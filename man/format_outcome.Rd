@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{format_outcome}
 \alias{format_outcome}
-\title{Title: F3: format outcome data}
+\title{format outcome data}
 \usage{
 format_outcome(dat, snp = iv$SNP, N = "Neff")
 }
@@ -17,5 +17,5 @@ format_outcome(dat, snp = iv$SNP, N = "Neff")
 a tsmr format outcome dataframe
 }
 \description{
-Title: F3: format outcome data
+format outcome data
 }

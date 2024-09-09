@@ -2,3 +2,6 @@
 
 export(check_significant_SNP)
 export(get_id)
+export(mr_one_pair)
+export(mr_scatter_plot_modified)
+export(mrlap_one_pair)

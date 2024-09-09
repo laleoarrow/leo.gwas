@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{clump_data_local}
 \alias{clump_data_local}
-\title{Title：F1: Clump data locally----}
+\title{Clump data locally}
 \usage{
 clump_data_local(dat, pop = NULL, bfile = NULL, plink_bin = NULL)
 }

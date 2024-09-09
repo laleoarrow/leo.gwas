@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{leo_message}
 \alias{leo_message}
-\title{Title: F0: Give Messages with my color ----}
+\title{Give Messages with my color}
 \usage{
 leo_message(msg, color = "31")
 }
@@ -12,7 +12,7 @@ leo_message(msg, color = "31")
 \item{color}{prefered color}
 }
 \description{
-Title: F0: Give Messages with my color ----
+Give Messages with my color
 }
 \examples{
 leo_message("This is a pink message")

@@ -2,10 +2,7 @@
 % Please edit documentation in R/tsmr_packages.R
 \name{mr_scatter_plot_modified}
 \alias{mr_scatter_plot_modified}
-\title{The \code{mr_scatter_plot} in the \code{TwoSampleMR} package could be better.
-This is a modified version of \code{mr_scatter_plot} in the \code{TwoSampleMR} package
-When the slope of two method is really close, the scatter plot may not properly plot them!
-Change the line type here mannually herein then.}
+\title{Modified MR Scatter Plot}
 \usage{
 mr_scatter_plot_modified(mr_results, dat)
 }
