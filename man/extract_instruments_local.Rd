@@ -31,7 +31,4 @@ Extract instruments locally
 \details{
 要求dat数据中P的列名为P
 }
-\section{tsmr}{
-
-}
-
+\keyword{tsmr:}

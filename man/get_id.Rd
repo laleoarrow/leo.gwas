@@ -2,16 +2,24 @@
 % Please edit documentation in R/Pre.R
 \name{get_id}
 \alias{get_id}
-\title{Title Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)}
+\title{Get ID}
 \usage{
 get_id(x)
 }
 \arguments{
-\item{x}{df data.frame with CHR, BP, A2, A1 columns}
+\item{x}{A data.frame that must contain the columns CHR, BP, A2, and A1.
+Each column represents:
+\itemize{
+\item CHR: Chromosome number
+\item BP: Base pair position
+\item A2: Reference allele (non-effect allele)
+\item A1: Alternative allele (effect allele)
+}}
 }
 \value{
 A df data.frame with ID column and the character counts of A1 and A2
 }
 \description{
-Title Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
+Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
 }
+\keyword{basic}

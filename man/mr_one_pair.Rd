@@ -32,10 +32,6 @@ list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 \description{
 \code{perform_mr_for_one_pair} perform a MR for one pair of exp and out
 }
-\section{tsmr}{
-
-}
-
 \examples{
 clusterEvalQ(cl, {
 library(vroom)
@@ -56,3 +52,4 @@ For Forest: width = 7, height = 10 (T2D)
 For others: width = 7, height = 6
 fig_dir <- "./figure/tsmr"
 }
+\keyword{tsmr:}

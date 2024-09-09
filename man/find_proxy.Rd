@@ -38,10 +38,6 @@ a updated missiv with \code{proxy.snp} \code{proxy.effect.allele} \code{proxy.ot
 \description{
 \code{find_proxy} finds the proxy snp for the miss iv
 }
-\section{tsmr}{
-
-}
-
 \examples{
 # This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
 miss_iv <- iv[!iv$SNP \%in\% dat_h$SNP,] # iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
@@ -63,3 +59,4 @@ proxy_output_path <- "Full path to where you wanna store the LDlinkR output"
  dat_h_proxy <- harmonise_data(iv_f, out_nc_proxy)
  mr(dat_h_proxy) # nailed it!
 }
+\keyword{tsmr:}

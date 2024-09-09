@@ -1,5 +1,5 @@
 #' Give Messages with my color
-#' @section basic:
+#' @keywords basic:
 #'
 #' @param color prefered color
 #' @param msg messages to show; it should be a word pasted pharse.
@@ -19,7 +19,7 @@ leo_message <- function(msg, color = "31") {
 #' @param dat a datafame with `SNP`, `pval.exposure` and `id.exposure` col
 #' @param pop Super-population to use as reference panel. Options are: AFR, AMR, EAS, EUR, SAS
 #' @param bfile If this is provided then will go ld locally
-#' @section tsmr:
+#' @keywords tsmr:
 #' @return a subset of input dat with independant SNP
 #' @description
 #' Here is the reference:
@@ -55,7 +55,7 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
 #' @param p: P cut-off value
 #' @param pop: param for clump_data_local
 #' @param bfile: param for clump_data_local
-#' @section tsmr:
+#' @keywords tsmr:
 #' @return a clumped tsmr format dataframe
 #' @details
 #' 要求dat数据中P的列名为P
@@ -90,7 +90,7 @@ extract_instruments_local <- function(dat, p = 5e-08, N = "Neff", pop = "EUR", b
 #' @param dat a dataframe for outcome with SNP, CHR, POS, A1, A2, EAF, BETA, SE, P, Phenotype, samplesize columns
 #' @param snp a str vector out of iv$SNP
 #' @param N N column name for sample size (effective or observed)
-#' @section tsmr:
+#' @keywords tsmr:
 #' @return a tsmr format outcome dataframe
 format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
  leo_message("You should check samplesize column (effective or observed)")
@@ -130,7 +130,7 @@ format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
 #' @param proxy_output_path a full path to save the proxy file when using ldlink
 #' @param proxy_file pre-calculated proxy file path (full); do provide this if the proxy file is already generated !!!
 #' @param token token of `LDlinkR`
-#' @section tsmr:
+#' @keywords tsmr:
 #' @return a updated missiv with `proxy.snp` `proxy.effect.allele` `proxy.other.allele` `r2` col
 #' @examples
 #' # This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
@@ -264,7 +264,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' @param fig_dir dir path where the figure of MR analysis stored
 #' @param save_plot only save the plot if T, defaut T.
 #'
-#' @section tsmr:
+#' @keywords tsmr:
 #' @export
 #' @return list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 #' @examples
@@ -427,7 +427,7 @@ mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./ou
 #' @param mr_results same as TwoSampleMR::mr_scatter_plot
 #' @param dat same as TwoSampleMR::mr_scatter_plot
 #'
-#' @section tsmr:
+#' @keywords tsmr:
 #' @export
 #'
 #' @examples
@@ -508,7 +508,7 @@ mr_scatter_plot_modified <- function(mr_results, dat) {
 #' @param log logi, if T, would save ldsc log to log_path, defaut F
 #' @param log_path path to where you wanna store the ldsc log
 #'
-#' @section tsmr:
+#' @keywords tsmr:
 #' @export
 mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_name, ld_path, hm3_path, log = F, log_path = ".") {
   leo_message(paste0(" - MR-lap for: ", exposure_name, " VS ", outcome_name))
