@@ -17,3 +17,12 @@ This is a modified version of \code{mr_scatter_plot} in the \code{TwoSampleMR} p
 When the slope of two method is really close, the scatter plot may not properly plot them!
 Change the line type here mannually herein then.
 }
+\section{tsmr}{
+
+}
+
+\examples{
+p1 <- mr_scatter_plot_modified(mr_results = res_pair, dat = dat_h_pair)
+print(p1[[1]])
+library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
+}

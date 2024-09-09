@@ -14,6 +14,10 @@ leo_message(msg, color = "31")
 \description{
 Give Messages with my color
 }
+\section{basic}{
+
+}
+
 \examples{
 leo_message("This is a pink message")
 leo_message("This is a green message","32")

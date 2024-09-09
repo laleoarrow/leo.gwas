@@ -23,6 +23,8 @@ mr_one_pair(
 \item{save_plot}{only save the plot if T, defaut T.}
 
 \item{res_dir}{dir path where the result fo MR analysis stored}
+
+\item{fig_dir}{dir path where the figure of MR analysis stored}
 }
 \value{
 list(res_pair=res_pair, res_pair_presso=res_pair_presso)
@@ -30,7 +32,11 @@ list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 \description{
 \code{perform_mr_for_one_pair} perform a MR for one pair of exp and out
 }
-\note{
+\section{tsmr}{
+
+}
+
+\examples{
 clusterEvalQ(cl, {
 library(vroom)
 library(tidyverse)
@@ -39,5 +45,14 @@ library(ggplot2)
 library(ggsci)
 source("./code/1.0.tsmr_packages.R")
 })
-clusterExport(cl, varlist = c("uni_pair","dat_h"))draw and save draw   >>>>>>>>>>>>>p1: Scatter plotp2: Forest plotp3: Funnel plotp4: LOO plotFor Forest: width = 7, height = 8 (T1D)For Forest: width = 7, height = 10 (T2D)For others: width = 7, height = 6fig_dir <- "./figure/tsmr"
+clusterExport(cl, varlist = c("uni_pair","dat_h"))
+>>>>>>>>>>>>>  draw and save draw   >>>>>>>>>>>>>
+p1: Scatter plot
+p2: Forest plot
+p3: Funnel plot
+p4: LOO plot
+For Forest: width = 7, height = 8 (T1D)
+For Forest: width = 7, height = 10 (T2D)
+For others: width = 7, height = 6
+fig_dir <- "./figure/tsmr"
 }

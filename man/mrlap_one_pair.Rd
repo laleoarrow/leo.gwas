@@ -36,3 +36,7 @@ mrlap_one_pair(
 \code{mrlap_one_pair} perform the MR-lap for one pair of exposure and outcome
 \href{https://github.com/n-mounier/MRlap?tab=readme-ov-file}{MR-lap}
 }
+\section{tsmr}{
+
+}
+

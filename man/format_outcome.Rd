@@ -19,3 +19,7 @@ a tsmr format outcome dataframe
 \description{
 format outcome data
 }
+\section{tsmr}{
+
+}
+

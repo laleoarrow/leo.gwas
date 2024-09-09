@@ -38,10 +38,12 @@ a updated missiv with \code{proxy.snp} \code{proxy.effect.allele} \code{proxy.ot
 \description{
 \code{find_proxy} finds the proxy snp for the miss iv
 }
-\note{
-this function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
+\section{tsmr}{
+
 }
+
 \examples{
+# This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
 miss_iv <- iv[!iv$SNP \%in\% dat_h$SNP,] # iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
 miss_snp <- miss_iv$SNP
 outcome_snp <- iri_nc$SNP

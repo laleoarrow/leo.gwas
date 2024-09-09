@@ -19,6 +19,10 @@ message that informs the user of the independant SNP for the following condition
 \description{
 locate the significant SNP for conditional analysis
 }
+\section{HLA data analysis}{
+
+}
+
 \examples{
 con_dir <- "/Users/leoarrow/project/VKH2024/data/zuo/con_su" # specify the directory to store the HLA original data and subsequent conditional analysis results data
 files <- list.files(con_dir,full.names = T) \%>\% as.vector(); files # update it each time

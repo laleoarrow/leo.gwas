@@ -24,3 +24,7 @@ library(ieugwasr)
 library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
 plinkbinr::get_plink_exe()
 }
+\section{tsmr}{
+
+}
+
