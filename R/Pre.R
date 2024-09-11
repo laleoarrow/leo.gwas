@@ -20,3 +20,62 @@ get_id <- function(x) {
            A2_n = nchar(A2))
   return(x)
 }
+
+#' Convert CHR:BP to rsID
+#'
+#' This function takes a dataframe that must include columns 'CHR' and 'BP',
+#' and it appends the corresponding rsID by querying the SNPlocs.Hsapiens.dbSNP155.GRCh37 database.
+#' The function returns a dataframe with the rsIDs included.
+#'
+#' @param df A dataframe containing at least the columns 'CHR' and 'BP'.
+#' @param ref str indicating ref version.
+#'    - "37" for GRCh37
+#'    - "38" for GRCh38
+#' @import data.table
+#' @import SNPlocs.Hsapiens.dbSNP155.GRCh37
+#' @import SNPlocs.Hsapiens.dbSNP155.GRCh38
+#' @import BSgenome
+#' @import dplyr
+#' @import stringr
+#' @return A dataframe with an additional 'RefSNP_id' column which contains the rsIDs.
+#' @examples
+#' pacman::p_load(data.table, BSgenome, leo.gwas)
+#' df <- data.frame(CHR = c(1, 1), BP = c(100023, 100056))
+#' result <- convert_to_rsid(df)
+#' @export
+convert_to_rsid <- function(dat, ref = "GRCh37") {
+  # Check if necessary columns are present
+  if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(df))) {
+    stop("DataFrame must contain 'CHR' and 'BP' columns")
+  }
+
+  # Convert dat to data.table if it is not one already
+  dat <- data.table::setDT(dat)
+  dat[, ranges := paste0(CHR, ":", BP, "-", BP)]
+
+  # Load SNP data - assuming GRCh37, modify if using GRCh38
+  if (ref == "GRCh37") {
+    snps <- SNPlocs.Hsapiens.dbSNP155.GRCh37::SNPlocs.Hsapiens.dbSNP155.GRCh37
+  } else {
+    snps <- SNPlocs.Hsapiens.dbSNP155.GRCh38::SNPlocs.Hsapiens.dbSNP155.GRCh38
+  }
+
+  # Find overlaps
+  snp.res <- snpsByOverlaps(snps, GRanges(dat$ranges))
+
+  # Convert results to data.table
+  snp.res.dt <- as.data.table(snp.res)
+  snp.res.dt[, ranges := stringr::str_c(seqnames, ":", pos, "-", pos)]
+
+  # Merge data
+  trans.dat <- merge(snp.res.dt, dat, by = "ranges")
+  columns_to_remove <- c("strand", "alleles_as_ambig", "ranges", "seqnames", "pos")
+  trans.dat[, (columns_to_remove) := NULL]
+
+  # Drop NA rsid and return
+  # trans.dat <- trans.dat %>% drop_na(RefSNP_id)
+  leo.gwas::leo_message("Remember to check if there is any NA in the RefSNP_id column.")
+
+  return(trans.dat)
+}
+

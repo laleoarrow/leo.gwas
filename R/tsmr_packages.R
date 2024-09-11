@@ -1,9 +1,7 @@
 #' Give Messages with my color
-#' @keywords basic:
-#'
 #' @param color prefered color
 #' @param msg messages to show; it should be a word pasted pharse.
-#'
+#' @export
 #' @examples
 #' leo_message("This is a pink message")
 #' leo_message("This is a green message","32")
