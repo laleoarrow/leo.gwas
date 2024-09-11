@@ -29,8 +29,8 @@ get_id <- function(x) {
 #'
 #' @param df A dataframe containing at least the columns 'CHR' and 'BP'.
 #' @param ref str indicating ref version.
-#'    - "37" for GRCh37
-#'    - "38" for GRCh38
+#' - "37" for GRCh37
+#' - "38" for GRCh38
 #' @return A dataframe with an additional 'RefSNP_id' column which contains the rsIDs.
 #' @examples
 #' pacman::p_load(data.table, BSgenome, leo.gwas)
@@ -39,7 +39,7 @@ get_id <- function(x) {
 #' @export
 add_rsid <- function(dat, ref = "GRCh37") {
   # Check if necessary columns are present
-  if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(df))) {
+  if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(dat))) {
     stop("DataFrame must contain 'CHR' and 'BP' columns")
   }
 
