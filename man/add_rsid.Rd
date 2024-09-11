@@ -25,6 +25,9 @@ The function returns a dataframe with the rsIDs included.
 }
 \examples{
 pacman::p_load(data.table, BSgenome, leo.gwas)
-df <- data.frame(CHR = c(1, 1), BP = c(15211, 15820))
+df <- data.frame(
+  CHR = c(1, 1),
+  BP = c(15211, 15820)
+)
 result <- add_rsid(df); result
 }
