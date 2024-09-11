@@ -20,4 +20,3 @@ leo_message("This is a green message","32")
 leo_message("This is a blue message","34")
 leo_message("This is a light purple message","95")
 }
-\keyword{basic:}
