@@ -29,12 +29,14 @@ get_id <- function(x) {
 #'
 #' @param df A dataframe containing at least the columns 'CHR' and 'BP'.
 #' @param ref str indicating ref version.
-#' - "37" for GRCh37
-#' - "38" for GRCh38
+#' - "GRCh37" for GRCh37 Ref panel
+#' - "GRCh38" for GRCh38 Ref panel
 #' @return A dataframe with an additional 'RefSNP_id' column which contains the rsIDs.
 #' @importFrom data.table ":="
 #' @examples
 #' pacman::p_load(data.table, BSgenome, leo.gwas)
+#' library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
+#' library("SNPlocs.Hsapiens.dbSNP155.GRCh38") # for GRCh38
 #' df <- data.frame(
 #'   CHR = c(1, 1),
 #'   BP = c(15211, 15820)
@@ -47,7 +49,7 @@ add_rsid <- function(dat, ref = "GRCh37") {
   }
 
   # Convert dat to data.table if it is not one already
-  library(data.table)
+  # library(data.table)
   if (!data.table::is.data.table(dat)) {data.table::setDT(dat)}
   dat[, ranges := paste0(CHR, ":", BP, "-", BP)]
 
@@ -80,3 +82,29 @@ add_rsid <- function(dat, ref = "GRCh37") {
   return(trans.dat)
 }
 
+#' Give precise p-value for chi-square test
+#'
+#' Sometimes you get a p-value of 0 when you perform a chi-square test or other analysis.
+#' This is because the p-value is so small that R rounds it to 0. This function gives you
+#' a more precise p-value.
+#'
+#' @param chisq_value numeric, chi-square value
+#' @param df numeric, degree of freedom
+#' @param digits numeric, digits for output to illustrate
+#' @param prec numeric, precision for mpfr() function
+#'
+#' @return A precise p-value in scientific format
+#' @export
+#'
+#' @examples
+#' # install.packages("Rmpfr")
+#' library(Rmpfr)
+#' chisq_value <- 2629; df <- 1
+#' p_value <- chisq_p_value(chisq_value, df)
+#' print(p_value)
+chisq_p_value <- function(chisq_value, df, digits = 4, prec = 100) {
+  log_p_value <- pchisq(chisq_value, df, lower.tail = FALSE, log.p = TRUE)
+  p_value <- exp(mpfr(log_p_value, prec = prec))
+  p_value <- format(p_value, scientific = TRUE, digits = digits)
+  return(p_value)
+}

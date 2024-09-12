@@ -25,6 +25,8 @@
 #' environment.list <- tibble(item = as.vector(grep("^x[0-9]+$", x = env, value = TRUE))) # load the environment
 #' check_significant_SNP(x8, environment.list, significance_level = 5e-8)
 #'
+#' # You can mannually check the p-value of one SNP in previous environment.list
+#'
 check_significant_SNP <- function(x, environment.list, significance_level = 5e-8) {
   if (nrow(environment.list) == 0) {
     message("No matching variables found in the environment.")

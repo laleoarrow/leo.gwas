@@ -2,6 +2,7 @@
 
 export(add_rsid)
 export(check_significant_SNP)
+export(chisq_p_value)
 export(get_id)
 export(leo_message)
 export(mr_one_pair)

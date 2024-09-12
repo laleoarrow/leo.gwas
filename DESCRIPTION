@@ -20,9 +20,11 @@ Imports:
     plinkbinr,
     TwoSampleMR,
     vroom,
-    SNPlocs.Hsapiens.dbSNP155.GRCh37,
-    SNPlocs.Hsapiens.dbSNP155.GRCh38,
     BSgenome,
     stringr
 Depends: 
     tidyverse
+Suggests: 
+    SNPlocs.Hsapiens.dbSNP155.GRCh37,
+    SNPlocs.Hsapiens.dbSNP155.GRCh38,
+    Rmpfr
