@@ -2,7 +2,7 @@
 # Layered Exploratory Omics (LEO)
 # leo.gwas
 GitHub Repository for "Layered Exploratory Omics (LEO)" Package
-## "Unveiling the Depths of Genomic Data, Layer by Layer"
+> "Unveiling the Depths of Genomic Data, Layer by Layer"
 
 ### Introduction
 **Layered Exploratory Omics** (LEO) is a tool specifically designed for deep analysis of genomic data. It employs a multi-layered exploratory approach to help researchers uncover the complex biological information hidden behind their data. Combining cutting-edge statistical and computational methodologies, LEO offers a user-friendly interface and powerful data-processing capabilities, enabling users ranging from beginners to advanced to effectively explore and analyze their omics data.
