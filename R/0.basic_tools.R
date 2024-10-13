@@ -105,6 +105,6 @@ add_rsid <- function(dat, ref = "GRCh37") {
 chisq_p_value <- function(chisq_value, df, digits = 4, prec = 100) {
   log_p_value <- pchisq(chisq_value, df, lower.tail = FALSE, log.p = TRUE)
   p_value <- exp(mpfr(log_p_value, prec = prec))
-  p_value <- format(p_value, scientific = TRUE, digits = digits)
+  # p_value <- format(p_value, scientific = TRUE, digits = digits)
   return(p_value)
 }
