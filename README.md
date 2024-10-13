@@ -22,6 +22,6 @@ We encourage and welcome contributions to LEO from the community. If you are int
 LEO is released under the GNU General Public License v3.0. This includes certain permissions and restrictions, particularly concerning patents and copyright. Your use, duplication, modification, and distribution of LEO are bound by the terms of GPL v3.0. For more detailed information, please refer to the LICENSE file.
 
 ### Contact Information
-For more information or assistance, please contact us through [luao@stu.cqmu.edu.cn] (Ao Lu).
+For more information or assistance, please contact us at [Ao Lu](luao@stu.cqmu.edu.cn).
 
 **We look forward to collaborating with researchers and developers worldwide to advance innovation and progress in genomic data analysis!**
