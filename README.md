@@ -1,3 +1,4 @@
+![Static Badge](https://img.shields.io/badge/R-language-red)
 # Layered Exploratory Omics (LEO)
 # leo.gwas
 GitHub Repository for "Layered Exploratory Omics (LEO)" Package
