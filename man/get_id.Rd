@@ -11,7 +11,7 @@ get_id(x)
 Each column represents:
 \itemize{
 \item CHR: Chromosome number
-\item BP: Base pair position
+\item BP/POS: Base pair position
 \item A2: Reference allele (non-effect allele)
 \item A1: Alternative allele (effect allele)
 }}
