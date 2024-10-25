@@ -1,6 +1,6 @@
 Package: leo.gwas
 Title: Layered Exploratory Omics (LEO)
-Version: 0.0.0
+Version: 0.0.1
 Authors@R: 
     person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-0927-4468"))
@@ -27,6 +27,4 @@ Depends:
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
-    Rmpfr,
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+    Rmpfr
