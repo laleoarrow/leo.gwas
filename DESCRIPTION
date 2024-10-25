@@ -27,4 +27,6 @@ Depends:
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
-    Rmpfr
+    Rmpfr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
