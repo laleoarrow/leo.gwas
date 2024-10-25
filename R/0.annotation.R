@@ -173,8 +173,8 @@ leo_map_gene_to_chrbp <- function(genes,
 #' @param genes A character vector of gene symbols or a data frame containing gene symbols.
 #' @param gene_col The column name of gene symbols if `genes` is a data frame.
 #' @param genome The genome assembly to use: `"hg19"` or `"hg38"`.
-#'  - For hg19, it needs `TxDb.Hsapiens.UCSC.hg19.knownGene` Bioconductor package
-#'  - For hg38, it needs `TxDb.Hsapiens.UCSC.hg38.knownGene` Bioconductor package
+#'  - For hg19, it needs **TxDb.Hsapiens.UCSC.hg19.knownGene** Bioconductor package
+#'  - For hg38, it needs **`TxDb.Hsapiens.UCSC.hg38.knownGene`** Bioconductor package
 #' @return A data frame with mapping results.
 #' @importFrom dplyr %>% mutate left_join select pull
 #' @importFrom rlang sym
