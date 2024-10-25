@@ -13,8 +13,8 @@ map_using_bioconductor(genes, gene_col = NULL, genome = c("hg19", "hg38"))
 
 \item{genome}{The genome assembly to use: \code{"hg19"} or \code{"hg38"}.
 \itemize{
-\item For hg19, it needs \code{TxDb.Hsapiens.UCSC.hg19.knownGene} Bioconductor package
-\item For hg38, it needs \code{TxDb.Hsapiens.UCSC.hg38.knownGene} Bioconductor package
+\item For hg19, it needs \strong{TxDb.Hsapiens.UCSC.hg19.knownGene} Bioconductor package
+\item For hg38, it needs \strong{\code{TxDb.Hsapiens.UCSC.hg38.knownGene}} Bioconductor package
 }}
 }
 \value{

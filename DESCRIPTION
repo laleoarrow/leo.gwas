@@ -27,4 +27,6 @@ Depends:
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
-    Rmpfr
+    Rmpfr,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    TxDb.Hsapiens.UCSC.hg38.knownGene
