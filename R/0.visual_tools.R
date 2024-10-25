@@ -49,7 +49,7 @@ ld_ps_index <- function(gwas, index = "rs999", # ps for pre-select
 #' @param index_snp indexed snp
 #' @param online_ld whether to use online LD; default is F
 #' @param flank flank size for the locus plot
-#' @return
+#' @return prepared data which could be pass to save_regional_plot
 #' @export
 locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
   #   ----- loc_plot using `locuszoomr`

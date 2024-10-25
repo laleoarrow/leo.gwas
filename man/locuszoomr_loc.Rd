@@ -17,6 +17,9 @@ locuszoomr_loc(loci_data, gene, online_ld = F, index_snp, flank)
 
 \item{flank}{flank size for the locus plot}
 }
+\value{
+prepared data which could be pass to save_regional_plot
+}
 \description{
 Loci_plot: prepare the locus data for locuszoomr
 }
