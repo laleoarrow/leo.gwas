@@ -2,7 +2,7 @@
 % Please edit documentation in R/0.annotation.R
 \name{add_chrpos}
 \alias{add_chrpos}
-\title{Add Chromosome Position (CHR and POS) to Dataset Based on rsID}
+\title{Convert rsID to CHR & BP}
 \usage{
 add_chrpos(dat, snp_col = "SNP", ref = "GRCh37")
 }

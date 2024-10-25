@@ -59,7 +59,7 @@ add_rsid <- function(dat, ref = "GRCh37") {
   return(trans.dat)
 }
 
-#' Add Chromosome Position (CHR and POS) to Dataset Based on rsID
+#' Convert rsID to CHR & BP
 #'
 #' This function takes a dataset with a column containing rsIDs (SNP IDs) and
 #' adds the corresponding chromosome (CHR) and position (POS) information.
