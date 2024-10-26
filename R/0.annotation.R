@@ -173,9 +173,9 @@ leo_map_gene_to_chrbp <- function(genes,
 #' @param genes A character vector of gene symbols or a data frame containing gene symbols.
 #' @param gene_col The column name of gene symbols if `genes` is a data frame.
 #' @param genome The genome assembly to use: `"hg19"` or `"hg38"`.
-#'  - For hg19, it needs **TxDb.Hsapiens.UCSC.hg19.knownGene** Bioconductor package
-#'  - For hg38, it needs **`TxDb.Hsapiens.UCSC.hg38.knownGene`** Bioconductor package
-#' @return A data frame with mapping results.
+#'  - For hg19, it needs `"TxDb.Hsapiens.UCSC.hg19.knownGene"` Bioconductor package
+#'  - For hg38, it needs `"TxDb.Hsapiens.UCSC.hg38.knownGene"` Bioconductor package
+#' @return A data frame with mapped results.
 #' @importFrom dplyr %>% mutate left_join select pull
 #' @importFrom rlang sym
 #' @importFrom AnnotationDbi mapIds
@@ -227,42 +227,59 @@ map_using_bioconductor <- function(genes, gene_col = NULL, genome = c("hg19", "h
   } else {
     stop("Input 'genes' must be a vector or a data frame.")
   }
+  unique_gene_symbols <- unique(gene_symbols) # Use unique gene symbols for mapping
+  message(sprintf("Total input genes: %d; Unique genes: %d", length(gene_symbols), length(unique_gene_symbols)))
 
   # Map gene symbols to Entrez IDs
   entrez_ids <- suppressMessages(
     AnnotationDbi::mapIds(
       org.Hs.eg.db::org.Hs.eg.db,
-      keys = gene_symbols,
+      keys = unique_gene_symbols,
       column = "ENTREZID",
       keytype = "SYMBOL",
       multiVals = "first"
     )
   )
 
-  # Retrieve genomic positions using Entrez IDs
-  suppressMessages( gene_locations <- GenomicFeatures::genes(txdb, columns = c("gene_id"), single.strand.genes.only = T) )
-  gene_locations_df <- as.data.frame(gene_locations) %>%
-    dplyr::mutate(gene_id = as.character(gene_id))
-
   # Merge & Mapping
   mapping_df <- data.frame(
-    gene_symbol = gene_symbols,
+    gene_symbol = unique_gene_symbols,
     entrez_id = entrez_ids,
     stringsAsFactors = FALSE
+  ) %>% dplyr::filter(!is.na(entrez_id))
+  mapping_df <- mapping_df %>% dplyr::filter(!is.na(entrez_id))
+
+  # Retrieve genomic positions using Entrez IDs
+  suppressMessages(
+    gene_locations <- GenomicFeatures::genes(txdb, columns = c("gene_id"),
+                                             single.strand.genes.only = TRUE)
   )
+  gene_locations_df <- as.data.frame(gene_locations) %>%
+    dplyr::mutate(gene_id = as.character(gene_id))
 
   result_df <- mapping_df %>%
     dplyr::left_join(gene_locations_df, by = c("entrez_id" = "gene_id")) %>%
     dplyr::select(gene_symbol, chr = seqnames, bp_start = start, bp_end = end, strand) %>%
-    dplyr::mutate(chr = gsub("^chr", "", chr))
+    dplyr::mutate(chr = gsub("^chr", "", chr)) %>%
+    dplyr::distinct()
 
-  # If input was a data frame, append the results
-  if (is.data.frame(genes)) {
-    final_df <- genes %>% dplyr::left_join(result_df, by = stats::setNames("gene_symbol", gene_col))
-    return(final_df)
-  } else {
-    return(result_df)
+  # Group by gene_symbol to get unique positions
+  standard_chr <- c(as.character(1:22), "X", "Y", "MT")
+  result_df <- result_df %>%
+    dplyr::filter(chr %in% standard_chr, !is.na(bp_start), !is.na(bp_end))
+
+  # Inform about genes that could not be mapped
+  unmapped_genes <- setdiff(unique_gene_symbols, result_df$gene_symbol)
+  if (length(unmapped_genes) > 0) {
+    message(paste0("⬇ A total of ", length(unmapped_genes), " could not be mapped ⬇"))
+    message("The following genes could not be mapped: ", paste(unmapped_genes, collapse = ", "))
   }
+
+  # Now merge the mapping back to the original input data
+  final_df <- input_df %>%
+    dplyr::left_join(result_df, by = stats::setNames("gene_symbol", gene_col))
+
+  return(final_df)
 }
 
 #' Map Gene Symbols Using GTF File
@@ -304,6 +321,8 @@ map_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gt
   } else {
     stop("Input 'genes' must be a vector or a data frame.")
   }
+  unique_gene_symbols <- unique(gene_symbols) # Use unique gene symbols for mapping
+  message(sprintf("Total input genes: %d; Unique genes: %d", length(gene_symbols), length(unique_gene_symbols)))
 
   # Set default download directory
   if (is.null(download_dir)) { download_dir <- "~/project/ref/gtf" }
@@ -355,26 +374,53 @@ map_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gt
   gene_symbols_map <- as.data.frame(gene_symbols_map)
 
   # Merge gene locations with gene symbols
-  gene_locations_df <- gene_locations_df %>%
-    dplyr::left_join(gene_symbols_map, by = c("gene_id"))
-
-  # Filter for input gene symbols
-  result_df <- gene_locations_df %>%
-    dplyr::filter(gene_name %in% gene_symbols) %>%
-    dplyr::select(gene_symbol = gene_name, chr = seqnames, bp_start = start, bp_end = end, strand)
-
-  # Clean up chromosome names and strand
-  result_df <- result_df %>%
+  gene_locations_df <- gene_locations_df %>% # gene_locations_df <- as.data.frame(gene_locations) # (debug)
+    dplyr::left_join(gene_symbols_map, by = c("gene_id")) %>%
+    dplyr::distinct() %>%
     dplyr::mutate(
-      chr = sub("^NC_0*([0-9XYMT]+)\\..*$", "\\1", chr)
+      # Extract numeric chromosome numbers
+      chr = dplyr::case_when(
+        grepl("^NC_", seqnames) ~ sub("^NC_0{0,}0*([0-9]+)\\..*", "\\1", seqnames),
+        TRUE ~ NA_character_
+      ),
+      # Replace numeric codes for X and Y chromosomes
+      chr = dplyr::case_when(
+        chr == "23" ~ "X",
+        chr == "24" ~ "Y",
+        chr == "12920" ~ "MT",
+        TRUE ~ chr
+      )
     )
 
-  # If input was a data frame, append the results
-  if (is.data.frame(genes)) {
-    final_df <- genes %>%
-      dplyr::left_join(result_df, by = stats::setNames("gene_symbol", gene_col))
-    return(final_df)
-  } else {
-    return(result_df)
+  # Filter out non-standard chromosomes and NA positions
+  standard_chr <- c(as.character(1:22), "X", "Y", "MT")
+  gene_locations_df <- gene_locations_df %>%
+    dplyr::filter(chr %in% standard_chr, !is.na(start), !is.na(end))
+
+  # Filter for unique gene symbols and group
+  result_df <- gene_locations_df %>%
+    dplyr::filter(gene_name %in% unique_gene_symbols) %>%
+    dplyr::group_by(gene_name) %>%
+    dplyr::summarise(
+      chr = chr[1],
+      bp_start = min(start),
+      bp_end = max(end),
+      strand = strand[1]
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::rename(gene_symbol = gene_name)
+
+  # Inform about genes that could not be mapped
+  mapped_genes <- result_df$gene_symbol
+  unmapped_genes <- setdiff(unique_gene_symbols, mapped_genes)
+  if (length(unmapped_genes) > 0) {
+    message(paste0("⬇ A total of ", length(unmapped_genes), " could not be mapped ⬇"))
+    message("The following genes could not be mapped: ", paste(unmapped_genes, collapse = ", "))
   }
+
+  # Merge back with original input data
+  final_df <- input_df %>%
+    dplyr::left_join(result_df, by = stats::setNames("gene_symbol", gene_col))
+
+  return(final_df)
 }
