@@ -1,6 +1,6 @@
 Package: leo.gwas
 Title: Layered Exploratory Omics (LEO)
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-0927-4468"))
