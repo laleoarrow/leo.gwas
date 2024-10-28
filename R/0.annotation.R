@@ -424,3 +424,78 @@ map_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gt
 
   return(final_df)
 }
+
+
+#' Query Gene Symbols for Chromosome Position Using biomaRt
+#'
+#' This function queries gene symbols for their genomic positions (chromosome, start, end, strand)
+#' using Ensembl's biomaRt for the specified genome assembly (GRCh37, which is equivalent to hg19, or GRCh38).
+#'
+#' @param genes A character vector of gene symbols to query, or a data frame containing gene symbols.
+#' @param gene_col The column name of gene symbols if `genes` is a data frame.
+#' @param genome The genome assembly to use: "hg19" or "hg38".
+#'
+#' @return A data frame with columns: gene_symbol, chr, bp_start, bp_end, strand.
+#' @importFrom biomaRt useMart getBM
+#' @examples
+#'
+#' # Query location of TP53, BRCA1, and EGFR genes
+#'
+#' \dontrun{
+#' gene_locations <- query_gene_location_biomart(genes = c("TP53", "BRCA1", "EGFR"), genome = "hg19")
+#' print(gene_locations)
+#' }
+#' @export
+query_gene_location_biomart <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
+  # check
+  genome <- match.arg(genome)
+  if (!requireNamespace("biomaRt", quietly = TRUE)) {stop("Package 'biomaRt' is required. Install it using BiocManager::install('biomaRt').")}
+
+  # Connect to Ensembl based on genome assembly
+  if (genome == "hg19") {
+    ensembl <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "https://grch37.ensembl.org")
+  } else if (genome == "hg38") {
+    ensembl <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "https://www.ensembl.org")
+  }
+
+  # check input genes
+  if (is.data.frame(genes)) {
+    if (is.null(gene_col) || !(gene_col %in% colnames(genes))) {
+      stop("Please specify a valid 'gene_col' that exists in the data frame.")
+    }
+    gene_symbols <- genes[[gene_col]]
+    input_df <- genes
+  } else if (is.vector(genes)) {
+    gene_symbols <- genes
+    input_df <- data.frame(gene_symbol = gene_symbols, stringsAsFactors = FALSE)
+    gene_col <- "gene_symbol"
+  } else {
+    stop("Input 'genes' must be a vector or a data frame.")
+  }
+
+  # Message about the number of input genes
+  total_genes <- length(gene_symbols)
+  unique_genes <- length(unique(gene_symbols))
+  message(sprintf("Total input genes: %d, Unique genes: %d", total_genes, unique_genes))
+
+  # Query gene information by symbol
+  unique_gene_symbols <- unique(gene_symbols)
+  gene_info <- biomaRt::getBM(attributes = c("chromosome_name", "start_position", "end_position", "strand", "hgnc_symbol"),
+                              filters = "hgnc_symbol",
+                              values = unique_gene_symbols,
+                              mart = ensembl)
+  colnames(gene_info) <- c("chr", "bp_start", "bp_end", "strand", "gene_symbol")
+
+  # Filter out non-standard chromosomes (only keep 1-22, X, Y, MT)
+  standard_chr <- c(as.character(1:22), "X", "Y", "MT")
+  gene_info <- gene_info %>% dplyr::filter(chr %in% standard_chr) %>% filter(!is.na(chr))
+
+  # Merge back with original input to ensure consistency
+  result_df <- input_df %>%
+    dplyr::left_join(gene_info, by = stats::setNames("gene_symbol", gene_col))
+
+  return(result_df)
+}
+
+
+

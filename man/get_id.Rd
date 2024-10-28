@@ -2,24 +2,29 @@
 % Please edit documentation in R/0.basic_tools.R
 \name{get_id}
 \alias{get_id}
-\title{Get ID}
+\title{Get Unique Identifier for Genetic Data}
 \usage{
-get_id(x)
+get_id(x, count_A1_A2 = F)
 }
 \arguments{
 \item{x}{A data.frame that must contain the columns CHR, BP, A2, and A1.
 Each column represents:
 \itemize{
-\item CHR: Chromosome number
-\item BP/POS: Base pair position
-\item A2: Reference allele (non-effect allele)
-\item A1: Alternative allele (effect allele)
+\item CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome"))
+\item BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position"))
+\item A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "REF", "Ref", "Non-effect"))
+\item A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "ALT", "Alt", "Effect"))
 }}
+
+\item{count_A1_A2}{If T, will count the number of characters in A1 and A2}
 }
 \value{
-A df data.frame with ID column and the character counts of A1 and A2
+A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique identifiers and character counts of A1 and A2)
 }
 \description{
 Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
 }
-\keyword{basic}
+\examples{
+df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111), A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
+get_id(df); get_id(df, count_A1_A2 = T)
+}
