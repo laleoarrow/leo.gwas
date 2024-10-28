@@ -6,8 +6,8 @@
 #' Each column represents:
 #' - CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome"))
 #' - BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position"))
-#' - A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "REF", "Ref", "Non-effect"))
-#' - A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "ALT", "Alt", "Effect"))
+#' - A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect"))
+#' - A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect"))
 #' @param count_A1_A2 If T, will count the number of characters in A1 and A2
 #'
 #' @return A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique identifiers and character counts of A1 and A2)
@@ -21,8 +21,8 @@ get_id <- function(x, count_A1_A2 = F) {
   # possible colnames for CHR and POS
   chrom_cols <- c("chrom", "CHR", "Chromosome", "chromosome")
   pos_cols <- c("pos", "POS", "position", "BP", "Position")
-  a1_cols <- c("A1", "Allele1", "allele1", "ALT", "Alt", "Effect")
-  a2_cols <- c("A2", "Allele2", "allele2", "REF", "Ref", "Non-effect")
+  a1_cols <- c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect")
+  a2_cols <- c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect")
 
   chrom_col <- intersect(chrom_cols, names(x)); if(length(chrom_col) == 0){stop("No chromosome column found in the dataframe.")}
   chrom_col <- chrom_col[1]

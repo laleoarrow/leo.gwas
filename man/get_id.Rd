@@ -12,8 +12,8 @@ Each column represents:
 \itemize{
 \item CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome"))
 \item BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position"))
-\item A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "REF", "Ref", "Non-effect"))
-\item A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "ALT", "Alt", "Effect"))
+\item A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect"))
+\item A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect"))
 }}
 
 \item{count_A1_A2}{If T, will count the number of characters in A1 and A2}
