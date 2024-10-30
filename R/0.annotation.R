@@ -119,8 +119,8 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 #' start, end, strand) using the specified method and genome assembly.
 #'
 #' The function supports two methods:
-#' - `"bioconductor"`: uses Bioconductor packages. See [map_using_bioconductor()].
-#' - `"gtf"`: uses a GTF file. See [map_using_gtf()].
+#' - `"bioconductor"`: uses Bioconductor packages. See [map_gene_to_chrbp_using_TxDb()].
+#' - `"gtf"`: uses a GTF file. See [map_gene_to_chrbp_using_gtf()].
 #'
 #' @param genes A character vector of gene symbols or a data frame containing gene symbols.
 #' @param gene_col The column name of gene symbols if `genes` is a data frame.
@@ -134,32 +134,32 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 #' @examples
 #' \dontrun{
 #' # Using Bioconductor method with a character vector of gene symbols
-#' leo_map_gene_to_chrbp(genes = c("TP53", "BRCA1", "EGFR"), method = "bioconductor", genome = "hg19")
+#' leo_map_GtoCP(genes = c("TP53", "BRCA1", "EGFR"), method = "bioconductor", genome = "hg19")
 #'
 #' # Using Bioconductor method with a data frame
-#' leo_map_gene_to_chrbp(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
-#'                       gene_col = "gene_name", method = "bioconductor", genome = "hg19")
+#' leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
+#'               gene_col = "gene_name", method = "bioconductor", genome = "hg19")
 #'
 #' # Using GTF method with a character vector of gene symbols
-#' leo_map_gene_to_chrbp(genes = c("TP53", "BRCA1", "EGFR"), method = "gtf", genome = "hg38")
+#' leo_map_GtoCP(genes = c("TP53", "BRCA1", "EGFR"), method = "gtf", genome = "hg38")
 #'
 #' # Using GTF method with a data frame
-#' leo_map_gene_to_chrbp(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
-#'                       gene_col = "gene_name", method = "gtf", genome = "hg38", download_dir = "~/project/ref/gtf")
+#' leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
+#'               gene_col = "gene_name", method = "gtf", genome = "hg38", download_dir = "~/project/ref/gtf")
 #' }
 #' @export
-leo_map_gene_to_chrbp <- function(genes,
-                                  gene_col = NULL,
-                                  method = c("bioconductor", "gtf"),
-                                  genome = c("hg19", "hg38"),
-                                  ...) {
+leo_map_GtoCP <- function(genes,
+                          gene_col = NULL,
+                          method = c("bioconductor", "gtf"),
+                          genome = c("hg19", "hg38"),
+                          ...) {
   method <- match.arg(method)
   genome <- match.arg(genome)
 
   if (method == "bioconductor") {
-    result <- map_using_bioconductor(genes = genes, gene_col = gene_col, genome = genome)
+    result <- map_gene_to_chrbp_using_TxDb(genes = genes, gene_col = gene_col, genome = genome)
   } else if (method == "gtf") {
-    result <- map_using_gtf(genes = genes, gene_col = gene_col, genome = genome, ...)
+    result <- map_gene_to_chrbp_using_gtf(genes = genes, gene_col = gene_col, genome = genome, ...)
   } else {
     stop("Invalid method specified.")
   }
@@ -183,13 +183,13 @@ leo_map_gene_to_chrbp <- function(genes,
 #' @examples
 #' \dontrun{
 #' gene_symbols <- c("TP53", "BRCA1", "EGFR") # Example with gene symbol vector
-#' map_using_bioconductor(genes = gene_symbols, genome = "hg19")
+#' map_gene_to_chrbp_using_TxDb(genes = gene_symbols, genome = "hg19")
 #'
 #' gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInformation = c(1,2,3)) # Example with data frame input
-#' map_using_bioconductor(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
+#' map_gene_to_chrbp_using_TxDb(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
 #' }
 #' @export
-map_using_bioconductor <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
+map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
   genome <- match.arg(genome)
 
   # Load the appropriate TxDb package based on genome assembly
@@ -298,13 +298,13 @@ map_using_bioconductor <- function(genes, gene_col = NULL, genome = c("hg19", "h
 #' @examples
 #' \dontrun{
 #' gene_symbols <- c("TP53", "BRCA1", "EGFR")
-#' map_using_gtf(genes = gene_symbols, genome = "hg38")
+#' map_gene_to_chrbp_using_gtf(genes = gene_symbols, genome = "hg38")
 #'
 #' gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInformation = c(1,2,3))
-#' map_using_gtf(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
+#' map_gene_to_chrbp_using_gtf(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
 #' }
 #' @export
-map_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gtf_file = NULL, download_dir = "~/project/ref/gtf") {
+map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gtf_file = NULL, download_dir = "~/project/ref/gtf") {
   genome <- match.arg(genome)
 
   # Process input genes
@@ -442,11 +442,11 @@ map_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gt
 #' # Query location of TP53, BRCA1, and EGFR genes
 #'
 #' \dontrun{
-#' gene_locations <- query_gene_location_biomart(genes = c("TP53", "BRCA1", "EGFR"), genome = "hg19")
+#' gene_locations <- map_gene_to_chrbp_using_biomart(genes = c("TP53", "BRCA1", "EGFR"), genome = "hg19")
 #' print(gene_locations)
 #' }
 #' @export
-query_gene_location_biomart <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
+map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
   # check
   genome <- match.arg(genome)
   if (!requireNamespace("biomaRt", quietly = TRUE)) {stop("Package 'biomaRt' is required. Install it using BiocManager::install('biomaRt').")}
@@ -498,4 +498,73 @@ query_gene_location_biomart <- function(genes, gene_col = NULL, genome = c("hg19
 }
 
 
+#' Map Ensembl IDs to Gene Symbols
+#'
+#' This function maps Ensembl IDs to their corresponding gene symbols using the `org.Hs.eg.db` package.
+#'
+#' @param ensembl_ids A character vector of Ensembl IDs or a data frame containing Ensembl IDs.
+#' @param ensembl_col The column name of Ensembl IDs if `ensembl_ids` is a data frame.
+#' @return A data frame with two columns: the input Ensembl IDs and the corresponding gene symbols.
+#' @importFrom dplyr %>% left_join pull
+#' @importFrom rlang sym
+#' @importFrom AnnotationDbi mapIds
+#' @examples
+#' \dontrun{
+#' ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648") # Example with Ensembl ID vector
+#' map_ensembl_to_gene(ensembl_ids = ensembl_ids)
+#'
+#' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInformation = c(1,2,3)) # Example with data frame input
+#' map_ensembl_to_gene(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID")
+#' }
+#' @export
+map_ensembl_to_gene <- function(ensembl_ids, ensembl_col = NULL) {
+  # Load required package
+  if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
+    message("Package 'org.Hs.eg.db' is required. You can install it using BiocManager::install('org.Hs.eg.db').")
+    stop("Package 'org.Hs.eg.db' is required.")
+  }
+
+  # Process input Ensembl IDs
+  if (is.data.frame(ensembl_ids)) {
+    if (is.null(ensembl_col) || !(ensembl_col %in% colnames(ensembl_ids))) {
+      stop("Please specify a valid 'ensembl_col' that exists in the data frame.")
+    }
+    ensembl_col_sym <- rlang::sym(ensembl_col)
+    ensembl_id_values <- ensembl_ids %>% dplyr::pull(!!ensembl_col_sym)
+    input_df <- ensembl_ids
+  } else if (is.vector(ensembl_ids)) {
+    ensembl_id_values <- ensembl_ids
+    input_df <- data.frame(ensembl_id = ensembl_id_values, stringsAsFactors = FALSE)
+    ensembl_col <- "ensembl_id"
+  } else {
+    stop("Input 'ensembl_ids' must be a vector or a data frame.")
+  }
+
+  unique_ensembl_ids <- unique(ensembl_id_values)
+  message(sprintf("Total input Ensembl IDs: %d; Unique Ensembl IDs: %d", length(ensembl_id_values), length(unique_ensembl_ids)))
+
+  # Map Ensembl IDs to Gene Symbols
+  gene_symbols <- suppressMessages(
+    AnnotationDbi::mapIds(
+      org.Hs.eg.db::org.Hs.eg.db,
+      keys = unique_ensembl_ids,
+      column = "SYMBOL",
+      keytype = "ENSEMBL",
+      multiVals = "first"
+    )
+  )
+
+  # Create mapping data frame
+  mapping_df <- data.frame(
+    ensembl_id = unique_ensembl_ids,
+    gene_symbol = gene_symbols[unique_ensembl_ids],
+    stringsAsFactors = FALSE
+  ) %>% dplyr::filter(!is.na(gene_symbol))
+
+  # Merge back with input data
+  final_df <- input_df %>%
+    dplyr::left_join(mapping_df, by = stats::setNames("ensembl_id", ensembl_col))
+
+  return(final_df)
+}
 
