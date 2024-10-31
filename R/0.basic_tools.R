@@ -4,8 +4,8 @@
 #'
 #' @param x A data.frame that must contain the columns CHR, BP, A2, and A1.
 #' Each column represents:
-#' - CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome"))
-#' - BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position"))
+#' - CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome", "Chr"))
+#' - BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position", "Bp"))
 #' - A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect"))
 #' - A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect"))
 #' @param count_A1_A2 If T, will count the number of characters in A1 and A2
@@ -19,8 +19,8 @@
 get_id <- function(x, count_A1_A2 = F) {
   # require(dplyr)
   # possible colnames for CHR and POS
-  chrom_cols <- c("chrom", "CHR", "Chromosome", "chromosome")
-  pos_cols <- c("pos", "POS", "position", "BP", "Position")
+  chrom_cols <- c("chrom", "CHR", "Chromosome", "chromosome", "Chr")
+  pos_cols <- c("pos", "POS", "position", "BP", "Position", "Bp")
   a1_cols <- c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect")
   a2_cols <- c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect")
 
@@ -116,7 +116,6 @@ exclude_HLA <- function(data, chromosome_col="CHR", position_col="BP", lower_bou
 #' @return An integer representing the number of matches if return is "count",
 #'         or a logical vector indicating which elements match the pattern if return is "logi".
 #' @export
-#'
 #' @examples
 #' vec <- c("abc", "def", "xyz", "abcd")
 #' count_matching_elements(vec, "abc", return = "count")  # Returns 2
@@ -134,6 +133,34 @@ count_matching_elements <- function(vector, pattern, return = "count") {
     return(sum(matches))  # Return the count of matching elements
   } else if (return == "logi") {
     return(matches)  # Return the logical vector
+  } else {
+    stop("Invalid return value. Use 'count' or 'logi'.")
+  }
+}
+
+#' Count or Identify Duplicates in a Vector
+#'
+#' This function counts the number of duplicate elements in a vector,
+#' or returns a logical vector indicating which elements are duplicates.
+#'
+#' @param vector A vector to be checked for duplicates.
+#' @param return A string specifying the return type: "count" for number of duplicates, or "logi" for a logical vector.
+#'
+#' @return An integer representing the number of duplicates if return is "count",
+#'         or a logical vector indicating which elements are duplicates if return is "logi".
+#' @export
+#' @examples
+#' vec <- c("a", "b", "c", "a", "b", "d")
+#' count_duplicate_element(vec, return = "count")  # Returns 4
+#' count_duplicate_element(vec, return = "logi")   # Returns c(TRUE, TRUE, FALSE, TRUE, TRUE, FALSE)
+count_duplicate_element <- function(vector, return = "count") {
+  # Find duplicates
+  duplicate_indices <- duplicated(vector) | duplicated(vector, fromLast = TRUE)
+
+  if (return == "count") {
+    return(sum(duplicate_indices))  # Return the count of duplicates
+  } else if (return == "logi") {
+    return(duplicate_indices)  # Return the logical vector
   } else {
     stop("Invalid return value. Use 'count' or 'logi'.")
   }

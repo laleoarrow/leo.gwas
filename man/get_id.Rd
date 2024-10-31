@@ -10,8 +10,8 @@ get_id(x, count_A1_A2 = F)
 \item{x}{A data.frame that must contain the columns CHR, BP, A2, and A1.
 Each column represents:
 \itemize{
-\item CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome"))
-\item BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position"))
+\item CHR: Chromosome (It can be any in c("chrom", "CHR", "Chromosome", "chromosome", "Chr"))
+\item BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position", "Bp"))
 \item A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect"))
 \item A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect"))
 }}
