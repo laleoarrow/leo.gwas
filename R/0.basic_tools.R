@@ -103,3 +103,39 @@ exclude_HLA <- function(data, chromosome_col="CHR", position_col="BP", lower_bou
                       !!sym(position_col) <= upper_bound))
   return(filtered_data)
 }
+
+#' Count or Identify Rows Matching a Pattern in a Specified Column
+#'
+#' This function counts the number of rows in a data frame where a specified column contains a given pattern,
+#' or returns a logical vector indicating which rows match the pattern.
+#'
+#' @param data A data frame to be searched.
+#' @param column_name The name of the column to search for the pattern (as a string).
+#' @param pattern The pattern to match (regular expression).
+#' @param return A string specifying the return type: "count" for number of matches, or "logi" for a logical vector.
+#'
+#' @return An integer representing the number of rows matching the pattern if return is "count",
+#'         or a logical vector indicating which rows match the pattern if return is "logi".
+#' @export
+#'
+#' @examples
+#' df <- data.frame(text = c("abc", "def", "xyz", "abcd"))
+#' count_matching_rows(df, "text", "abc", return = "count")  # Returns 2
+#' count_matching_rows(df, "text", "abc", return = "logi")   # Returns c(TRUE, FALSE, FALSE, TRUE)
+count_matching_rows <- function(data, column_name, pattern, return = "count") {
+  # Ensure the specified column exists
+  if (!column_name %in% names(data)) {
+    stop("Column not found in the data frame.")
+  }
+
+  # Create a logical vector for matching rows
+  matches <- grepl(pattern, data[[column_name]], ignore.case = TRUE)
+
+  if (return == "count") {
+    return(sum(matches))  # Return the count of matching rows
+  } else if (return == "logi") {
+    return(matches)  # Return the logical vector
+  } else {
+    stop("Invalid return value. Use 'count' or 'logi'.")
+  }
+}
