@@ -9,6 +9,16 @@ filter_chr_basedonSNP_p(
   df,
   chr_col = "CHR",
   snp_col = "Variant_ID",
+  gene_col = "Gene",
+  p_val_col = "nominal_P_value",
+  threshold = 0.00157
+)
+
+filter_chr_basedonSNP_p(
+  df,
+  chr_col = "CHR",
+  snp_col = "Variant_ID",
+  gene_col = "Gene",
   p_val_col = "nominal_P_value",
   threshold = 0.00157
 )
@@ -20,19 +30,39 @@ filter_chr_basedonSNP_p(
 
 \item{snp_col}{Character string specifying the name of the SNP identifier column. Default is \code{"Variant_ID"}.}
 
+\item{gene_col}{Character string specifying the name of the gene column. Default is \code{"Gene"}.}
+
 \item{p_val_col}{Character string specifying the name of the p-value column. Default is \code{"nominal_P_value"}.}
 
 \item{threshold}{Numeric value specifying the p-value threshold. Default is \code{5e-8}.}
 }
 \value{
 A filtered data frame with an added \code{index} column.
+
+A filtered data frame with an added \code{index} column.
 }
 \description{
+This function adds an index column to the input data frame and filters chromosomes based on whether any SNP within the chromosome crosses a specified threshold. If a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained. Otherwise, all SNPs on that chromosome are removed.
+
 This function adds an index column to the input data frame and filters chromosomes based on whether any SNP within the chromosome crosses a specified threshold. If a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained. Otherwise, all SNPs on that chromosome are removed.
 }
 \examples{
 library(dplyr)
 eqtl_data <- data.frame(
+CHR = c("1", "1", "2", "2", "3"),
+Variant_ID = c("rs1", "rs2", "rs3", "rs4", "rs5"),
+nominal_P_value = c(1e-9, 0.05, 0.2, 1e-7, 0.3)
+);eqtl_data
+df_filtered <- filter_chr_basedonSNP_p(
+  df = eqtl_data,
+  chr_col = "CHR",
+  snp_col = "Variant_ID",
+  p_val_col = "nominal_P_value",
+  threshold = 5e-8
+);df_filtered
+library(dplyr)
+eqtl_data <- data.frame(
+Gene = c("G1", "G1", "G2", "G2", "G3"),
 CHR = c("1", "1", "2", "2", "3"),
 Variant_ID = c("rs1", "rs2", "rs3", "rs4", "rs5"),
 nominal_P_value = c(1e-9, 0.05, 0.2, 1e-7, 0.3)
