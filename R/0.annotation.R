@@ -97,11 +97,12 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
   # Get CHR and POS for the SNPs from the SNPlocs database
   snp_info <- data.table::setDT(data.frame(snpsById(snps, dat[[snp_col]], ifnotfound = "drop"))) %>%
     dplyr::select(seqnames, pos, RefSNP_id) %>%
-    dplyr::rename(CHR = seqnames, POS = pos, SNP = RefSNP_id)
+    dplyr::rename(CHR = seqnames, POS = pos, SNP = RefSNP_id) %>%
+    unique()
 
   # Merge the SNP info with the original dataset, keeping all original columns
   merged_data <- merge(dat, snp_info, by.x = snp_col, by.y = "SNP", all.x = TRUE) %>%
-    select(SNP, CHR, POS, everything())
+    dplyr::select(SNP, CHR, POS, everything())
 
   # Check for missing SNPs (those not found in the SNP reference)
   missing_snps <- merged_data[is.na(merged_data$CHR), ]$SNP
