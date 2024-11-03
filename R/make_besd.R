@@ -65,14 +65,14 @@ filter_chr_basedonSNP_p <- function(df,
 #' Variant_ID = c("rs1", "rs2", "rs3", "rs4", "rs5"),
 #' nominal_P_value = c(1e-9, 0.05, 0.2, 1e-7, 0.3)
 #' );eqtl_data
-#' df_filtered <- filter_chr_basedonSNP_p(
+#' df_filtered <- filter_chr_basedonSNP_p_qtltools(
 #'   df = eqtl_data,
 #'   chr_col = "CHR",
 #'   snp_col = "Variant_ID",
 #'   p_val_col = "nominal_P_value",
 #'   threshold = 5e-8
 #' );df_filtered
-filter_chr_basedonSNP_p <- function(df,
+filter_chr_basedonSNP_p_qtltools <- function(df,
                                     chr_col = "CHR",
                                     snp_col = "Variant_ID",
                                     gene_col = "Gene",
