@@ -166,3 +166,38 @@ count_duplicate_element <- function(vector, return = "count") {
   }
 }
 
+
+#' Across a df to count na
+#'
+#' This function summarize NA values in each column of a data frame.
+#'
+#' @param df a data frame
+#' @return a data frame with the number of NA values in each column
+#' @export
+#' @examples
+#' df <- data.frame(a = c(1, 2, NA, 4), b = c(NA, 2, 3, 4))
+#' summarize_na(df)
+across_df_na <- function(df){
+  df %>% dplyr::summarise(across(everything(), ~sum(is.na(.))))
+}
+
+#' Across a df to count TRUE and FALSE
+#'
+#' This function summarizes both TRUE and FALSE values in each column of a data frame.
+#'
+#' @param df a data frame
+#' @param type "T" for TRUE counts (default), "F" for FALSE counts
+#' @return a data frame with the number of TRUE or FALSE values in each column
+#' @export
+#' @examples
+#' df <- data.frame(a = c(TRUE, FALSE, TRUE, TRUE), b = c(FALSE, TRUE, TRUE, TRUE))
+#' across_df_TF(df) # Count TRUE (default)
+#' across_df_TF(df, "F") # Count FALSE
+across_df_TF <- function(df, type = "T"){
+  type <- match.arg(type, c("T", "F"))
+  if(type == "T"){
+    df %>% dplyr::summarise(across(everything(), ~sum(.)))
+  } else {
+    df %>% dplyr::summarise(across(everything(), ~sum(!.)))
+  }
+}
