@@ -27,6 +27,7 @@ leo_map_GtoCP(
 A data frame with columns: gene_symbol, chr, bp_start, bp_end, strand.
 }
 \description{
+TODO: Merge all gene annotation function into one simple command.
 This function maps gene symbols to their genomic positions (chromosome,
 start, end, strand) using the specified method and genome assembly.
 }

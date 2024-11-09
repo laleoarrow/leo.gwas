@@ -116,6 +116,7 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 
 #' Map Gene Symbols to Genomic Positions
 #'
+#' TODO: Merge all gene annotation function into one simple command.
 #' This function maps gene symbols to their genomic positions (chromosome,
 #' start, end, strand) using the specified method and genome assembly.
 #'
@@ -427,51 +428,59 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
 }
 
 
-#' Query Gene Symbols for Chromosome Position Using biomaRt
+#' Map Gene Symbols to Genomic Positions Using biomaRt
 #'
 #' This function queries gene symbols for their genomic positions (chromosome, start, end, strand)
-#' using Ensembl's biomaRt for the specified genome assembly (GRCh37, which is equivalent to hg19, or GRCh38).
+#' using Ensembl's biomaRt for the specified genome assembly ("hg19" or "hg38").
+#'
+#' If the input is a data frame, the function retains all existing columns and
+#' adds new columns with the mapping results.
 #'
 #' @param genes A character vector of gene symbols to query, or a data frame containing gene symbols.
 #' @param gene_col The column name of gene symbols if `genes` is a data frame.
 #' @param genome The genome assembly to use: "hg19" or "hg38".
 #'
-#' @return A data frame with columns: gene_symbol, chr, bp_start, bp_end, strand.
+#' @return A data frame with the original data and new columns: chr, bp_start, bp_end, strand, gene_symbol.
 #' @importFrom biomaRt useMart getBM
+#' @importFrom dplyr left_join mutate filter
 #' @examples
-#'
-#' # Query location of TP53, BRCA1, and EGFR genes
-#'
 #' \dontrun{
-#' gene_locations <- map_gene_to_chrbp_using_biomart(genes = c("TP53", "BRCA1", "EGFR"), genome = "hg19")
-#' print(gene_locations)
+#' # Query location of TP53, BRCA1, and EGFR genes
+#' gene_symbols <- c("TP53", "BRCA1", "EGFR")
+#' map_gene_to_chrbp_using_biomart(genes = gene_symbols, genome = "hg19")
+#'
+#' # Using a data frame with gene symbols
+#' gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInfo = c(1, 2, 3))
+#' map_gene_to_chrbp_using_biomart(genes = gene_symbols_df, gene_col = "GeneName", genome = "hg19")
 #' }
 #' @export
 map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
-  # check
+  # Check and set genome argument
   genome <- match.arg(genome)
-  if (!requireNamespace("biomaRt", quietly = TRUE)) {stop("Package 'biomaRt' is required. Install it using BiocManager::install('biomaRt').")}
-
-  # Connect to Ensembl based on genome assembly
-  if (genome == "hg19") {
-    ensembl <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "https://grch37.ensembl.org")
-  } else if (genome == "hg38") {
-    ensembl <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "https://www.ensembl.org")
+  if (!requireNamespace("biomaRt", quietly = TRUE)) {
+    stop("Package 'biomaRt' is required. Install it using BiocManager::install('biomaRt').")
   }
 
-  # check input genes
+  # Connect to Ensembl based on genome assembly
+  ensembl <- if (genome == "hg19") {
+    biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl",host = "https://grch37.ensembl.org")
+  } else {
+    biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl",host = "https://www.ensembl.org")
+  }
+
+  # Process input genes
   if (is.data.frame(genes)) {
     if (is.null(gene_col) || !(gene_col %in% colnames(genes))) {
       stop("Please specify a valid 'gene_col' that exists in the data frame.")
     }
     gene_symbols <- genes[[gene_col]]
     input_df <- genes
-  } else if (is.vector(genes)) {
+  } else if (is.character(genes)) {
     gene_symbols <- genes
     input_df <- data.frame(gene_symbol = gene_symbols, stringsAsFactors = FALSE)
     gene_col <- "gene_symbol"
   } else {
-    stop("Input 'genes' must be a vector or a data frame.")
+    stop("Input 'genes' must be a character vector or a data frame.")
   }
 
   # Message about the number of input genes
@@ -481,25 +490,142 @@ map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("
 
   # Query gene information by symbol
   unique_gene_symbols <- unique(gene_symbols)
-  gene_info <- biomaRt::getBM(attributes = c("chromosome_name", "start_position", "end_position", "strand", "hgnc_symbol"),
-                              filters = "hgnc_symbol",
-                              values = unique_gene_symbols,
-                              mart = ensembl)
+  gene_info <- biomaRt::getBM(
+    attributes = c("chromosome_name", "start_position", "end_position", "strand", "hgnc_symbol"),
+    filters = "hgnc_symbol",
+    values = unique_gene_symbols,
+    mart = ensembl
+  )
+  # Rename columns to match expected names
   colnames(gene_info) <- c("chr", "bp_start", "bp_end", "strand", "gene_symbol")
+
+  # Ensure 'gene_symbol' is character
+  gene_info$gene_symbol <- as.character(gene_info$gene_symbol)
 
   # Filter out non-standard chromosomes (only keep 1-22, X, Y, MT)
   standard_chr <- c(as.character(1:22), "X", "Y", "MT")
-  gene_info <- gene_info %>% dplyr::filter(chr %in% standard_chr) %>% filter(!is.na(chr))
+  gene_info <- gene_info %>% dplyr::filter(chr %in% standard_chr) %>% dplyr::filter(!is.na(chr))
 
   # Merge back with original input to ensure consistency
   result_df <- input_df %>%
     dplyr::left_join(gene_info, by = stats::setNames("gene_symbol", gene_col))
 
+  # Convert strand information to "+" and "-"
+  result_df <- result_df %>%
+    dplyr::mutate(strand = ifelse(strand == 1, "+", "-"))
+
   return(result_df)
 }
 
+#' Map Ensembl Gene IDs to Genomic Positions using biomaRt
+#'
+#' This function uses biomaRt to retrieve genomic positions (chr, bp_start, bp_end,
+#' and strand) from the Ensembl database based on Ensembl gene IDs.
+#'
+#' @param ensembl_ids A character vector of Ensembl gene IDs, or a data frame containing this information.
+#' @param ensembl_col If `ensembl_ids` is a data frame, specify the column name containing the Ensembl gene IDs.
+#' @param verbose Logical indicating whether to print the unmapped information.
+#' @param genome The genome version to use: "hg19" or "hg38".
+#'
+#' @return A data frame containing genomic position information, including ensembl_gene_id, chr, bp_start, bp_end, strand.
+#' @importFrom biomaRt useMart getBM
+#' @importFrom dplyr %>% left_join select mutate filter
+#' @examples
+#' \dontrun{
+#' # Query using Ensembl gene IDs
+#' ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648")
+#' map_ensg_to_chrbp_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
+#'
+#' # Use a data frame as input
+#' gene_df <- data.frame(ensembl_id = ensembl_ids, value = c(1.2, 3.4, 5.6))
+#' map_ensg_to_chrbp_using_biomaRt(ensembl_ids = gene_df, ensembl_col = "ensembl_id", genome = "hg19")
+#' }
+#' @export
+map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), verbose = F) {
+  # Load required package
+  if (!requireNamespace("biomaRt", quietly = TRUE)) {
+    stop("Package 'biomaRt' is required. Please install it using BiocManager::install('biomaRt').")
+  }
 
-#' Map Ensembl IDs to Gene Symbols
+  genome <- match.arg(genome)
+
+  # Select the appropriate Ensembl database
+  if (genome == "hg19") {
+    ensembl <- biomaRt::useMart(
+      biomart = "ENSEMBL_MART_ENSEMBL",
+      dataset = "hsapiens_gene_ensembl",
+      host = "https://grch37.ensembl.org"
+    )
+  } else if (genome == "hg38") {
+    ensembl <- biomaRt::useMart(
+      biomart = "ENSEMBL_MART_ENSEMBL",
+      dataset = "hsapiens_gene_ensembl",
+      host = "https://www.ensembl.org"
+    )
+  }
+
+  # Process the input Ensembl IDs
+  if (is.data.frame(ensembl_ids)) {
+    if (is.null(ensembl_col) || !(ensembl_col %in% colnames(ensembl_ids))) {
+      stop("Please specify a valid 'ensembl_col', which is a column in the data frame.")
+    }
+    ensg_ids <- ensembl_ids[[ensembl_col]]
+    input_df <- ensembl_ids
+  } else if (is.vector(ensembl_ids)) {
+    ensg_ids <- ensembl_ids
+    input_df <- data.frame(ensembl_gene_id = ensg_ids, stringsAsFactors = FALSE)
+    ensembl_col <- "ensembl_gene_id"
+  } else {
+    stop("Input 'ensembl_ids' must be a character vector or a data frame containing Ensembl gene IDs.")
+  }
+
+  unique_ensg_ids <- unique(ensg_ids)
+  message(sprintf("Total number of input Ensembl gene IDs: %d; Number of unique gene IDs: %d",
+                  length(ensg_ids), length(unique_ensg_ids)))
+
+  # Remove version numbers from Ensembl gene IDs
+  ensg_ids_clean <- sub("\\..*", "", ensg_ids)
+  input_df[[ensembl_col]] <- ensg_ids_clean
+  unique_ensg_ids <- unique(ensg_ids_clean)
+
+  # Define attributes to retrieve
+  attributes <- c("ensembl_gene_id", "chromosome_name",
+                  "start_position", "end_position", "strand")
+
+  # Retrieve gene information from Ensembl
+  gene_info <- biomaRt::getBM(
+    attributes = attributes,
+    filters = "ensembl_gene_id",
+    values = unique_ensg_ids,
+    mart = ensembl
+  )
+
+  # Process strand information
+  gene_info <- gene_info %>% dplyr::mutate(strand = ifelse(strand == 1, "+", "-"))
+  colnames(gene_info) <- c("ensembl_gene_id", "chr", "bp_start", "bp_end", "strand")
+
+  # Merge back to the input data frame
+  result_df <- input_df %>% dplyr::left_join(gene_info, by = stats::setNames("ensembl_gene_id", ensembl_col))
+
+  # Filter out non-standard chromosomes (optional)
+  # standard_chr <- c(1:22, "X", "Y", "MT")
+  # result_df <- result_df %>% dplyr::filter(chr %in% standard_chr)
+
+  # Report unmapped Ensembl IDs
+  if (verbose) {
+    unmapped_ensg <- result_df %>%
+      dplyr::filter(is.na(chr) | is.na(bp_start) | is.na(bp_end) | is.na(strand)) %>%
+      dplyr::pull(!!rlang::sym(ensembl_col))
+    if (length(unmapped_ensg) > 0) {
+      message("The following Ensembl gene IDs could not be mapped to genomic positions:")
+      print(unmapped_ensg)
+    }
+  }
+
+  return(result_df)
+}
+
+#' Map Ensembl IDs to Gene Symbols using `org.Hs.eg.db`
 #'
 #' This function maps Ensembl IDs to their corresponding gene symbols using the `org.Hs.eg.db` package.
 #'
@@ -511,14 +637,14 @@ map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("
 #' @importFrom AnnotationDbi mapIds
 #' @examples
 #' \dontrun{
-#' ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648") # Example with Ensembl ID vector
-#' map_ensembl_to_gene(ensembl_ids = ensembl_ids)
+#' ensembl_ids <- c("ENSG00000141510.1", "ENSG00000012048", "ENSG00000146648") # Example with Ensembl ID vector
+#' map_ensembl_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids)
 #'
 #' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInformation = c(1,2,3)) # Example with data frame input
-#' map_ensembl_to_gene(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID")
+#' map_ensembl_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID")
 #' }
 #' @export
-map_ensembl_to_gene <- function(ensembl_ids, ensembl_col = NULL) {
+map_ensembl_to_gene_using_org.Hs.eg.db <- function(ensembl_ids, ensembl_col = NULL) {
   # Load required package
   if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
     message("Package 'org.Hs.eg.db' is required. You can install it using BiocManager::install('org.Hs.eg.db').")
@@ -541,8 +667,13 @@ map_ensembl_to_gene <- function(ensembl_ids, ensembl_col = NULL) {
     stop("Input 'ensembl_ids' must be a vector or a data frame.")
   }
 
-  unique_ensembl_ids <- unique(ensembl_id_values)
-  message(sprintf("Total input Ensembl IDs: %d; Unique Ensembl IDs: %d", length(ensembl_id_values), length(unique_ensembl_ids)))
+  # Remove version numbers from Ensembl IDs
+  ensembl_id_clean <- sub("\\..*", "", ensembl_id_values)
+  input_df[[ensembl_col]] <- ensembl_id_clean
+
+  unique_ensembl_ids <- unique(ensembl_id_clean)
+  message(sprintf("Total input Ensembl IDs: %d; Unique Ensembl IDs: %d",
+                  length(ensembl_id_clean), length(unique_ensembl_ids)))
 
   # Map Ensembl IDs to Gene Symbols
   gene_symbols <- suppressMessages(
@@ -563,9 +694,111 @@ map_ensembl_to_gene <- function(ensembl_ids, ensembl_col = NULL) {
   ) %>% dplyr::filter(!is.na(gene_symbol))
 
   # Merge back with input data
-  final_df <- input_df %>%
-    dplyr::left_join(mapping_df, by = stats::setNames("ensembl_id", ensembl_col))
+  final_df <- dplyr::left_join(input_df, mapping_df, by = stats::setNames("ensembl_id", ensembl_col))
 
   return(final_df)
 }
 
+#' Map Genes to Their TSS Positions
+#'
+#' This function maps gene symbols to their transcription start sites (TSS) positions
+#' using hg19 or hg38 genome assembly.
+#'
+#' @param genes A character vector of gene symbols or a data frame containing gene symbols.
+#' @param gene_col The column name of gene symbols if `genes` is a data frame.
+#' @param genome The genome assembly to use: `"hg19"` or `"hg38"`.
+#' @param gtf_file The path to a GTF file. If `NULL`, the function will download the appropriate GTF file.
+#' @param download_dir The path where you want to store the downloaded gtf file.
+#' @param ... Pass to map_gene_to_chrbp_using_gtf. See [map_gene_to_chrbp_using_gtf()]
+#'
+#' @return A data frame with gene symbols and their TSS positions
+#' @importFrom dplyr %>% select mutate case_when
+#' @examples
+#' \dontrun{
+#' genes <- c("TP53", "BRCA1", "EGFR")
+#' map_gene_to_tss_using_gtf(genes = genes, genome = "hg38")
+#'
+#' genes_df <- data.frame(GeneName = genes, OtherInfo = c(1,2,3))
+#' map_gene_to_tss_using_gtf(genes = genes_df, gene_col = "GeneName", genome = "hg19")
+#' }
+#' @export
+map_gene_to_tss_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"),
+                                      gtf_file = NULL, download_dir = "~/project/ref/gtf", ...) {
+
+  # Get full mapping results using existing function
+  mapping_results <- map_gene_to_chrbp_using_gtf(
+    genes = genes,
+    gene_col = gene_col,
+    genome = genome,
+    gtf_file = gtf_file,
+    download_dir = download_dir,
+    ...
+  )
+
+  # Calculate TSS based on strand, handling NA cases
+  final_df <- mapping_results %>%
+    dplyr::mutate(
+      tss = dplyr::case_when(
+        is.na(strand) ~ NA_integer_,
+        strand == "+" ~ bp_start,  # TSS is at start for forward strand
+        strand == "-" ~ bp_end,    # TSS is at end for reverse strand
+        TRUE ~ NA_integer_
+      )
+    ) %>%
+    dplyr::select(-bp_start, -bp_end)  # Remove the original start/end positions
+
+  # Report genes without strand information
+  genes_no_strand <- final_df %>%
+    dplyr::filter(!is.na(chr), is.na(strand)) %>%
+    dplyr::pull(!!rlang::sym(ifelse(is.null(gene_col), "gene_symbol", gene_col)))
+
+  if (length(genes_no_strand) > 0) {
+    message("\n⚠️ The following genes were mapped but lack strand information (TSS could not be determined):")
+    message(paste(genes_no_strand, collapse = ", "))
+  }
+
+  return(final_df)
+}
+
+#' Map Ensembl Gene IDs to TSS Using biomaRt
+#'
+#' This function maps Ensembl gene IDs to their transcription start sites (TSS)
+#' using biomaRt for the specified genome assembly ("hg19" or "hg38").
+#'
+#' @param ensembl_ids A character vector of Ensembl gene IDs, or a data frame containing this information.
+#' @param ensembl_col If `ensembl_ids` is a data frame, specify the column name containing the Ensembl gene IDs.
+#' @param genome The genome version to use: "hg19" or "hg38".
+#' @param ... pass to `map_ensg_to_chrbp_using_biomaRt`. See [map_ensg_to_chrbp_using_biomaRt()]
+#'
+#' @return A data frame with Ensembl gene IDs and their TSS positions.
+#' @importFrom dplyr %>% mutate case_when select
+#' @examples
+#' \dontrun{
+#' ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648")
+#' map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
+#'
+#' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInfo = c(1, 2, 3))
+#' map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID", genome = "hg38")
+#' }
+#' @export
+map_ensg_to_tss_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), ...) {
+  mapping_results <- map_ensg_to_chrbp_using_biomaRt(
+    ensembl_ids = ensembl_ids,
+    ensembl_col = ensembl_col,
+    genome = genome,
+    ...
+  )
+
+  # Calculate TSS based on strand
+  final_df <- mapping_results %>%
+    dplyr::mutate(
+      tss = dplyr::case_when(
+        strand == "+" ~ bp_start,
+        strand == "-" ~ bp_end,
+        TRUE ~ NA_integer_
+      )
+    ) %>%
+    dplyr::select(-bp_start, -bp_end)  # Remove original start/end positions
+
+  return(final_df)
+}

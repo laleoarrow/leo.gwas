@@ -1,3 +1,21 @@
+#' Give Messages with my color
+#'
+#' @param ... The messages you wanna messgae, which will be pasted together
+#' @param color prefered color
+#'
+#' @export
+#' @examples
+#' leo_message("This is a pink message")
+#' leo_message("This is a green message", "\nhaha", color = "32")
+#' leo_message("This is a blue ", "message", color = "34")
+#' leo_message("This is a light purple message", color = "95")
+leo_message <- function(..., color = "31") {
+  message_content <- paste0(..., collapse = " ")
+  message(paste0("\033[", color, "m", message_content, "\033[0m\n"))
+}
+
+
+
 #' Get Unique Identifier for Genetic Data
 #'
 #' Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)

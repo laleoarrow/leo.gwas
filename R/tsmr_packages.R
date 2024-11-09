@@ -1,16 +1,3 @@
-#' Give Messages with my color
-#' @param color prefered color
-#' @param msg messages to show; it should be a word pasted pharse.
-#' @export
-#' @examples
-#' leo_message("This is a pink message")
-#' leo_message("This is a green message","32")
-#' leo_message("This is a blue message","34")
-#' leo_message("This is a light purple message","95")
-leo_message <- function(msg, color = "31") {
- message(paste0("\033[", color, "m", msg, "\033[0m\n"))
-}
-
 # F1
 #' Clump data locally
 #'
