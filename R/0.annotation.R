@@ -182,6 +182,7 @@ leo_map_GtoCP <- function(genes,
 #' @importFrom rlang sym
 #' @importFrom AnnotationDbi mapIds
 #' @importFrom GenomicFeatures genes
+#' @importFrom tidyr drop_na
 #' @examples
 #' \dontrun{
 #' gene_symbols <- c("TP53", "BRCA1", "EGFR") # Example with gene symbol vector
@@ -221,11 +222,12 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
       stop("Please specify a valid 'gene_col' that exists in the data frame.")
     }
     gene_col_sym <- rlang::sym(gene_col)
-    gene_symbols <- genes %>% dplyr::pull(!!gene_col_sym)
-    input_df <- genes
+    input_df <- genes %>% tidyr::drop_na(!!gene_col)
+    gene_symbols <- input_df %>% dplyr::pull(!!gene_col_sym)
   } else if (is.vector(genes)) {
-    gene_symbols <- genes
-    input_df <- data.frame(gene_symbol = gene_symbols, stringsAsFactors = FALSE)
+    input_df <- data.frame(gene_symbol = gene_symbols, stringsAsFactors = FALSE) %>%
+      tidyr::drop_na(gene_symbol)
+    gene_symbols <- input_df %>% pull(gene_symbol)
   } else {
     stop("Input 'genes' must be a vector or a data frame.")
   }
@@ -234,14 +236,13 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
 
   # Map gene symbols to Entrez IDs
   entrez_ids <- suppressMessages(
-    AnnotationDbi::mapIds(
-      org.Hs.eg.db::org.Hs.eg.db,
-      keys = unique_gene_symbols,
-      column = "ENTREZID",
-      keytype = "SYMBOL",
-      multiVals = "first"
-    )
-  )
+    AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                          keys = unique_gene_symbols,
+                          column = "ENTREZID",
+                          keytype = "SYMBOL",
+                          multiVals = "first") )
+  # in case there are NA
+
 
   # Merge & Mapping
   mapping_df <- data.frame(
@@ -496,7 +497,7 @@ map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("
   unique_gene_symbols <- unique(gene_symbols)
   gene_info <- biomaRt::getBM(
     attributes = c("chromosome_name", "start_position", "end_position", "strand",
-                   "hgnc_symbol", ""), # "transcription_start_site" is also a attributes, but it returns too many results.
+                   "hgnc_symbol"), # "transcription_start_site" is also a attributes, but it returns too many results.
     filters = "hgnc_symbol",
     values = unique_gene_symbols,
     mart = ensembl
@@ -627,6 +628,125 @@ map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, gen
 
   return(result_df)
 }
+
+#' Map Ensembl Gene IDs to Gene Symbols using biomaRt
+#'
+#' This function uses biomaRt to retrieve gene symbols based on Ensembl gene IDs.
+#'
+#' @param ensembl_ids A character vector of Ensembl gene IDs, or a data frame containing this information.
+#' @param ensembl_col If `ensembl_ids` is a data frame, specify the column name containing the Ensembl gene IDs.
+#' @param type How to handle cases where one Ensembl ID maps to multiple gene symbols. Options are "combine" (default) to combine them with a separator or "first" to only use the first symbol.
+#' @param sep The separator to deal with one ensg mapped to multiple gene. Default with "/".
+#' @param verbose Logical indicating whether to print the unmapped information.
+#' @param genome The genome version to use: "hg19" or "hg38".
+#'
+#' @return A data frame containing Ensembl gene IDs and corresponding gene symbols.
+#' @importFrom biomaRt useMart getBM
+#' @importFrom dplyr %>% left_join mutate filter group_by summarise
+#' @examples
+#' \dontrun{
+#' # Query using Ensembl gene IDs
+#' ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648")
+#' map_ensg_to_gene_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
+#'
+#' # Use a data frame as input
+#' gene_df <- data.frame(ensembl_id = ensembl_ids, value = c(1.2, 3.4, 5.6))
+#' map_ensg_to_gene_using_biomaRt(ensembl_ids = gene_df, ensembl_col = "ensembl_id", genome = "hg19")
+#' }
+#' @export
+map_ensg_to_gene_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL,
+  type = c("combine", "first"), sep = "/", genome = c("hg19", "hg38"), verbose = F) {
+
+  # Load required package
+  if (!requireNamespace("biomaRt", quietly = TRUE)) {
+    stop("Package 'biomaRt' is required. Please install it using BiocManager::install('biomaRt').")
+  }
+
+  genome <- match.arg(genome)
+  type <- match.arg(type)
+
+  # Select the appropriate Ensembl database
+  if (genome == "hg19") {
+    ensembl <- biomaRt::useMart(
+      biomart = "ENSEMBL_MART_ENSEMBL",
+      dataset = "hsapiens_gene_ensembl",
+      host = "https://grch37.ensembl.org"
+    )
+  } else if (genome == "hg38") {
+    ensembl <- biomaRt::useMart(
+      biomart = "ENSEMBL_MART_ENSEMBL",
+      dataset = "hsapiens_gene_ensembl",
+      host = "https://www.ensembl.org"
+    )
+  }
+
+  # Process the input Ensembl IDs
+  if (is.data.frame(ensembl_ids)) {
+    if (is.null(ensembl_col) || !(ensembl_col %in% colnames(ensembl_ids))) {
+      stop("Please specify a valid 'ensembl_col', which is a column in the data frame.")
+    }
+    ensg_ids <- ensembl_ids[[ensembl_col]]
+    input_df <- ensembl_ids
+  } else if (is.vector(ensembl_ids)) {
+    ensg_ids <- ensembl_ids
+    input_df <- data.frame(ensembl_gene_id = ensg_ids, stringsAsFactors = FALSE)
+    ensembl_col <- "ensembl_gene_id"
+  } else {
+    stop("Input 'ensembl_ids' must be a character vector or a data frame containing Ensembl gene IDs.")
+  }
+
+  unique_ensg_ids <- unique(ensg_ids)
+  message(sprintf("Total number of input Ensembl gene IDs: %d; Number of unique gene IDs: %d",
+                  length(ensg_ids), length(unique_ensg_ids)))
+
+  # Remove version numbers from Ensembl gene IDs
+  ensg_ids_clean <- sub("\\..*", "", ensg_ids)
+  input_df[[ensembl_col]] <- ensg_ids_clean
+  unique_ensg_ids <- unique(ensg_ids_clean)
+
+  # Define attributes to retrieve
+  attributes <- c("ensembl_gene_id", "hgnc_symbol")
+
+  # Retrieve gene information from Ensembl
+  gene_info <- biomaRt::getBM(
+    attributes = attributes,
+    filters = "ensembl_gene_id",
+    values = unique_ensg_ids,
+    mart = ensembl
+  )
+
+  # Process based on 'type' parameter
+  if (type == "combine") {
+    gene_info <- gene_info %>%
+      dplyr::group_by(ensembl_gene_id) %>%
+      dplyr::summarise(hgnc_symbol = paste(unique(hgnc_symbol), collapse = sep)) %>%
+      dplyr::ungroup()
+  } else if (type == "first") {
+    gene_info <- gene_info %>%
+      dplyr::group_by(ensembl_gene_id) %>%
+      dplyr::summarise(hgnc_symbol = first(hgnc_symbol)) %>%
+      dplyr::ungroup()
+  }
+
+  # Merge back to the input data frame
+  result_df <- input_df %>% dplyr::left_join(gene_info, by = stats::setNames("ensembl_gene_id", ensembl_col))
+  result_df <- result_df %>% mutate(hgnc_symbol = ifelse(hgnc_symbol=="", NA, hgnc_symbol))
+
+  # Report unmapped Ensembl IDs
+  if (verbose) {
+    unmapped_ensg <- result_df %>%
+      dplyr::filter(is.na(hgnc_symbol)) %>%
+      dplyr::pull(!!rlang::sym(ensembl_col))
+    if (length(unmapped_ensg) > 0) {
+      message("The following Ensembl gene IDs could not be mapped to gene symbols:")
+      print(unmapped_ensg)
+    }
+  }
+
+  return(result_df)
+}
+
+
 
 #' Map Ensembl IDs to Gene Symbols using `org.Hs.eg.db`
 #'
