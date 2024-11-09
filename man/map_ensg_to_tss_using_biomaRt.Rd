@@ -17,13 +17,16 @@ map_ensg_to_tss_using_biomaRt(
 \item{ensembl_col}{If \code{ensembl_ids} is a data frame, specify the column name containing the Ensembl gene IDs.}
 
 \item{genome}{The genome version to use: "hg19" or "hg38".}
+
+\item{...}{pass to \code{map_ensg_to_chrbp_using_biomaRt}. See \code{\link[=map_ensg_to_chrbp_using_biomaRt]{map_ensg_to_chrbp_using_biomaRt()}}}
 }
 \value{
 A data frame with Ensembl gene IDs and their TSS positions.
 }
 \description{
-This function maps Ensembl gene IDs to their transcription start sites (TSS)
-using biomaRt for the specified genome assembly ("hg19" or "hg38").
+This function maps Ensembl gene IDs to their transcription start sites (TSS).
+(Note that this is inferred using the gene start and end information based on strand)
+It uses biomaRt for the specified genome assembly ("hg19" or "hg38").
 }
 \examples{
 \dontrun{

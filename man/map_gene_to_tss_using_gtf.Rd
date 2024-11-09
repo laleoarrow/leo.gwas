@@ -9,7 +9,8 @@ map_gene_to_tss_using_gtf(
   gene_col = NULL,
   genome = c("hg19", "hg38"),
   gtf_file = NULL,
-  download_dir = "~/project/ref/gtf"
+  download_dir = "~/project/ref/gtf",
+  ...
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ map_gene_to_tss_using_gtf(
 
 \item{gtf_file}{The path to a GTF file. If \code{NULL}, the function will download the appropriate GTF file.}
 
-\item{download_dir}{The path where you wanna store the downloaded gtf file}
+\item{download_dir}{The path where you want to store the downloaded gtf file.}
+
+\item{...}{Pass to map_gene_to_chrbp_using_gtf. See \code{\link[=map_gene_to_chrbp_using_gtf]{map_gene_to_chrbp_using_gtf()}}}
 }
 \value{
 A data frame with gene symbols and their TSS positions

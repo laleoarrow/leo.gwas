@@ -7,13 +7,14 @@
 add_rsid(dat, ref = "GRCh37")
 }
 \arguments{
-\item{ref}{str indicating ref version.
-\itemize{
-\item "GRCh37" for GRCh37 Ref panel
+\item{dat}{\itemize{
 \item "GRCh38" for GRCh38 Ref panel
 }}
 
-\item{df}{A dataframe containing at least the columns 'CHR' and 'BP'.}
+\item{ref}{str indicating ref version.
+\itemize{
+\item "GRCh37" for GRCh37 Ref panel
+}}
 }
 \value{
 A dataframe with an additional 'RefSNP_id' column which contains the rsIDs.
