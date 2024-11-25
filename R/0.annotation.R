@@ -1,4 +1,4 @@
-#' Convert CHR:BP to rsID
+#' Convert CHR:BP to rsID (not recommended)
 #'
 #' This function takes a dataframe that must include columns 'CHR' and 'BP',
 #' and it appends the corresponding rsID by querying the SNPlocs.Hsapiens.dbSNP155.GRCh37 database.
@@ -58,6 +58,113 @@ add_rsid <- function(dat, ref = "GRCh37") {
 
   return(trans.dat)
 }
+
+#' Add rsID based on local reference file (recommended)
+#'
+#' This function takes a data frame with at least chromosome, position, and allele columns,
+#' and matches rsID based on a local reference file, considering reversed/complement alleles.
+#' It allows for flexibility in the names of the allele columns (e.g., 'REF'/'ALT' or 'A1'/'A2').
+#' The function returns the original data frame with rsID added in the first column.
+#'
+#' @param dat A data frame containing at least chromosome, position, and allele columns.
+#' @param local_ref A data frame containing at least 'ID' and 'SNP' columns.
+#' @param chr_col Name of the chromosome column in 'dat'. Default is 'CHR'.
+#' @param pos_col Name of the position column in 'dat'. Default is 'BP'.
+#' @param a1_col Name of the first allele column in 'dat'.  Default is 'A1' (e.g., 'A1' or 'ALT').
+#' @param a2_col Name of the second allele column in 'dat'.  Default is 'A2' (e.g., 'A2' or 'REF').
+#' @return The original data frame with an added 'rsID' column as the first column.
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' # Example data with REF and ALT
+#' dat <- data.frame(
+#'   CHR = c(7, 12, 4),
+#'   BP = c(6013153, 126890980, 40088896),
+#'   REF = c("G", "A", "T"),
+#'   ALT = c("A", "G", "A")
+#' )
+#' # Reference data
+#' local_ref <- data.frame(
+#'   ID = c("7:6013153:A:G", "12:126890980:G:A", "4:40088896:A:T"),
+#'   SNP = c("rs10000", "rs1000000", "rs10000000")
+#' )
+#' result <- add_rsid_using_ref(dat, local_ref, a1_col = "ALT", a2_col = "REF")
+#' print(result)
+#'
+#' # Example data with A1 and A2
+#' dat2 <- data.frame(
+#'   CHR = c(7, 12, 4),
+#'   POS = c(6013153, 126890980, 40088896),
+#'   A1 = c("A", "G", "A"),
+#'   A2 = c("G", "A", "T")
+#' )
+#' result2 <- add_rsid_using_ref(dat2, local_ref, pos_col = "POS")
+#' print(result2)
+#' }
+#' @export
+add_rsid_using_ref <- function(dat, local_ref, chr_col = "CHR", pos_col = "BP", a1_col = "A1", a2_col = "A2") {
+
+  # Ensure required columns are present
+  required_cols_dat <- c(chr_col, pos_col, a1_col, a2_col)
+  required_cols_ref <- c("ID", "SNP")
+  if (!all(required_cols_dat %in% colnames(dat))) {
+    stop("Data frame 'dat' must contain columns: ", paste(required_cols_dat, collapse = ", "))
+  }
+  if (!all(required_cols_ref %in% colnames(local_ref))) {
+    stop("Reference data 'local_ref' must contain columns: ", paste(required_cols_ref, collapse = ", "))
+  }
+
+  # Define function to get complement
+  get_complement <- function(base) {
+    dplyr::case_when(
+      base == "A" ~ "T",
+      base == "T" ~ "A",
+      base == "C" ~ "G",
+      base == "G" ~ "C",
+      TRUE ~ base  # For non-standard bases, keep as is
+    )
+  }
+
+  # Extract necessary columns as vectors
+  CHR <- dat[[chr_col]]
+  BP <- dat[[pos_col]]
+  REF <- dat[[a1_col]]; REF_comp <- get_complement(REF)
+  ALT <- dat[[a2_col]]; ALT_comp <- get_complement(ALT)
+  # Construct indices
+  index1 <- paste0(CHR, ":", BP, ":", REF, ":", ALT)       # Original
+  index2 <- paste0(CHR, ":", BP, ":", ALT, ":", REF)       # Reversed
+  index3 <- paste0(CHR, ":", BP, ":", REF_comp, ":", ALT_comp) # Complement
+  index4 <- paste0(CHR, ":", BP, ":", ALT_comp, ":", REF_comp)  # Complement reversed
+
+  # Match indices & Get rsID
+  match_idx1 <- match(index1, local_ref$ID)
+  match_idx2 <- match(index2, local_ref$ID)
+  match_idx3 <- match(index3, local_ref$ID)
+  match_idx4 <- match(index4, local_ref$ID)
+  dat <- dat %>%
+    dplyr::mutate(
+      rsID = dplyr::case_when(
+        !is.na(match_idx1) ~ local_ref$SNP[match_idx1],
+        !is.na(match_idx2) ~ local_ref$SNP[match_idx2],
+        !is.na(match_idx3) ~ local_ref$SNP[match_idx3],
+        !is.na(match_idx4) ~ local_ref$SNP[match_idx4],
+        TRUE ~ NA_character_
+      )
+    )
+
+  # Remove auxiliary columns and reorder
+  dat <- dat %>% dplyr::select(rsID, dplyr::everything())
+
+  # Message about unmatched rsIDs
+  na_count <- sum(is.na(dat$rsID))
+  if (na_count > 0) {
+    na_percent <- (na_count / nrow(dat)) * 100
+    leo_message(paste0(na_count, " rsID(s) could not be matched and are set to NA. (", round(na_percent, 2), "%)"))
+  }
+
+  return(dat)
+}
+
 
 #' Convert rsID to CHR & BP
 #'

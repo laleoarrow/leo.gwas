@@ -2,7 +2,7 @@
 % Please edit documentation in R/0.annotation.R
 \name{add_rsid}
 \alias{add_rsid}
-\title{Convert CHR:BP to rsID}
+\title{Convert CHR:BP to rsID (not recommended)}
 \usage{
 add_rsid(dat, ref = "GRCh37")
 }

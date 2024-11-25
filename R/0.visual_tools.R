@@ -2,8 +2,148 @@
 # This script is for functions for visualization #
 # @author: Lu Ao (luao@stu.cqmu.edu.cn)          #
 ##################################################
+#  ------------------------------ Basics Function ------------------------------
+#' Apply Color Palette to ggplot
+#'
+#' This function applies a specified color palette to a ggplot object,
+#' supporting `ggsci`, `RColorBrewer`, and `viridis` palettes, as well as custom colors.
+#'
+#' @param plot A ggplot object to which the color palette will be applied.
+#' @param color_palette A character string specifying the color palette to use.
+#'                      Options include `ggsci` palettes ("npg", "lancet", "jama", etc.),
+#'                      `RColorBrewer` palettes, `viridis` palettes, or a custom vector of colors.
+#'
+#' @return A ggplot object with the applied color palette.
+#' @importFrom ggsci scale_color_npg scale_color_lancet scale_color_jama scale_color_nejm scale_color_d3 scale_color_tron scale_color_igv scale_color_ucscgb scale_color_aaas scale_color_futurama scale_color_rickandmorty scale_color_simpsons
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom viridis scale_color_viridis
+#' @import ggplot2
+leo_scale_color <- function(plot, color_palette = "npg") {
+  # Check if color_palette is a recognized ggsci palette
+  if (color_palette == "npg") {
+    plot <- plot + ggsci::scale_color_npg()
+  } else if (color_palette == "lancet") {
+    plot <- plot + ggsci::scale_color_lancet()
+  } else if (color_palette == "jama") {
+    plot <- plot + ggsci::scale_color_jama()
+  } else if (color_palette == "nejm") {
+    plot <- plot + ggsci::scale_color_nejm()
+  } else if (color_palette == "d3") {
+    plot <- plot + ggsci::scale_color_d3()
+  } else if (color_palette == "tron") {
+    plot <- plot + ggsci::scale_color_tron()
+  } else if (color_palette == "igv") {
+    plot <- plot + ggsci::scale_color_igv()
+  } else if (color_palette == "ucscgb") {
+    plot <- plot + ggsci::scale_color_ucscgb()
+  } else if (color_palette == "aaas") {
+    plot <- plot + ggsci::scale_color_aaas()
+  } else if (color_palette == "futurama") {
+    plot <- plot + ggsci::scale_color_futurama()
+  } else if (color_palette == "rickandmorty") {
+    plot <- plot + ggsci::scale_color_rickandmorty()
+  } else if (color_palette == "simpsons") {
+    plot <- plot + ggsci::scale_color_simpsons()
+  }
+  # Check if color_palette is a recognized RColorBrewer palette
+  else if (color_palette %in% rownames(RColorBrewer::brewer.pal.info)) {
+    plot <- plot + scale_color_brewer(palette = color_palette)
+  }
+  # Check if color_palette is a viridis palette
+  else if (color_palette %in% c("magma", "inferno", "plasma", "viridis", "cividis")) {
+    plot <- plot + viridis::scale_color_viridis(option = color_palette)
+  }
+  # Use a custom color vector if provided
+  else if (is.vector(color_palette) && all(is.character(color_palette))) {
+    plot <- plot + scale_color_manual(values = color_palette)
+  } else {
+    warning("Color palette not recognized. Default ggplot2 colors will be used.")
+  }
 
-#  ------------------------------ Reginal Plot Function ------------------------------ #
+  return(plot)
+}
+
+#' Draw Correlation between Two Vectors
+#'
+#' This function creates a scatter plot to visualize the correlation between two vectors,
+#' displaying the correlation coefficient and p-value on the plot.
+#' It uses `ggplot2` for visualization and `ggsci` for color schemes.
+#'
+#' @importFrom ggplot2 ggplot aes geom_point geom_smooth labs annotate theme_minimal theme element_text element_blank
+#'
+#' @param vector_x A numeric vector.
+#' @param vector_y A numeric vector of the same length as \code{vector_x}.
+#' @param method A character string specifying the correlation method ("spearman" or "pearson").
+#'               Defaults to "spearman".
+#' @param color_palette A character string or vector specifying the color palette to use.
+#'               Can be a palette name from `ggsci`, `RColorBrewer`, `viridis`, or a custom color vector.
+#' @param title A character string for the plot title. Defaults to "Correlation Plot".
+#' @param xlab A character string for the x-axis label. Defaults to "Vector X".
+#' @param ylab A character string for the y-axis label. Defaults to "Vector Y".
+#' @param point_size Numeric value for point size in the scatter plot. Defaults to 4.
+#' @param point_color A character string specifying color for the scatter points. Defaults to "#BB7CD8".
+#' @param alpha Numeric value for the transparency of points. Defaults to 0.75.
+#' @param line_color A character string specifying color for the trend line. Defaults to "#BB7CD8".
+#' @param line_type Character specifying the type of line ("solid", "dashed", etc.). Defaults to "dashed".
+#' @param line_size Numeric value specifying the thickness of the trend line. Defaults to 1.2.
+#' @param ci_alpha Numeric value for the transparency level of the confidence interval. Defaults to 0.6.
+#' @param title_size Numeric value for title text size. Defaults to 14.
+#' @param xlab_size Numeric value for x-axis label text size. Defaults to 12.
+#' @param ylab_size Numeric value for y-axis label text size. Defaults to 12.
+#' @param axis_text_size Numeric value for axis text size. Defaults to 10.
+#' @param ... Additional arguments passed to \code{\link[stats]{cor.test}}.
+#' @param point_stroke It could also be NA!!!
+#'
+#' @return A ggplot object representing the scatter plot with correlation information.
+#' @export
+#' @seealso \code{\link{correlation_calculate}} for calculating correlation coefficients and p-values.
+#' @seealso [leo_scale_color()] for applying color palettes to ggplot objects.
+#' @examples
+#' vector_x <- c(10, 2, 3, 4, 5)
+#' vector_y <- c(5, 6, 7, 8, 7)
+#' correlation_draw(vector_x, vector_y, method = "pearson", point_size = 10, color_palette = "npg")
+correlation_draw <- function(vector_x, vector_y, method = "spearman", color_palette = "npg",
+                             title = "Correlation Plot", xlab = "Vector X", ylab = "Vector Y",
+                             point_size = 1.5, point_color = "#BB7CD8", point_stroke = 1, alpha = 0.75,
+                             line_color = "#BB7CD8", line_type = "dashed", line_size = 1.2,
+                             ci_alpha = 0.2, title_size = 16, xlab_size = 14,
+                             ylab_size = 14, axis_text_size = 14, ...) {
+
+  # Calculate correlation
+  correlation_result <- correlation_calculate(vector_x, vector_y, method = method, ...)
+  correlation_coefficient <- round(correlation_result$correlation_coefficient, 3)
+  p_value <- round(correlation_result$p_value, 3)
+
+  # Create scatter plot with correlation coefficient and p-value annotation
+  plot <- ggplot2::ggplot(data = data.frame(vector_x, vector_y), ggplot2::aes(x = vector_x, y = vector_y)) +
+    ggplot2::geom_point(size = point_size, color = "black", fill = point_color, alpha = alpha, stroke = point_stroke, shape = 21) +
+    ggplot2::geom_smooth(method = "lm", color = line_color, linetype = line_type,
+                         size = line_size, se = TRUE, fill = line_color, alpha = ci_alpha) +  # Add confidence interval shading
+    ggplot2::labs(title = title, x = xlab, y = ylab) +
+    ggplot2::annotate(
+      "text", x = Inf, y = Inf,
+      label = paste("Correlation:", correlation_coefficient, "\nP-value:", p_value),
+      hjust = 1.1, vjust = 1.2,
+      size = 5, color = "black"
+    ) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(size = title_size),
+      axis.text = ggplot2::element_text(size = axis_text_size, color = "black"),
+      axis.title.x = ggplot2::element_text(size = xlab_size, color = "black"),
+      axis.title.y = ggplot2::element_text(size = ylab_size, color = "black"),
+      axis.line = ggplot2::element_line(color = "black"),      # Set axis line color
+      axis.ticks = ggplot2::element_line(color = "black"),     # Set axis ticks color
+      panel.grid = ggplot2::element_blank()                    # Remove grid
+    )
+
+  # Apply color palette using the helper function
+  # plot <- leo_scale_color(plot, color_palette)
+
+  return(plot)
+}
+
+#  ------------------------------ Reginal Plot Function ------------------------------
 
 #' Loci_plot: Calculate the LD-matrix (LD r2) for the index SNP
 #' @param gwas gwas summary data that needs to select loci and calculate r2
