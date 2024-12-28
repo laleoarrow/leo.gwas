@@ -13,9 +13,6 @@ combine_smr_res_chr(dir, out_dir = "")
 \item{out_dir}{Character. The output directory where combined SMR files will be saved.
 If not specified, defaults to a subdirectory named \code{chr_combined} within \code{dir}.}
 }
-\value{
-NULL. The function is called for its side effects of writing combined SMR files.
-}
 \description{
 This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
 for each unique exposure and outcome pair. The combined results are saved to a specified output directory.

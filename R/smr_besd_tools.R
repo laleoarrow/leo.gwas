@@ -106,8 +106,7 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #'            `exposure_chrX@outcome.smr`, where `X` represents the chromosome number.
 #' @param out_dir Character. The output directory where combined SMR files will be saved.
 #'                If not specified, defaults to a subdirectory named `chr_combined` within `dir`.
-#'
-#' @return NULL. The function is called for its side effects of writing combined SMR files.
+#' @return NULL
 #'
 #' @examples
 #' \dontrun{
@@ -124,10 +123,10 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #' @export
 combine_smr_res_chr <- function(dir, out_dir="") {
   leo.gwas::leo_log("Combine SMR results for all chromosomes.")
-  df_tmp <- data.frame(
+  df_tmp <- data.table::data.table(
+    files=list.files(dir, full.names = F, pattern = "smr$"),
     exposures=strsplit(files, "@") %>% sapply(function(x) x[1]) %>% sub("_chr[0-9]+", "", .),
     outcomes=strsplit(files, "@") %>% sapply(function(x) x[2]) %>% sub(".smr", "", .),
-    files=list.files(dir, full.names = F, pattern = "smr$"),
     full_paths=list.files(dir, full.names = T, pattern = "smr$")
   )
 
