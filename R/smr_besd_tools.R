@@ -91,12 +91,12 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 }
 
 
-# Below is how you aggregate all SMR results for XWAS ----
+# ---- Below is how you aggregate all SMR results for XWAS ----
 # smr result should be all stored in a dir in the following format:
 # - level 1: qtl type (e.g. mqtl, eqtl, ...)
 # - level 2: qtl specific source (e.g. GTEx49, ...)
 
-# 1. deal with single SMR results from one source ----
+# 0. Combine SMR res of all CHR from one source ----
 #' Combine SMR Results for All Chromosomes
 #'
 #' This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
@@ -122,7 +122,7 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #' @importFrom data.table fread fwrite
 #' @export
 combine_smr_res_chr <- function(dir, out_dir="") {
-  leo.gwas::leo_log("Combine SMR results for all chromosomes.")
+  leo_log("Combine SMR results for all chromosomes.")
   df_tmp <- dplyr::tibble(
     files=list.files(dir, full.names = F, pattern = "smr$"),
     exposures=strsplit(files, "@") %>% sapply(function(x) x[1]) %>% sub("_chr[0-9]+", "", .),
@@ -131,14 +131,14 @@ combine_smr_res_chr <- function(dir, out_dir="") {
   )
 
   if (length(unique(df_tmp$exposures)) > 1) {
-    cli::cli_alert_info("{format(Sys.time(), '%H:%M')}: Deal with {.emph {length(unique(df_tmp$exposures))}} exposure{?s} seperately.")
+    cli::cli_alert_info("Deal with {.emph {length(unique(df_tmp$exposures))}} exposure{?s} seperately.")
   }
   if (length(unique(df_tmp$outcomes)) > 1) {
     cli::cli_alert_info("Deal with {.emph {length(unique(df_tmp$outcomes))}} outcome{?s} seperately.")
   }
   if (out_dir == "") {
     out_dir <- file.path(dir, "chr_combined")
-    leo.gwas::leo_log("Out dir set to >>>", out_dir, level = "success")
+    leo_log("Out dir set to >>>", out_dir, level = "success")
   }
   if (!file.exists(out_dir)) {dir.create(out_dir)}
 
@@ -152,7 +152,85 @@ combine_smr_res_chr <- function(dir, out_dir="") {
       data.table::fwrite(res, out_file, sep = "\t")
     }
   }
-  leo.gwas::leo_log("ALL DONE!", level = "success")
+  leo_log("ALL DONE!", level = "success")
   return(NULL)
 }
 
+# 1. FDR ----
+#' Adjust SMR Results with FDR and Bonferroni Corrections
+#'
+#' It applies FDR/Bonferroni corrections for a single SMR result.
+#' The corrected results are saved in an `fdr` subdirectory within the output directory.
+#'
+#' @param smr_result_path Character. The path containing SMR result file. Files should have the `.smr` extension.
+#' @param out_dir Character. The output directory where adjusted files will be saved.
+#'                If not specified, defaults to creat a dir named `fdr` within dirname(smr_result_path).
+#' @return NULL
+#' @examples
+#' \dontrun{
+#' leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+#'writePath = "",
+#'out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
+#'leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+#'               writePath = "./haha.fdr",
+#'               out_dir = "")
+#' }
+#' @importFrom cli cli_alert_info
+#' @importFrom vroom vroom vroom_write
+#' @importFrom dplyr mutate
+#' @importFrom stringr str_replace
+#' @export
+leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "") {
+  smr_result <- vroom::vroom(smr_result_path, show_col_types = F) %>%
+    mutate(Pass_HEIDI = ifelse(p_HEIDI>=0.05, "Pass", "Fail"),
+           FDR = p.adjust(p_SMR, method = "BH"),
+           Bonferroni = p.adjust(p_SMR, method = "bonferroni"))
+  basename <- basename(smr_result_path) %>% gsub(".smr", ".fdr", .)
+  dirname <- dirname(smr_result_path)
+  if (writePath == "") {
+    if (out_dir == "") {
+      cli::cli_alert_warning("No writePath & out_dir set")
+      out_dir <- file.path(dirname, "fdr")
+    }
+    if (!file.exists(out_dir)) {dir.create(out_dir)}
+    writePath <- file.path(out_dir, basename)
+  } else {
+    writePath <- writePath # this will overide the basename setting
+  }
+  vroom::vroom_write(smr_result, writePath, delim = "\t")
+  cli::cli_alert_success(" - Writing to >>> {.path {writePath}}")
+  return(NULL)
+}
+
+
+#' Batch Adjust SMR Results with FDR and Bonferroni Corrections
+#'
+#' This function applies FDR/Bonferroni corrections to all SMR results within a specified directory.
+#'
+#' @param dir Character. The directory containing SMR result files. Files should have the `.smr` extension and follow the naming convention `exposure@outcome.smr`.
+#' @param out_dir Character. The output directory where the adjusted SMR files will be saved.
+#'                If not specified, defaults to creating a `fdr` directory within the input directory.
+#' @param ... Additional arguments to be passed to `leo_smr_adjust`.
+#'
+#' @return NULL.
+#' @importFrom cli cli_alert_info cli_alert_success cli_alert_warning
+#' @importFrom dplyr filter pull
+#' @export
+leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
+  leo_log("Adjusting SMR results for all files in the >>>", dir, "<<< directory.")
+  if (out_dir == "") {
+    dirname <- dirname(dir)
+    out_dir <- file.path(dirname, "fdr")
+    make.directory(out_dir, re)
+    cli::cli_alert_warning("out_dir set to {out_dir} as there are no pre-set out_dir.")
+  } else {out_dir = out_dir}
+  # list all smr file
+  smr_files <- list.files(path = dir, pattern = "\\.smr$", full.names = TRUE) # Get list of .smr files in the folder
+  for (smr_file in smr_files) { # Loop through each .smr file and apply leo_smr_adjust function
+    cli::cli_alert_info(" - Processing: {smr_file}")
+    leo_smr_adjust(smr_file, out_dir = out_dir, ...)
+  }
+  leo_log("ALL DONE!", level = "success")
+}
+leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined",
+                    out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/fdr") # 保存
