@@ -4,11 +4,7 @@
 \alias{leo_log}
 \title{Log Messages with Timestamps}
 \usage{
-leo_log(
-  ...,
-  level = "info",
-  levels = c("info", "success", "warning", "danger")
-)
+leo_log(..., level = "info")
 }
 \arguments{
 \item{...}{The message string to log, which will be pasted together.}

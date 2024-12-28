@@ -131,14 +131,14 @@ combine_smr_res_chr <- function(dir, out_dir="") {
   )
 
   if (length(unique(df_tmp$exposures)) > 1) {
-    cli::cli_alert_info("{format(Sys.time(), '%H:%M')}: Deal with {.emph {length(unique(exposures))}} exposure{?s} seperately.")
+    cli::cli_alert_info("{format(Sys.time(), '%H:%M')}: Deal with {.emph {length(unique(df_tmp$exposures))}} exposure{?s} seperately.")
   }
   if (length(unique(df_tmp$outcomes)) > 1) {
-    cli::cli_alert_info("Deal with {.emph {length(unique(outcomes))}} outcome{?s} seperately.")
+    cli::cli_alert_info("Deal with {.emph {length(unique(df_tmp$outcomes))}} outcome{?s} seperately.")
   }
   if (out_dir == "") {
     out_dir <- file.path(dir, "chr_combined")
-    cli::cli_alert_success("Out dir set to >>> {.path {out_dir}}")
+    leo.gwas::leo_log("Out dir set to >>>", out_dir, level = "success")
   }
   if (!file.exists(out_dir)) {dir.create(out_dir)}
 
@@ -149,10 +149,10 @@ combine_smr_res_chr <- function(dir, out_dir="") {
       res <- do.call(rbind, res)
       out_file <- paste0(out_dir, "/chr_combine_", exposure, "@", outcome, ".smr")
       cli::cli_alert_info("Write to file: {.path {out_file}}")
-      data.table::fwrite(res, out_file)
+      data.table::fwrite(res, out_file, sep = "\t")
     }
   }
-  cli::cli_alert_success("All done!")
+  leo.gwas::leo_log("ALL DONE!", level = "success")
   return(NULL)
 }
 
