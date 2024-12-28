@@ -23,7 +23,7 @@ Imports:
     BSgenome,
     stringr
 Depends: 
-    dplyr, logger
+    dplyr, cli
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,

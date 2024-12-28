@@ -109,14 +109,14 @@ combine_smr_res_chr <- function(dir, out_dir="") {
   )
 
   if (length(unique(df_tmp$exposures)) > 1) {
-    logger::log_info("Deal with {length(unique(exposures))} exposures seperately.")
+    cli::cli_alert_info("{format(Sys.time(), '%H:%M')}: Deal with {.emph {length(unique(exposures))}} exposure{?s} seperately.")
   }
   if (length(unique(df_tmp$outcomes)) > 1) {
-    logger::log_info("Deal with {length(unique(outcomes))} outcomes seperately.")
+    cli::cli_alert_info("Deal with {.emph {length(unique(outcomes))}} outcome{?s} seperately.")
   }
   if (out_dir == "") {
     out_dir <- file.path(dir, "chr_combined")
-    logger::log_info("Out dir set to >>> {out_dir}")
+    cli::cli_alert_success("Out dir set to >>> {.path {out_dir}}")
   }
   if (!file.exists(out_dir)) {dir.create(out_dir)}
 
@@ -126,10 +126,11 @@ combine_smr_res_chr <- function(dir, out_dir="") {
       res <- lapply(files_paths, data.table::fread)
       res <- do.call(rbind, res)
       out_file <- paste0(out_dir, "/chr_combine_", exposure, "@", outcome, ".smr")
-      logger::log_info(paste("Write to file: ", out_file))
+      cli::cli_alert_info("Write to file: {.path {out_file}}")
       data.table::fwrite(res, out_file)
     }
   }
+  cli::cli_alert_success("All done!")
   return(NULL)
 }
 combine_smr_res_chr("/Users/leoarrow/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")

@@ -4,12 +4,14 @@
 \alias{leo_message}
 \title{Give Messages with my color}
 \usage{
-leo_message(..., color = "31")
+leo_message(..., color = "31", return = FALSE)
 }
 \arguments{
 \item{...}{The messages you wanna messgae, which will be pasted together}
 
 \item{color}{prefered color}
+
+\item{return}{Logical. If TRUE, returns the formatted string. If FALSE, prints directly.}
 }
 \description{
 Give Messages with my color
