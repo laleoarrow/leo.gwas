@@ -123,7 +123,7 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #' @export
 combine_smr_res_chr <- function(dir, out_dir="") {
   leo.gwas::leo_log("Combine SMR results for all chromosomes.")
-  df_tmp <- data.table::data.table(
+  df_tmp <- dplyr::tibble(
     files=list.files(dir, full.names = F, pattern = "smr$"),
     exposures=strsplit(files, "@") %>% sapply(function(x) x[1]) %>% sub("_chr[0-9]+", "", .),
     outcomes=strsplit(files, "@") %>% sapply(function(x) x[2]) %>% sub(".smr", "", .),
