@@ -38,7 +38,7 @@ leo_message <- function(..., color = "31", return = FALSE) {
 #' leo_log("Task completed successfully!", level = "success")
 #' leo_log("Potential issue detected.", level = "warning")
 #' leo_log("Error occurred during processing!", level = "danger")
-leo_log_time <- function(..., level = "info", levels = c("info", "success", "warning", "danger")) {
+leo_log <- function(..., level = "info", levels = c("info", "success", "warning", "danger")) {
   msg <- paste(..., collapse = " ");level <- match.arg(levels);timestamp <- format(Sys.time(), '%H:%M')
   colored_timestamp <- switch(level,
     info    = leo_message(paste0("[",timestamp,"]"), color = "36", return = TRUE), # blue
