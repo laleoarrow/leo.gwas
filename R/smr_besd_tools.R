@@ -97,10 +97,33 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 # - level 2: qtl specific source (e.g. GTEx49, ...)
 
 # 1. deal with single SMR results from one source ----
-#' combine SMR res for all chr
-
-
+#' Combine SMR Results for All Chromosomes
+#'
+#' This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
+#' for each unique exposure and outcome pair. The combined results are saved to a specified output directory.
+#'
+#' @param dir Character. The directory containing SMR result files. Files should follow the naming convention
+#'            `exposure_chrX@outcome.smr`, where `X` represents the chromosome number.
+#' @param out_dir Character. The output directory where combined SMR files will be saved.
+#'                If not specified, defaults to a subdirectory named `chr_combined` within `dir`.
+#'
+#' @return NULL. The function is called for its side effects of writing combined SMR files.
+#'
+#' @examples
+#' \dontrun{
+#' # Combine SMR results in the "data/smr_results" directory and save to default output directory
+#' combine_smr_res_chr(dir = "data/smr_results")
+#'
+#' # Combine SMR results and specify a custom output directory
+#' combine_smr_res_chr(dir = "data/smr_results", out_dir = "data/combined_results")
+#' }
+#'
+#' @importFrom cli cli_alert_info cli_alert_success cli_alert_warning cli_alert_danger
+#' @importFrom dplyr filter pull
+#' @importFrom data.table fread fwrite
+#' @export
 combine_smr_res_chr <- function(dir, out_dir="") {
+  leo.gwas::leo_log("Combine SMR results for all chromosomes.")
   df_tmp <- data.frame(
     exposures=strsplit(files, "@") %>% sapply(function(x) x[1]) %>% sub("_chr[0-9]+", "", .),
     outcomes=strsplit(files, "@") %>% sapply(function(x) x[2]) %>% sub(".smr", "", .),
@@ -133,4 +156,4 @@ combine_smr_res_chr <- function(dir, out_dir="") {
   cli::cli_alert_success("All done!")
   return(NULL)
 }
-combine_smr_res_chr("/Users/leoarrow/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
+

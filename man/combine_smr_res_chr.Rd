@@ -2,10 +2,31 @@
 % Please edit documentation in R/smr_besd_tools.R
 \name{combine_smr_res_chr}
 \alias{combine_smr_res_chr}
-\title{combine SMR res for all chr}
+\title{Combine SMR Results for All Chromosomes}
 \usage{
 combine_smr_res_chr(dir, out_dir = "")
 }
+\arguments{
+\item{dir}{Character. The directory containing SMR result files. Files should follow the naming convention
+\code{exposure_chrX@outcome.smr}, where \code{X} represents the chromosome number.}
+
+\item{out_dir}{Character. The output directory where combined SMR files will be saved.
+If not specified, defaults to a subdirectory named \code{chr_combined} within \code{dir}.}
+}
+\value{
+NULL. The function is called for its side effects of writing combined SMR files.
+}
 \description{
-combine SMR res for all chr
+This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
+for each unique exposure and outcome pair. The combined results are saved to a specified output directory.
+}
+\examples{
+\dontrun{
+# Combine SMR results in the "data/smr_results" directory and save to default output directory
+combine_smr_res_chr(dir = "data/smr_results")
+
+# Combine SMR results and specify a custom output directory
+combine_smr_res_chr(dir = "data/smr_results", out_dir = "data/combined_results")
+}
+
 }
