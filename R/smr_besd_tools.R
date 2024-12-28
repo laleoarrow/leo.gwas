@@ -89,3 +89,47 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
     dplyr::ungroup()
   return(df_filtered)
 }
+
+
+# Below is how you aggregate all SMR results for XWAS ----
+# smr result should be all stored in a dir in the following format:
+# - level 1: qtl type (e.g. mqtl, eqtl, ...)
+# - level 2: qtl specific source (e.g. GTEx49, ...)
+
+# 1. deal with single SMR results from one source ----
+#' combine SMR res for all chr
+
+
+combine_smr_res_chr <- function(dir, out_dir="") {
+  df_tmp <- data.frame(
+    exposures=strsplit(files, "@") %>% sapply(function(x) x[1]) %>% sub("_chr[0-9]+", "", .),
+    outcomes=strsplit(files, "@") %>% sapply(function(x) x[2]) %>% sub(".smr", "", .),
+    files=list.files(dir, full.names = F, pattern = "smr$"),
+    full_paths=list.files(dir, full.names = T, pattern = "smr$")
+  )
+
+  if (length(unique(df_tmp$exposures)) > 1) {
+    logger::log_info("Deal with {length(unique(exposures))} exposures seperately.")
+  }
+  if (length(unique(df_tmp$outcomes)) > 1) {
+    logger::log_info("Deal with {length(unique(outcomes))} outcomes seperately.")
+  }
+  if (out_dir == "") {
+    out_dir <- file.path(dir, "chr_combined")
+    logger::log_info("Out dir set to >>> {out_dir}")
+  }
+  if (!file.exists(out_dir)) {dir.create(out_dir)}
+
+  for (exposure in unique(df_tmp$exposures)) {
+    for (outcome in unique(df_tmp$outcomes)) {
+      files_paths <- df_tmp %>% dplyr::filter(exposures == exposure, outcomes == outcome) %>% pull("full_paths")
+      res <- lapply(files_paths, data.table::fread)
+      res <- do.call(rbind, res)
+      out_file <- paste0(out_dir, "/chr_combine_", exposure, "@", outcome, ".smr")
+      logger::log_info(paste("Write to file: ", out_file))
+      data.table::fwrite(res, out_file)
+    }
+  }
+  return(NULL)
+}
+combine_smr_res_chr("/Users/leoarrow/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")

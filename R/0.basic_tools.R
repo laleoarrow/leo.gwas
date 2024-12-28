@@ -2,6 +2,7 @@
 #'
 #' @param ... The messages you wanna messgae, which will be pasted together
 #' @param color prefered color
+#' @param return Logical. If TRUE, returns the formatted string. If FALSE, prints directly.
 #'
 #' @export
 #' @examples
@@ -9,11 +10,49 @@
 #' leo_message("This is a green message", "\nhaha", color = "32")
 #' leo_message("This is a blue ", "message", color = "34")
 #' leo_message("This is a light purple message", color = "95")
-leo_message <- function(..., color = "31") {
+leo_message <- function(..., color = "31", return = FALSE) {
   message_content <- paste0(..., collapse = " ")
-  message(paste0("\033[", color, "m", message_content, "\033[0m\n"))
+  formatted_message <- paste0("\033[", color, "m", message_content, "\033[0m")
+  if (return) {
+    return(formatted_message)
+  } else {
+    message(formatted_message)
+  }
 }
 
+#' Log Messages with Timestamps
+#'
+#' Logs messages with timestamps
+#' The messages are styled using the `cli` package for enhanced readability.
+#' This function can not deal with {} function in the `cli` package.
+#'
+#' @param ... The message string to log, which will be pasted together.
+#' @param level The log level. Options are `"info"`, `"success"`, `"warning"`, and `"danger"`.
+#' @param levels All levels that is now supported.
+#'
+#' @return No return value. Outputs a formatted log message with a timestamp.
+#' @export
+#'
+#' @examples
+#' leo_log("Processing the", n1, "and", n2, "files.")
+#' leo_log("Task completed successfully!", level = "success")
+#' leo_log("Potential issue detected.", level = "warning")
+#' leo_log("Error occurred during processing!", level = "danger")
+leo_log_time <- function(..., level = "info", levels = c("info", "success", "warning", "danger")) {
+  msg <- paste(..., collapse = " ");level <- match.arg(levels);timestamp <- format(Sys.time(), '%H:%M')
+  colored_timestamp <- switch(level,
+    info    = leo_message(paste0("[",timestamp,"]"), color = "36", return = TRUE), # blue
+    success = leo_message(paste0("[",timestamp,"]"), color = "32", return = TRUE), # green
+    warning = leo_message(paste0("[",timestamp,"]"), color = "33", return = TRUE), # red
+    danger  = leo_message(paste0("[",timestamp,"]"), color = "31", return = TRUE)  # red
+  )
+  switch(level,
+         info    = cli::cli_alert_info("{colored_timestamp} {msg}"),
+         success = cli::cli_alert_success("{colored_timestamp} {msg}"),
+         warning = cli::cli_alert_warning("{colored_timestamp} {msg}"),
+         danger  = cli::cli_alert_danger("{colored_timestamp} {msg}")
+  )
+}
 
 
 #' Get Unique Identifier for Genetic Data
