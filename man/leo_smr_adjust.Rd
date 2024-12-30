@@ -9,6 +9,8 @@ leo_smr_adjust(smr_result_path, writePath = "", out_dir = "", write_out = T)
 \arguments{
 \item{smr_result_path}{Character. The path containing SMR result file. Files should have the \code{.smr} extension.}
 
+\item{writePath}{Character. The path to write the adjusted results.}
+
 \item{out_dir}{Character. The output directory where adjusted files will be saved.
 If not specified, defaults to creat a dir named \code{fdr} within dirname(smr_result_path).}
 

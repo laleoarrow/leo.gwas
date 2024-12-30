@@ -165,7 +165,7 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @param smr_result_path Character. The path containing SMR result file. Files should have the `.smr` extension.
 #' @param out_dir Character. The output directory where adjusted files will be saved.
 #'                If not specified, defaults to creat a dir named `fdr` within dirname(smr_result_path).
-#' @param writePath
+#' @param writePath Character. The path to write the adjusted results.
 #' @param write_out Logical. Whether to write the adjusted results to a file. Default is `TRUE`.
 #' @return NULL
 #' @examples
