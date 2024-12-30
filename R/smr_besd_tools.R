@@ -156,7 +156,7 @@ combine_smr_res_chr <- function(dir, out_dir="") {
   return(NULL)
 }
 
-# 1. FDR ----
+# 1. FDR/Bonferroni ----
 #' Adjust SMR Results with FDR and Bonferroni Corrections
 #'
 #' It applies FDR/Bonferroni corrections for a single SMR result.
@@ -165,6 +165,8 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @param smr_result_path Character. The path containing SMR result file. Files should have the `.smr` extension.
 #' @param out_dir Character. The output directory where adjusted files will be saved.
 #'                If not specified, defaults to creat a dir named `fdr` within dirname(smr_result_path).
+#' @param writePath
+#' @param write_out Logical. Whether to write the adjusted results to a file. Default is `TRUE`.
 #' @return NULL
 #' @examples
 #' \dontrun{
@@ -177,29 +179,43 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' }
 #' @importFrom cli cli_alert_info
 #' @importFrom vroom vroom vroom_write
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate %>%
 #' @importFrom stringr str_replace
 #' @export
-leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "") {
+leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", write_out = T) {
   smr_result <- vroom::vroom(smr_result_path, show_col_types = F) %>%
+    mutate(HLA_Probe = ifelse( (ProbeChr == 6 & Probe_bp >= 25000000 & Probe_bp <= 34000000), "Yes", "No") )
+  nrow_HLA_probe <- smr_result %>% filter(HLA_Probe == "Yes") %>% nrow()
+  cli::cli_alert_info("Filtering out {.emph {nrow_HLA_probe}} probe{?s} for {basename(smr_result_path)}")
+  smr_result <- smr_result %>% filter(HLA_Probe == "No") %>%
     mutate(Pass_HEIDI = ifelse(p_HEIDI>=0.05, "Pass", "Fail"),
+           N_probe = nrow(.),
            FDR = p.adjust(p_SMR, method = "BH"),
-           Bonferroni = p.adjust(p_SMR, method = "bonferroni"))
-  basename <- basename(smr_result_path) %>% gsub(".smr", ".fdr", .)
-  dirname <- dirname(smr_result_path)
-  if (writePath == "") {
-    if (out_dir == "") {
-      cli::cli_alert_warning("No writePath & out_dir set")
-      out_dir <- file.path(dirname, "fdr")
+           Pass_FDR = ifelse(FDR < 0.05, "Pass", "Fail"),
+           Bonferroni = p.adjust(p_SMR, method = "bonferroni"),
+           Pass_Bonferroni = ifelse(Bonferroni < 0.05, "Pass", "Fail"))
+
+  if (write_out) {
+    basename <- basename(smr_result_path) %>% gsub(".smr", ".fdr", .)
+    dirname <- dirname(smr_result_path)
+
+    if (writePath == "") {
+      if (out_dir == "") {
+        cli::cli_alert_warning("No writePath & out_dir set")
+        out_dir <- file.path(dirname, "fdr")
+      }
+      if (!file.exists(out_dir)) {dir.create(out_dir)}
+      writePath <- file.path(out_dir, basename)
+    } else {
+      writePath <- writePath # this will overide the basename setting
     }
-    if (!file.exists(out_dir)) {dir.create(out_dir)}
-    writePath <- file.path(out_dir, basename)
+
+    cli::cli_alert_success(" - Writing to >>> {.path {writePath}}")
+    vroom::vroom_write(smr_result, writePath, delim = "\t")
+    return(NULL)
   } else {
-    writePath <- writePath # this will overide the basename setting
+    return(smr_result)
   }
-  vroom::vroom_write(smr_result, writePath, delim = "\t")
-  cli::cli_alert_success(" - Writing to >>> {.path {writePath}}")
-  return(NULL)
 }
 
 
@@ -221,16 +237,24 @@ leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
   if (out_dir == "") {
     dirname <- dirname(dir)
     out_dir <- file.path(dirname, "fdr")
-    make.directory(out_dir, re)
+    if (!file.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
     cli::cli_alert_warning("out_dir set to {out_dir} as there are no pre-set out_dir.")
-  } else {out_dir = out_dir}
+  } else {
+    if (!file.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+    out_dir = out_dir
+  }
+
   # list all smr file
   smr_files <- list.files(path = dir, pattern = "\\.smr$", full.names = TRUE) # Get list of .smr files in the folder
+  if (length(smr_files) == 0) {
+    leo_log("No `.smr` files found in the directory.", level = "danger")
+    return(NULL)
+  }
   for (smr_file in smr_files) { # Loop through each .smr file and apply leo_smr_adjust function
     cli::cli_alert_info(" - Processing: {smr_file}")
     leo_smr_adjust(smr_file, out_dir = out_dir, ...)
   }
   leo_log("ALL DONE!", level = "success")
 }
-leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined",
-                    out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/fdr") # 保存
+# leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined",
+#                     out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/fdr")

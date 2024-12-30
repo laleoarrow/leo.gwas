@@ -4,13 +4,15 @@
 \alias{leo_smr_adjust}
 \title{Adjust SMR Results with FDR and Bonferroni Corrections}
 \usage{
-leo_smr_adjust(smr_result_path, writePath = "", out_dir = "")
+leo_smr_adjust(smr_result_path, writePath = "", out_dir = "", write_out = T)
 }
 \arguments{
 \item{smr_result_path}{Character. The path containing SMR result file. Files should have the \code{.smr} extension.}
 
 \item{out_dir}{Character. The output directory where adjusted files will be saved.
 If not specified, defaults to creat a dir named \code{fdr} within dirname(smr_result_path).}
+
+\item{write_out}{Logical. Whether to write the adjusted results to a file. Default is \code{TRUE}.}
 }
 \description{
 It applies FDR/Bonferroni corrections for a single SMR result.
