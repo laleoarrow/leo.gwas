@@ -20,3 +20,9 @@ NULL.
 \description{
 This function applies FDR/Bonferroni corrections to all SMR results within a specified directory.
 }
+\examples{
+\dontrun{
+leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/chr_combined",
+                    out_dir = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/fdr")
+}
+}

@@ -186,7 +186,7 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", write_
   smr_result <- vroom::vroom(smr_result_path, show_col_types = F) %>%
     mutate(HLA_Probe = ifelse( (ProbeChr == 6 & Probe_bp >= 25000000 & Probe_bp <= 34000000), "Yes", "No") )
   nrow_HLA_probe <- smr_result %>% filter(HLA_Probe == "Yes") %>% nrow()
-  cli::cli_alert_info("Filtering out {.emph {nrow_HLA_probe}} probe{?s} for {basename(smr_result_path)}")
+  # cli::cli_alert_info(" - Filtering out {.emph {nrow_HLA_probe}} probe{?s} for {basename(smr_result_path)}") # seems unnecessary
   smr_result <- smr_result %>% filter(HLA_Probe == "No") %>%
     mutate(Pass_HEIDI = ifelse(p_HEIDI>=0.05, "Pass", "Fail"),
            N_probe = nrow(.),
@@ -212,7 +212,7 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", write_
 
     cli::cli_alert_success(" - Writing to >>> {.path {writePath}}")
     vroom::vroom_write(smr_result, writePath, delim = "\t")
-    return(NULL)
+    return(invisible(NULL))
   } else {
     return(smr_result)
   }
@@ -229,6 +229,11 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", write_
 #' @param ... Additional arguments to be passed to `leo_smr_adjust`.
 #'
 #' @return NULL.
+#' @examples
+#' \dontrun{
+#' leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/chr_combined",
+#'                     out_dir = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/fdr")
+#' }
 #' @importFrom cli cli_alert_info cli_alert_success cli_alert_warning
 #' @importFrom dplyr filter pull
 #' @export
@@ -238,7 +243,7 @@ leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
     dirname <- dirname(dir)
     out_dir <- file.path(dirname, "fdr")
     if (!file.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-    cli::cli_alert_warning("out_dir set to {out_dir} as there are no pre-set out_dir.")
+    cli::cli_alert_warning("out_dir set to {.path {out_dir}} as there are no pre-set out_dir.")
   } else {
     if (!file.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
     out_dir = out_dir
@@ -248,13 +253,101 @@ leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
   smr_files <- list.files(path = dir, pattern = "\\.smr$", full.names = TRUE) # Get list of .smr files in the folder
   if (length(smr_files) == 0) {
     leo_log("No `.smr` files found in the directory.", level = "danger")
-    return(NULL)
+    return(invisible(NULL))
   }
   for (smr_file in smr_files) { # Loop through each .smr file and apply leo_smr_adjust function
     cli::cli_alert_info(" - Processing: {smr_file}")
     leo_smr_adjust(smr_file, out_dir = out_dir, ...)
   }
   leo_log("ALL DONE!", level = "success")
+  return(invisible(NULL))
 }
-# leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined",
-#                     out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/fdr")
+
+# 2. Combine all results for each outcomes ----
+#' Combine `.fdr` files for one or multiple outcomes (seperately)
+#'
+#' @param dir       Character. The parent folder that contains subfolders with fdr files.
+#' @param outcome   Character or character vector. One or more outcomes to search in file names.
+#' @param out_dir   Character. Output folder; default is to create "combine_1outcome" under \code{dir}.
+#' @return          NULL. This function writes combined files to disk directly.
+#' @examples
+#' \dontrun{
+#' combine_smr_res_1outcome("/Users/leoarrow/project/iridocyclitis/output/smr", "iri3")
+#' }
+#' @importFrom cli cli_alert_danger cli_alert_success cli_alert_warning cli_alert_info
+#' @importFrom dplyr bind_rows select everything
+#' @importFrom data.table fwrite
+#' @importFrom vroom vroom
+#' @export
+combine_smr_res_1outcome <- function(dir, outcome, out_dir = file.path(dir, "combine_1outcome")) {
+  date_str <- format(Sys.Date(), "%Y%m%d")
+  cli::cat_rule(paste0("[",date_str,"] Combining SMR results"), col = "blue")
+  if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE) # Create out_dir if not exist
+
+  # Find all .fdr files
+  fdr_files <- list.files(
+    path         = dir,
+    pattern      = "\\.fdr$",
+    recursive    = TRUE,
+    full.names   = TRUE
+  )
+  if (length(fdr_files) == 0) {
+    leo_log("No `.fdr` files found in the given directory", level = "danger")
+    return(invisible(NULL))
+  }
+  # check if given oc all in the file.names
+  extract_outcome_from_filename <- function(fp) {
+    fn_no_ext <- basename(fp) %>% sub("\\.fdr$", "", .) %>% sub("\\.ma$", "", .)
+    if (grepl("@", fn_no_ext)) {
+      return(sub(".*@", "", fn_no_ext))
+    } else if (grepl("_", fn_no_ext)) {
+      return(sub(".*_", "", fn_no_ext))
+    } else {
+      return(fn_no_ext)
+    }
+  }
+  file.outcomes <- unique(sapply(fdr_files, extract_outcome_from_filename))
+  missing_outcomes <- setdiff(outcome, file.outcomes)
+  if (length(missing_outcomes) > 0) {
+    msg <- paste0("The following outcome(s) are not found: ", paste(missing_outcomes, collapse = ", "), " Continue?")
+    if (interactive()) {
+      proceed <- utils::askYesNo(
+        msg, default = T, prompts = getOption("askYesNo", gettext(c("Yes", "No", "Cancel")))
+      )
+      if (!isTRUE(proceed)) {
+        cli::cli_alert_danger("Operation aborted by the user.")
+        return(invisible(NULL))
+      }
+    } else {
+      cli::cli_alert_warning("Missing outcomes: {paste(missing_outcomes, collapse = ', ')}. Skipping them.")
+    }
+  }
+
+  # Loop each outcome
+  for (oc in outcome) {
+    cli::cli_alert_info("Processing outcome: {oc}")
+
+    # Select files with this outcome
+    sub_files <- fdr_files[grepl(oc, basename(fdr_files))]
+    if (length(sub_files) == 0) {
+      leo_log(" - No `.fdr` file matched: ", oc, level = "warning")
+      next
+    }
+
+    # Read and combine
+    df_list <- lapply(sub_files, function(fp) {
+      tmp <- vroom::vroom(fp, show_col_types = F, progress = F) %>% dplyr::mutate(
+        source_type = basename(dirname(dirname(dirname(fp)))),
+        source      = basename(dirname(dirname(fp))))
+    }) %>% as.list()
+    merged_df <- do.call(dplyr::bind_rows, df_list) %>% dplyr::select(source, source_type, dplyr::everything())
+
+    # Output file
+    out_file <- file.path(out_dir, paste0("smr_res_", date_str, "_", oc, ".all"))
+    cli::cli_alert_success("Writing => {out_file}")
+    data.table::fwrite(merged_df, file = out_file, sep = "\t")
+  }
+  leo_log("All Done!", level = "success")
+  return(invisible(NULL))
+}
+
