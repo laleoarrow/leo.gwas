@@ -9,16 +9,18 @@ leo_message(..., color = "31", return = FALSE)
 \arguments{
 \item{...}{The messages you wanna messgae, which will be pasted together}
 
-\item{color}{prefered color}
+\item{color}{Str. Preferred color. Default is yellow.
+Options are "31" (red), "32" (green), "34" (blue), "95" (light purple)...}
 
-\item{return}{Logical. If TRUE, returns the formatted string. If FALSE, prints directly.}
+\item{return}{Logical. If TRUE, returns the formatted string. If FALSE (Default), prints directly.}
 }
 \description{
 Give Messages with my color
 }
 \examples{
-leo_message("This is a pink message")
+leo_message("This is a red message", color = "31")
 leo_message("This is a green message", "\nhaha", color = "32")
 leo_message("This is a blue ", "message", color = "34")
 leo_message("This is a light purple message", color = "95")
+leo_message(" 🦁🦁🦁 Welcome to use the LEO package ! 🦁🦁🦁")
 }

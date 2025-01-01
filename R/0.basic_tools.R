@@ -1,15 +1,17 @@
 #' Give Messages with my color
 #'
 #' @param ... The messages you wanna messgae, which will be pasted together
-#' @param color prefered color
-#' @param return Logical. If TRUE, returns the formatted string. If FALSE, prints directly.
+#' @param color Str. Preferred color. Default is yellow.
+#'              Options are "31" (red), "32" (green), "34" (blue), "95" (light purple)...
+#' @param return Logical. If TRUE, returns the formatted string. If FALSE (Default), prints directly.
 #'
 #' @export
 #' @examples
-#' leo_message("This is a pink message")
+#' leo_message("This is a red message", color = "31")
 #' leo_message("This is a green message", "\nhaha", color = "32")
 #' leo_message("This is a blue ", "message", color = "34")
 #' leo_message("This is a light purple message", color = "95")
+#' leo_message(" 🦁🦁🦁 Welcome to use the LEO package ! 🦁🦁🦁")
 leo_message <- function(..., color = "31", return = FALSE) {
   message_content <- paste0(..., collapse = " ")
   formatted_message <- paste0("\033[", color, "m", message_content, "\033[0m")
