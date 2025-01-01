@@ -4,7 +4,13 @@
 \alias{leo_smr_adjust}
 \title{Adjust SMR Results with FDR and Bonferroni Corrections}
 \usage{
-leo_smr_adjust(smr_result_path, writePath = "", out_dir = "", write_out = T)
+leo_smr_adjust(
+  smr_result_path,
+  writePath = "",
+  out_dir = "",
+  hla = F,
+  write_out = T
+)
 }
 \arguments{
 \item{smr_result_path}{Character. The path containing SMR result file. Files should have the \code{.smr} extension.}
@@ -12,7 +18,9 @@ leo_smr_adjust(smr_result_path, writePath = "", out_dir = "", write_out = T)
 \item{writePath}{Character. The path to write the adjusted results.}
 
 \item{out_dir}{Character. The output directory where adjusted files will be saved.
-If not specified, defaults to creat a dir named \code{fdr} within dirname(smr_result_path).}
+If not specified, defaults to create a dir named \code{fdr} within dir-name (smr_result_path).}
+
+\item{hla}{Logical. Whether to pre-exclude the HLA region probes. Default is \code{False}.}
 
 \item{write_out}{Logical. Whether to write the adjusted results to a file. Default is \code{TRUE}.}
 }
@@ -23,10 +31,8 @@ The corrected results are saved in an \code{fdr} subdirectory within the output 
 \examples{
 \dontrun{
 leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-writePath = "",
-out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
+               writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
 leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-              writePath = "./haha.fdr",
-              out_dir = "")
+               writePath = "./haha.fdr", out_dir = "")
 }
 }

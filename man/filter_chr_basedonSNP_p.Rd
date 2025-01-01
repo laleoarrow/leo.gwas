@@ -2,8 +2,7 @@
 % Please edit documentation in R/smr_besd_tools.R
 \name{filter_chr_basedonSNP_p}
 \alias{filter_chr_basedonSNP_p}
-\title{This contains need-to-have functions for making BESD files for SMR and HEIDI
-Filter Chromosomes Based on SNP P-value Threshold}
+\title{Filter Chromosomes Based on SNP P-value Threshold}
 \usage{
 filter_chr_basedonSNP_p(
   df,
