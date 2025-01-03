@@ -1033,3 +1033,57 @@ map_ensg_to_tss_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genom
 
   return(final_df)
 }
+
+# CpG annotation
+#' Annotate CpG Sites with Gene Information
+#'
+#' This function annotates a vector of CpG site probe IDs by retrieving corresponding gene names
+#' from the Illumina 450k annotation package. It returns a data frame with the original CpG sites
+#' and their associated gene names.
+#'
+#' @param cpg_vector A character vector of CpG site probe IDs to be annotated.
+#' @param annotation_package A character string specifying the Illumina annotation package to use.
+#'   It can be one of the following:
+#'   - "IlluminaHumanMethylation450kanno.ilmn12.hg19" (default)
+#'   - "IlluminaHumanMethylationEPICanno.ilm10b4.hg19"
+#' @return A data frame with two columns:
+#'   - `CpG_Site`: The original CpG site probe IDs.
+#'   - `Gene`: The associated gene names. `NA` if no gene annotation is found.
+#' @importFrom minfi getAnnotation
+#' @importFrom dplyr filter pull mutate select
+#' @importFrom cli cli_alert_info cli_alert_success
+#' @examples
+#' \dontrun{
+#' library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+#' library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
+#' # Example CpG probe IDs
+#' cpg_ids <- c("cg00000029", "cg00000108", "cg00000109")
+#' # Annotate CpG sites
+#' annotate_cpg_sites(cpg_ids, "IlluminaHumanMethylation450kanno.ilmn12.hg19")
+#' }
+#' @export
+annotate_cpg_sites <- function(cpg_vector,
+                               annotation_package = "IlluminaHumanMethylation450kanno.ilmn12.hg19") {
+  cli::cli_alert_info("Loading annotation package '{annotation_package}'...")
+  cli::cat_bullet("Please do pre-library the required package", bullet_col = "blue")
+  # Check if annotation package is installed
+  if (annotation_package == "IlluminaHumanMethylation450kanno.ilmn12.hg19") {
+    library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+  } else if (annotation_package == "IlluminaHumanMethylationEPICanno.ilm10b4.hg19") {
+    library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
+  } else {
+    stop("Invalid annotation package. Please use either 'IlluminaHumanMethylation450kanno.ilmn12.hg19' or 'IlluminaHumanMethylationEPICanno.ilm10b4.hg19'.")
+  }
+  annotation_data_full <- minfi::getAnnotation(get(annotation_package))
+  # mapping
+  cli::cli_alert_info("Filtering annotation data for provided CpG sites...")
+  annotation_subset <- annotation_data_full[cpg_vector, , drop = FALSE]
+  gene_names <- annotation_subset$UCSC_RefGene_Name
+  cli::cli_alert_success("Annotation completed successfully.")
+  result_df <- data.frame(
+    CpG_Site = cpg_vector,
+    Gene = gene_names,
+    stringsAsFactors = FALSE
+  )
+  return(result_df)
+}

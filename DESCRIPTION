@@ -21,9 +21,10 @@ Imports:
     TwoSampleMR,
     vroom,
     BSgenome,
-    stringr
+    stringr,
+    cli
 Depends: 
-    dplyr, cli
+    dplyr
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,

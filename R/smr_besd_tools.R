@@ -288,7 +288,7 @@ leo_smr_adjust_loop <- function(dir, out_dir="", pattern = "\\.smr$", QTL_type, 
   }
   for (smr_file in smr_files) { # Loop through each .smr file and apply leo_smr_adjust function
     cli::cli_alert_info(" - Processing: {smr_file}")
-    basename <- basename(smr_file) %>% gsub(".smr", "", .) %>% gsub(".ma", "", .)
+    basename <- basename(smr_file) %>% sub(".smr", "", .)
     Tissue = stringr::str_split(basename, "@", simplify = T)[1]
     Outcome_name = stringr::str_split(basename, "@", simplify = T)[2]
     cli::cli_alert_info(" - Tissue: {.val {Tissue}}, Source: {.val {Outcome_name}}")
@@ -492,9 +492,9 @@ leo_smr_merge_shared_probes <- function(
   if (out_file != "") {
     vroom::vroom_write(merged_df, out_file, delim = "\t")
     cli::cli_alert_success("Merged data written to {out_file} with {nrow(merged_df)} rows.")
-    return(invisible(NULL))
   } else {
     cli::cli_alert_info("Merged data has {nrow(merged_df)} shared rows across all files.")
-    return(merged_df)
+
   }
+  return(merged_df)
 }
