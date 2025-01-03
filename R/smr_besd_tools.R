@@ -166,6 +166,13 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @param out_dir Character. The output directory where adjusted files will be saved.
 #'                If not specified, defaults to create a dir named `fdr` within dir-name (smr_result_path).
 #' @param writePath Character. The path to write the adjusted results.
+#' ----
+#' @param add_info_cols Logical. Whether to add information columns for: QTL_type, Source, Tissue and Outcome. Default is `TRUE`.
+#' @param QTL_type Character. The type of the QTL for SMR analysis.
+#' @param Source Character. The name of the Source.
+#' @param Tissue Character. The name of the Tissue.
+#' @param Outcome_name Character. The name of the Outcome.
+#' ----
 #' @param hla Logical. Whether to pre-exclude the HLA region probes. Default is `False`.
 #' @param write_out Logical. Whether to write the adjusted results to a file. Default is `TRUE`.
 #'
@@ -182,7 +189,9 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @importFrom dplyr mutate %>% filter
 #' @importFrom stringr str_replace
 #' @export
-leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", hla = F, write_out = T) {
+leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "",
+                           QTL_type = "", Source = "", Tissue = "", Outcome_name = "", add_info_cols = T,
+                           hla = F, write_out = T) {
   smr_result <- vroom::vroom(smr_result_path, show_col_types = F)
   if (hla) {
     smr_result <- smr_result %>%
@@ -198,6 +207,22 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", hla = 
            Pass_FDR = ifelse(FDR < 0.05, "Pass", "Fail"),
            Bonferroni = p.adjust(p_SMR, method = "bonferroni", n = N_probe[1]),
            Pass_Bonferroni = ifelse(Bonferroni < 0.05, "Pass", "Fail"))
+
+  if (add_info_cols) {
+    # check if required columns are provided
+    if (QTL_type == "" | Source == "" | Tissue == "" | Outcome_name == "") {
+      cli::cli_alert_danger("[QTL_type], [Source], [Tissue] and [Outcome_name] are all required.")
+      return(invisible(NULL))
+    }
+    smr_result <- smr_result %>%
+      dplyr::mutate(
+        QTL_type = QTL_type,
+        Source = Source,
+        Tissue = Tissue,
+        Outcome = Outcome_name
+      ) %>%
+      dplyr::select(QTL_type, Source, Tissue, Outcome, everything())
+  }
 
   if (write_out) {
     basename <- basename(smr_result_path) %>% gsub(".smr", ".fdr", .)
@@ -230,6 +255,7 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", hla = 
 #' @param dir Character. The directory containing SMR result files. Files should have the `.smr` extension and follow the naming convention `exposure@outcome.smr`.
 #' @param out_dir Character. The output directory where the adjusted SMR files will be saved.
 #'                If not specified, defaults to creating a `fdr` directory within the input directory.
+#' @param pattern Character. A regular expression pattern to match SMR result files. Default is `"\.smr$"` (i.e., files ending with `.smr`).
 #' @param ... Additional arguments to be passed to `leo_smr_adjust`.
 #'
 #' @return NULL.
@@ -240,9 +266,10 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "", hla = 
 #' }
 #' @importFrom cli cli_alert_info cli_alert_success cli_alert_warning
 #' @importFrom dplyr filter pull
+#' @importFrom stringr str_split
 #' @export
-leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
-  leo_log("Adjusting SMR results for all files in the >>>", dir, "<<< directory.")
+leo_smr_adjust_loop <- function(dir, out_dir="", pattern = "\\.smr$", QTL_type, Source, ...) {
+  leo_log("Adjusting SMR results for all files in the", leo_message(dir, color = 36, return = T), "directory.")
   if (out_dir == "") {
     dirname <- dirname(dir)
     out_dir <- file.path(dirname, "fdr")
@@ -254,14 +281,20 @@ leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
   }
 
   # list all smr file
-  smr_files <- list.files(path = dir, pattern = "\\.smr$", full.names = TRUE) # Get list of .smr files in the folder
+  smr_files <- list.files(path = dir, pattern = pattern, full.names = TRUE) # Get list of .smr files in the folder
   if (length(smr_files) == 0) {
     leo_log("No `.smr` files found in the directory.", level = "danger")
     return(invisible(NULL))
   }
   for (smr_file in smr_files) { # Loop through each .smr file and apply leo_smr_adjust function
     cli::cli_alert_info(" - Processing: {smr_file}")
-    leo_smr_adjust(smr_file, out_dir = out_dir, ...)
+    basename <- basename(smr_file) %>% gsub(".smr", "", .) %>% gsub(".ma", "", .)
+    Tissue = stringr::str_split(basename, "@", simplify = T)[1]
+    Outcome_name = stringr::str_split(basename, "@", simplify = T)[2]
+    cli::cli_alert_info(" - Tissue: {.val {Tissue}}, Source: {.val {Outcome_name}}")
+    leo_smr_adjust(smr_file, out_dir = out_dir,
+                   QTL_type = QTL_type, Source = Source, Tissue = Tissue, Outcome_name = Outcome_name,
+                   ...)
   }
   leo_log("ALL DONE!", level = "success")
   return(invisible(NULL))
@@ -284,71 +317,27 @@ leo_smr_adjust_loop <- function(dir, out_dir="", ...) {
 #' @importFrom vroom vroom
 #' @export
 combine_smr_res_1outcome <- function(dir, outcome, out_dir = file.path(dir, "combine_1outcome")) {
-  date_str <- format(Sys.Date(), "%Y%m%d")
-  cli::cat_rule(paste0("[",date_str,"] Combining SMR results"), col = "blue")
-  if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE) # Create out_dir if not exist
+  date_str <- format(Sys.Date(), "%Y%m%d"); cli::cat_rule(paste0("[",date_str,"] Combining SMR results"), col = "blue")
+  fdr_files <- list.files(path = dir, pattern = "\\.fdr$", recursive = TRUE, full.names = TRUE)
+  if (length(fdr_files) == 0) stop("No `.fdr` files found in the given directory")
 
-  # Find all .fdr files
-  fdr_files <- list.files(
-    path         = dir,
-    pattern      = "\\.fdr$",
-    recursive    = TRUE,
-    full.names   = TRUE
-  )
-  if (length(fdr_files) == 0) {
-    leo_log("No `.fdr` files found in the given directory", level = "danger")
-    return(invisible(NULL))
-  }
-  # check if given oc all in the file.names
-  extract_outcome_from_filename <- function(fp) {
-    fn_no_ext <- basename(fp) %>% sub("\\.fdr$", "", .) %>% sub("\\.ma$", "", .)
-    if (grepl("@", fn_no_ext)) {
-      return(sub(".*@", "", fn_no_ext))
-    } else if (grepl("_", fn_no_ext)) {
-      return(sub(".*_", "", fn_no_ext))
-    } else {
-      return(fn_no_ext)
-    }
-  }
-  file.outcomes <- unique(sapply(fdr_files, extract_outcome_from_filename))
-  missing_outcomes <- setdiff(outcome, file.outcomes)
-  if (length(missing_outcomes) > 0) {
-    msg <- paste0("The following outcome(s) are not found: ", paste(missing_outcomes, collapse = ", "), " Continue?")
-    if (interactive()) {
-      proceed <- utils::askYesNo(
-        msg, default = T, prompts = getOption("askYesNo", gettext(c("Yes", "No", "Cancel")))
-      )
-      if (!isTRUE(proceed)) {
-        cli::cli_alert_danger("Operation aborted by the user.")
-        return(invisible(NULL))
-      }
-    } else {
-      cli::cli_alert_warning("Missing outcomes: {paste(missing_outcomes, collapse = ', ')}. Skipping them.")
-    }
-  }
-
-  # Loop each outcome
+  # Loop each self-defined outcome
   for (oc in outcome) {
-    cli::cli_alert_info("Processing outcome: {oc}")
-
+    leo_log("Processing outcome >>>", leo_message(oc, color = 36, return = T))
     # Select files with this outcome
     sub_files <- fdr_files[grepl(oc, basename(fdr_files))]
     if (length(sub_files) == 0) {
-      leo_log(" - No `.fdr` file matched: ", oc, level = "warning")
+      leo_log(" - No `.fdr` file matched for the outcome >>>", leo_message(oc, color = 36, return = T), level = "warning")
       next
     }
 
     # Read and combine
-    df_list <- lapply(sub_files, function(fp) {
-      tmp <- vroom::vroom(fp, show_col_types = F, progress = F) %>% dplyr::mutate(
-        source_type = basename(dirname(dirname(dirname(fp)))),
-        source      = basename(dirname(dirname(fp))),
-        filename    = basename(fp))
-    }) %>% as.list()
-    merged_df <- do.call(dplyr::bind_rows, df_list) %>% dplyr::select(filename, source, source_type, dplyr::everything())
+    merged_df_list <- lapply(sub_files, function(fp) vroom::vroom(fp, show_col_types = F, progress = F))
+    merged_df <- do.call(rbind, merged_df_list)
 
     # Output file
-    out_file <- file.path(out_dir, paste0("smr_res_", date_str, "_", oc, ".all"))
+    if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE) # Create out_dir if not exist
+    out_file <- file.path(out_dir, paste0("smr_res_", date_str, "@", oc, ".all"))
     cli::cli_alert_success("Writing => {out_file}")
     data.table::fwrite(merged_df, file = out_file, sep = "\t")
   }
@@ -390,55 +379,31 @@ combine_smr_res_1outcome <- function(dir, outcome, out_dir = file.path(dir, "com
 #' @importFrom vroom vroom vroom_write
 #' @importFrom dplyr filter
 #' @export
-leo_smr_extract_sig_res <- function(dir, pass_type = c("FDR", "Bonferroni", "both"), out_dir   = "") {
+leo_smr_extract_sig_res <- function(dir, pass_type = c("FDR", "Bonferroni"), out_dir   = "") {
   cli::cat_rule("Extract significant results from `.all` files", col = "blue")
   pass_type <- match.arg(pass_type)
-  if (!dir.exists(dir)) {
-    cli::cli_alert_warning("No 'combine_1outcome' folder found in {dir}. Abort.")
-    return(invisible(NULL))
-  }
-  # Default out_dir => dir/combine_1outcome/sig
-  if (out_dir == "") {
-    out_dir <- file.path(dir, "sig")
-    cli::cli_alert_info("No out_dir specified. So out_dir set to {.path {out_dir}}")
-  }
-  if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-  # List all .all files, e.g. "smr_res_20241230_iri3.all"
-  all_files <- list.files(
-    path       = dir,
-    pattern    = "\\.all$",
-    full.names = TRUE
-  )
-  if (length(all_files) == 0) {
-    cli::cli_alert_warning("No '.all' files found in {dir}")
-    return(invisible(NULL))
-  }
-
-  # Loop through each .all file
-  for (fpath in all_files) {
-    fn <- basename(fpath)
-    cli::cli_alert_info("Processing file: {fn}")
-    df <- vroom::vroom(fpath, show_col_types = FALSE, progress = FALSE)
-
-    # Filter by pass_type
-    # if (!all(c("Pass_FDR", "Pass_Bonferroni") %in% names(df))) {
-    #   cli::cli_alert_warning("File {fn} lacks 'Pass_FDR' or 'Pass_Bonferroni' columns. Skipped.")
-    #   next
-    # }
+  all_files <- list.files(path = dir, pattern = "\\.all$", full.names = TRUE) # List all .all files, e.g. "smr_res_20241230_iri3.all"
+  for (all_file in all_files) {
+    fn <- basename(all_file);cli::cli_alert_info("Processing file: {fn}")
+    df <- vroom::vroom(all_file, show_col_types = FALSE, progress = FALSE) %>%
+      dplyr::filter(Pass_HEIDI == "Pass")
     df_sig <- switch(
       pass_type,
       "FDR" = dplyr::filter(df, .data$Pass_FDR == "Pass"),
-      "Bonferroni" = dplyr::filter(df, .data$Pass_Bonferroni == "Pass"),
-      "both" = dplyr::filter(df, .data$Pass_FDR == "Pass" | .data$Pass_Bonferroni == "Pass")
-    ) %>% dplyr::filter(Pass_HEIDI == "Pass")
+      "Bonferroni" = dplyr::filter(df, .data$Pass_Bonferroni == "Pass")
+    )
 
     if (nrow(df_sig) == 0) {
       cli::cli_alert_warning("No significant rows found in {fn} under '{pass_type}'. Skipped.")
       next
     }
 
-    # Build & write output filename: e.g. "smr_res_20241230_iri3.sig.all"
+    # Output: Build & write output filename: e.g. "smr_res_20241230_iri3.sig.all"
+    if (out_dir == "") {
+      out_dir <- file.path(dir, "sig") # Default out_dir => dir/combine_1outcome/sig
+      cli::cli_alert_info("No out_dir specified. So out_dir set to {.path {out_dir}}")
+    }
+    if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
     out_fn <- sub("\\.all$", ".sig.all", fn)
     out_fpath <- file.path(out_dir, out_fn)
     vroom::vroom_write(df_sig, out_fpath, delim = "\t")
@@ -447,9 +412,9 @@ leo_smr_extract_sig_res <- function(dir, pass_type = c("FDR", "Bonferroni", "bot
   return(invisible(NULL))
 }
 
-# 4. Shared ones ----
-# In this section, we locate the shared XWAS results for different outcomes
-#' Merge multiple SMR files and keep only shared probes
+# 4. Gimme Shared ones for 2 XWAS outcomes ----
+# In this section, we locate the shared XWAS results for 2 outcomes
+#' Merge multiple SMR files and keep only shared probes for 2 outcomes
 #'
 #' This function finds intersected \code{probeID} across all provided files
 #' and merges them into a single data frame using \code{inner_join}.
@@ -461,29 +426,34 @@ leo_smr_extract_sig_res <- function(dir, pass_type = c("FDR", "Bonferroni", "bot
 #' @param pattern    Character. Regex pattern for searching files in \code{dir}. Default is "\\.sig\\.all$".
 #' @param out_file   Character. If not empty, write the merged result to this path. Otherwise only return in R.
 #'
-#' @return A data frame (tibble) with shared probes. Also writes to \code{out_file} if \code{out_file != ""}.
+#' @return A tibble containing shared probes across all specified files. If \code{out_file} is provided, the result is written to disk and the function returns \code{NULL}.
 #'
 #' @examples
 #' \dontrun{
-#' # 1) Merge all .sig.all files in a folder:
+#' # 1) Merge all .sig.all files in a directory:
 #' merged_df <- leo_smr_merge_shared_probes(
-#'   dir = "/Users/leoarrow/project/iridocyclitis/output/smr-t2d/combine_1outcome/sig"
+#'   dir = "/path/to/smr-t2d/combine_1outcome/sig"
 #' )
 #'
 #' # 2) Merge specific files by absolute paths:
 #' files_vec <- c(
-#'   "/Users/leoarrow/project/iridocyclitis/output/smr/combine_1outcome/smr_res_20241230_iri3.all",
-#'   "/Users/leoarrow/project/iridocyclitis/output/smr/combine_1outcome/smr_res_20241230_t1d1.all"
+#'   "/path/to/smr/combine_1outcome/smr_res_20241230_iri3.all",
+#'   "/path/to/smr/combine_1outcome/smr_res_20241230_t1d1.all"
 #' )
-#' merged_df <- leo_smr_merge_shared_probes(file_paths = files_vec, out_file = "shared_probes_merged.tsv")
+#' merged_df <- leo_smr_merge_shared_probes(
+#'   file_paths = files_vec,
+#'   out_file = "shared_probes_merged.tsv"
+#' )
 #' }
-#'
-#' @importFrom vroom vroom_write vroom
-#' @importFrom dplyr inner_join group_by summarise filter select arrange
+#' @importFrom vroom vroom vroom_write
+#' @importFrom dplyr inner_join select
 #' @importFrom purrr reduce
+#' @importFrom stringr str_remove str_split_fixed
+#' @importFrom cli cli_alert_info cli_alert_success cli_alert_danger cat_rule
 #' @export
 leo_smr_merge_shared_probes <- function(
-    dir         = NULL, file_paths  = NULL,
+    dir         = NULL,
+    file_paths  = NULL,
     pattern     = "\\.sig\\.all$",
     out_file    = "") {
   cli::cat_rule("Merge multiple SMR files and keep only shared probes", col = "blue")
@@ -496,26 +466,26 @@ leo_smr_merge_shared_probes <- function(
   } else {
     # Otherwise, search dir for pattern
     if (is.null(dir) || !dir.exists(dir)) stop("Please provide a valid 'dir' or a non-empty 'file_paths'.")
-    leo_log("Reading files in 'dir': ", dir)
+    cli::cli_alert_info("Reading {.emph {length(list.files(dir))}} file{?s} in {.path {dir}}")
     smr_files <- list.files(
       path       = dir,
       pattern    = pattern,
       full.names = TRUE
     )
   }
-  if (length(smr_files) < 2) stop("At least 2 files are required to find shared probes.")
+  if (length(smr_files) != 2) stop("Only 2 files are permitted here to find shared probes.")
 
   # 2) Read all files
   df_list <- lapply(smr_files, function(fp) {
-    vroom::vroom(fp, show_col_types = FALSE, progress = FALSE)
+    dat <- vroom::vroom(fp, show_col_types = FALSE, progress = FALSE)
   })
 
-  # 3) Iteratively merge with inner_join by "probeID"
-  #    This keeps only the probeID rows that appear in *all* files.
-  #    If some file doesn't have "probeID" column, it will fail.
-  merged_df <- purrr::reduce(
-    .x  = df_list,
-    .f  = function(x, y) dplyr::inner_join(x, y, by = c("source", "source_type", "probeID"))
+  # 3) Merge with c("QTL_type", "Source", "Tissue", "probeID", "ProbeChr", "Probe_bp", "Gene")
+  merged_df <- dplyr::inner_join(
+    df_list[[1]], df_list[[2]],
+    by = c("QTL_type", "Source", "Tissue", "probeID", "ProbeChr", "Probe_bp", "Gene"),
+    suffix = c(paste0(".", unique(df_list[[1]][["Outcome"]])),
+               paste0(".", unique(df_list[[2]][["Outcome"]])))
   )
 
   # 4) Optionally write to out_file
@@ -528,13 +498,3 @@ leo_smr_merge_shared_probes <- function(
     return(merged_df)
   }
 }
-
-# merged_df <- leo_smr_merge_shared_probes(
-#     dir = "/Users/leoarrow/project/iridocyclitis/output/smr/combine_1outcome/sig"
-#   )
-# leo_smr_merge_shared_probes(
-#   file_paths = c(
-#     "/Users/leoarrow/project/iridocyclitis/output/smr/combine_1outcome/smr_res_20241230_iri3.all",
-#     "/Users/leoarrow/project/iridocyclitis/output/smr-t2d/combine_1outcome/smr_res_20241230_iri3.all"
-#   )
-# )

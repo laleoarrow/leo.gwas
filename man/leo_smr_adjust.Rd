@@ -8,6 +8,11 @@ leo_smr_adjust(
   smr_result_path,
   writePath = "",
   out_dir = "",
+  QTL_type = "",
+  Source = "",
+  Tissue = "",
+  Outcome_name = "",
+  add_info_cols = T,
   hla = F,
   write_out = T
 )
@@ -15,10 +20,22 @@ leo_smr_adjust(
 \arguments{
 \item{smr_result_path}{Character. The path containing SMR result file. Files should have the \code{.smr} extension.}
 
-\item{writePath}{Character. The path to write the adjusted results.}
+\item{writePath}{\subsection{Character. The path to write the adjusted results.}{
+}}
 
 \item{out_dir}{Character. The output directory where adjusted files will be saved.
 If not specified, defaults to create a dir named \code{fdr} within dir-name (smr_result_path).}
+
+\item{QTL_type}{Character. The type of the QTL for SMR analysis.}
+
+\item{Source}{Character. The name of the Source.}
+
+\item{Tissue}{Character. The name of the Tissue.}
+
+\item{Outcome_name}{\subsection{Character. The name of the Outcome.}{
+}}
+
+\item{add_info_cols}{Logical. Whether to add information columns for: QTL_type, Source, Tissue and Outcome. Default is \code{TRUE}.}
 
 \item{hla}{Logical. Whether to pre-exclude the HLA region probes. Default is \code{False}.}
 

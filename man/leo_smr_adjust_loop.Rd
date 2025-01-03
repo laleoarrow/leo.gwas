@@ -4,13 +4,22 @@
 \alias{leo_smr_adjust_loop}
 \title{Batch Adjust SMR Results with FDR and Bonferroni Corrections}
 \usage{
-leo_smr_adjust_loop(dir, out_dir = "", ...)
+leo_smr_adjust_loop(
+  dir,
+  out_dir = "",
+  pattern = "\\\\.smr$",
+  QTL_type,
+  Source,
+  ...
+)
 }
 \arguments{
 \item{dir}{Character. The directory containing SMR result files. Files should have the \code{.smr} extension and follow the naming convention \code{exposure@outcome.smr}.}
 
 \item{out_dir}{Character. The output directory where the adjusted SMR files will be saved.
 If not specified, defaults to creating a \code{fdr} directory within the input directory.}
+
+\item{pattern}{Character. A regular expression pattern to match SMR result files. Default is \code{"\\.smr$"} (i.e., files ending with \code{.smr}).}
 
 \item{...}{Additional arguments to be passed to \code{leo_smr_adjust}.}
 }

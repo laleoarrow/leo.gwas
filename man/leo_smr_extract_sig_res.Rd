@@ -4,11 +4,7 @@
 \alias{leo_smr_extract_sig_res}
 \title{Extract significant results from \code{.all} files}
 \usage{
-leo_smr_extract_sig_res(
-  dir,
-  pass_type = c("FDR", "Bonferroni", "both"),
-  out_dir = ""
-)
+leo_smr_extract_sig_res(dir, pass_type = c("FDR", "Bonferroni"), out_dir = "")
 }
 \arguments{
 \item{dir}{Character. The main \code{combine_1outcome} folder from \func{combine_smr_res_1outcome}.}
