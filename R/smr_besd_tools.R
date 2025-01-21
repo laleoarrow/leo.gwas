@@ -486,7 +486,7 @@ leo_smr_merge_shared_probes <- function(
     by = c("QTL_type", "Source", "Tissue", "probeID", "ProbeChr", "Probe_bp", "Gene"),
     suffix = c(paste0(".", unique(df_list[[1]][["Outcome"]])),
                paste0(".", unique(df_list[[2]][["Outcome"]])))
-  )
+  ) %>% select("QTL_type", "Source", "Tissue", "probeID", "ProbeChr", "Probe_bp", "Gene", everything())
 
   # 4) Optionally write to out_file
   if (out_file != "") {
@@ -494,7 +494,6 @@ leo_smr_merge_shared_probes <- function(
     cli::cli_alert_success("Merged data written to {out_file} with {nrow(merged_df)} rows.")
   } else {
     cli::cli_alert_info("Merged data has {nrow(merged_df)} shared rows across all files.")
-
   }
   return(merged_df)
 }

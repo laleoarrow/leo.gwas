@@ -15,11 +15,7 @@
 leo_message <- function(..., color = "31", return = FALSE) {
   message_content <- paste0(..., collapse = " ")
   formatted_message <- paste0("\033[", color, "m", message_content, "\033[0m")
-  if (return) {
-    return(formatted_message)
-  } else {
-    message(formatted_message)
-  }
+  message(formatted_message)
 }
 
 #' Log Messages with Timestamps
@@ -36,25 +32,27 @@ leo_message <- function(..., color = "31", return = FALSE) {
 #' @export
 #'
 #' @examples
+#' n1 <- 10; n2 <- 20
 #' leo_log("Processing the", n1, "and", n2, "files.")
 #' leo_log("Task completed successfully!", level = "success")
 #' leo_log("Potential issue detected.", level = "warning")
 #' leo_log("Error occurred during processing!", level = "danger")
 leo_log <- function(..., level = "info") {
-  msg <- paste(..., collapse = " ");timestamp <- format(Sys.time(), '%H:%M')
-  colored_timestamp <- switch(level,
-    info    = leo_message(paste0("[",timestamp,"]"), color = "36", return = TRUE), # blue
-    success = leo_message(paste0("[",timestamp,"]"), color = "32", return = TRUE), # green
-    warning = leo_message(paste0("[",timestamp,"]"), color = "33", return = TRUE), # red
-    danger  = leo_message(paste0("[",timestamp,"]"), color = "31", return = TRUE)  # red
-  )
+  msg <- paste(..., collapse = " "); timestamp <- paste0("[", format(Sys.time(), '%H:%M'),  "]")
+  timestamp_colored <- switch(level,
+                              "info" = cli::col_cyan(timestamp),     # cyan
+                              "success" = cli::col_green(timestamp), # green
+                              "warning" = cli::col_yellow(timestamp),# yellow
+                              "danger" = cli::col_red(timestamp))    # red
+  formatted_message <- paste(timestamp_colored, msg)
   switch(level,
-         info    = cli::cli_alert_info("{colored_timestamp} {msg}"),
-         success = cli::cli_alert_success("{colored_timestamp} {msg}"),
-         warning = cli::cli_alert_warning("{colored_timestamp} {msg}"),
-         danger  = cli::cli_alert_danger("{colored_timestamp} {msg}")
-  )
+         "info"    = cli::cli_alert_info(formatted_message),
+         "success" = cli::cli_alert_success(formatted_message),
+         "warning" = cli::cli_alert_warning(formatted_message),
+         "danger"  = cli::cli_alert_danger(formatted_message)
+         )
 }
+
 
 
 #' Get Unique Identifier for Genetic Data

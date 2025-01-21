@@ -16,7 +16,6 @@
 #' @return A ggplot object with the applied color palette.
 #' @importFrom ggsci scale_color_npg scale_color_lancet scale_color_jama scale_color_nejm scale_color_d3 scale_color_tron scale_color_igv scale_color_ucscgb scale_color_aaas scale_color_futurama scale_color_rickandmorty scale_color_simpsons
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom viridis scale_color_viridis
 #' @import ggplot2
 leo_scale_color <- function(plot, color_palette = "npg") {
   # Check if color_palette is a recognized ggsci palette
@@ -24,16 +23,6 @@ leo_scale_color <- function(plot, color_palette = "npg") {
     plot <- plot + ggsci::scale_color_npg()
   } else if (color_palette == "lancet") {
     plot <- plot + ggsci::scale_color_lancet()
-  } else if (color_palette == "jama") {
-    plot <- plot + ggsci::scale_color_jama()
-  } else if (color_palette == "nejm") {
-    plot <- plot + ggsci::scale_color_nejm()
-  } else if (color_palette == "d3") {
-    plot <- plot + ggsci::scale_color_d3()
-  } else if (color_palette == "tron") {
-    plot <- plot + ggsci::scale_color_tron()
-  } else if (color_palette == "igv") {
-    plot <- plot + ggsci::scale_color_igv()
   } else if (color_palette == "ucscgb") {
     plot <- plot + ggsci::scale_color_ucscgb()
   } else if (color_palette == "aaas") {
@@ -49,17 +38,12 @@ leo_scale_color <- function(plot, color_palette = "npg") {
   else if (color_palette %in% rownames(RColorBrewer::brewer.pal.info)) {
     plot <- plot + scale_color_brewer(palette = color_palette)
   }
-  # Check if color_palette is a viridis palette
-  else if (color_palette %in% c("magma", "inferno", "plasma", "viridis", "cividis")) {
-    plot <- plot + viridis::scale_color_viridis(option = color_palette)
-  }
   # Use a custom color vector if provided
   else if (is.vector(color_palette) && all(is.character(color_palette))) {
     plot <- plot + scale_color_manual(values = color_palette)
   } else {
     warning("Color palette not recognized. Default ggplot2 colors will be used.")
   }
-
   return(plot)
 }
 
@@ -76,7 +60,7 @@ leo_scale_color <- function(plot, color_palette = "npg") {
 #' @param method A character string specifying the correlation method ("spearman" or "pearson").
 #'               Defaults to "spearman".
 #' @param color_palette A character string or vector specifying the color palette to use.
-#'               Can be a palette name from `ggsci`, `RColorBrewer`, `viridis`, or a custom color vector.
+#'               Can be a palette name from `ggsci`, `RColorBrewer`, or a custom color vector.
 #' @param title A character string for the plot title. Defaults to "Correlation Plot".
 #' @param xlab A character string for the x-axis label. Defaults to "Vector X".
 #' @param ylab A character string for the y-axis label. Defaults to "Vector Y".
