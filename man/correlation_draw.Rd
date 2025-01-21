@@ -36,7 +36,7 @@ correlation_draw(
 Defaults to "spearman".}
 
 \item{color_palette}{A character string or vector specifying the color palette to use.
-Can be a palette name from \code{ggsci}, \code{RColorBrewer}, \code{viridis}, or a custom color vector.}
+Can be a palette name from \code{ggsci}, \code{RColorBrewer}, or a custom color vector.}
 
 \item{title}{A character string for the plot title. Defaults to "Correlation Plot".}
 

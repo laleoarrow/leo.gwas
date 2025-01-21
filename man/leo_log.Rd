@@ -22,6 +22,7 @@ The messages are styled using the \code{cli} package for enhanced readability.
 This function can not deal with {} function in the \code{cli} package.
 }
 \examples{
+n1 <- 10; n2 <- 20
 leo_log("Processing the", n1, "and", n2, "files.")
 leo_log("Task completed successfully!", level = "success")
 leo_log("Potential issue detected.", level = "warning")
