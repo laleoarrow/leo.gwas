@@ -209,7 +209,7 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 
   # Merge the SNP info with the original dataset, keeping all original columns
   merged_data <- merge(dat, snp_info, by.x = snp_col, by.y = "SNP", all.x = TRUE) %>%
-    dplyr::select(SNP, CHR, POS, everything())
+    dplyr::select(dplyr::all_of(snp_col), CHR, POS, everything())
 
   # Check for missing SNPs (those not found in the SNP reference)
   missing_snps <- merged_data[is.na(merged_data$CHR), ]$SNP
@@ -1034,7 +1034,312 @@ map_ensg_to_tss_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genom
   return(final_df)
 }
 
-# CpG annotation
+
+# Gene to Ensembl ID Mapping Functions -----------------------------------------
+
+#' Map Gene Symbols to Ensembl IDs
+#'
+#' This function provides robust gene symbol to Ensembl ID mapping through:
+#' \enumerate{
+#'   \item{Local \code{org.Hs.eg.db} annotations (default)}
+#'   \item{Ensembl BioMart web service (requires internet)}
+#' }
+#'
+#' @param genes Input containing gene symbols. Can be:
+#'   - Character vector of gene symbols
+#'   - Data frame containing gene symbol column
+#' @param gene_col Column name containing gene symbols when \code{genes} is data frame
+#' @param method Mapping methodology:
+#'   - "org.Hs.eg.db": Local Bioconductor annotations (default)
+#'   - "biomart": Ensembl BioMart service
+#' @param genome Genome assembly version (BioMart only):
+#'   - "hg19": GRCh37 (default)
+#'   - "hg38": GRCh38
+#' @param type Multi-mapping handling:
+#'   - "first": Return first valid ID (default)
+#'   - "combine": Concatenate multiple IDs
+#' @param sep Separator for combined IDs (default: "/")
+#' @param batch_size BioMart query batch size (default: 100)
+#'
+#' @return Data frame with original data + ensembl_id column
+#'
+#' @importFrom AnnotationDbi mapIds
+#' @importFrom dplyr left_join group_by summarise slice rename bind_rows
+#' @importFrom biomaRt useMart getBM
+#' @importFrom stats setNames na.omit
+#' @importFrom stringr str_to_upper str_remove_all
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Local annotation method
+#' genes <- c("TP53", "BRCA1", "VEGFA")
+#' result_local <- map_gene_to_ensembl(genes)
+#'
+#' # BioMart with custom parameters
+#' gene_df <- data.frame(
+#'   my_symbol = c("TP53", "BRCA1", "NONEXISTENT"),
+#'   values = rnorm(3)
+#' )
+#' result_biomart <- map_gene_to_ensembl(
+#'   gene_df,
+#'   gene_col = "my_symbol",
+#'   method = "biomart",
+#'   genome = "hg19",
+#'   batch_size = 50
+#' )
+#' }
+map_gene_to_ensembl <- function(genes,
+                                gene_col = NULL,
+                                method = c("org.Hs.eg.db", "biomart"),
+                                genome = c("hg19", "hg38"),
+                                type = c("first", "combine"),
+                                sep = "/",
+                                batch_size = 100) {
+
+  # Parameter validation
+  method <- match.arg(method)
+  genome <- match.arg(genome)
+  type <- match.arg(type)
+
+  # Dispatch to implementation
+  if (method == "org.Hs.eg.db") {
+    map_gene_to_ensembl_org(genes, gene_col, type, sep)
+  } else {
+    map_gene_to_ensembl_biomart(
+      genes,
+      gene_col,
+      genome,
+      type,
+      sep,
+      batch_size
+    )
+  }
+}
+
+# Local Annotation Method -----------------------------------------------------
+map_gene_to_ensembl_org <- function(genes,
+                                    gene_col,
+                                    type,
+                                    sep) {
+
+  # Validate package installation
+  if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
+    stop("Bioconductor package org.Hs.eg.db required.\n",
+         "Install with: BiocManager::install('org.Hs.eg.db')")
+  }
+
+  # Process input
+  processed <- process_gene_input(genes, gene_col)
+  input_df <- processed$data
+  gene_vec <- clean_symbols(processed$genes)
+  unique_genes <- unique(gene_vec)
+
+  # Perform mapping
+  ensembl_map <- suppressMessages(
+    AnnotationDbi::mapIds(
+      org.Hs.eg.db::org.Hs.eg.db,
+      keys = unique_genes,
+      column = "ENSEMBL",
+      keytype = "SYMBOL",
+      multiVals = if(type == "combine") "list" else "first"
+    )
+  )
+
+  # Process multi-mappings
+  if (type == "combine") {
+    ensembl_map <- vapply(
+      ensembl_map,
+      function(x) paste(stats::na.omit(x), collapse = sep),
+      character(1)
+    )
+  }
+
+  # Create mapping structure
+  mapping_df <- data.frame(
+    clean_symbol = names(ensembl_map),
+    ensembl_id = unname(ensembl_map),
+    stringsAsFactors = FALSE
+  )
+
+  # Merge results
+  final_df <- input_df %>%
+    dplyr::mutate(clean_symbol = clean_symbols(.data[[processed$col_name]])) %>%
+    dplyr::left_join(mapping_df, by = "clean_symbol") %>%
+    dplyr::select(-clean_symbol)
+
+  report_mapping_stats(final_df$ensembl_id)
+  final_df
+}
+
+# BioMart Method --------------------------------------------------------------
+map_gene_to_ensembl_biomart <- function(genes,
+                                        gene_col,
+                                        genome,
+                                        type,
+                                        sep,
+                                        batch_size) {
+
+  # Validate package installation
+  if (!requireNamespace("biomaRt", quietly = TRUE)) {
+    stop("biomaRt package required.\n",
+         "Install with: BiocManager::install('biomaRt')")
+  }
+
+  # Configure BioMart connection
+  mart <- tryCatch({
+    host <- if (genome == "hg19") {
+      "https://grch37.ensembl.org"
+    } else {
+      "https://www.ensembl.org"
+    }
+
+    biomaRt::useMart(
+      "ENSEMBL_MART_ENSEMBL",
+      dataset = "hsapiens_gene_ensembl",
+      host = host
+    )
+  }, error = function(e) {
+    stop("BioMart connection failed:\n",
+         "Error: ", e$message, "\n",
+         "Possible solutions:\n",
+         "1. Check internet connection\n",
+         "2. Verify Ensembl server status\n",
+         "3. Try smaller batch_size")
+  })
+
+  # Process input
+  processed <- process_gene_input(genes, gene_col)
+  input_df <- processed$data
+  gene_vec <- clean_symbols(processed$genes)
+  unique_genes <- unique(gene_vec)
+
+  # Batch processing
+  results <- list()
+  for (i in seq(1, length(unique_genes), batch_size)) {
+    batch <- unique_genes[i:min(i + batch_size - 1, length(unique_genes))]
+
+    batch_res <- tryCatch({
+      biomaRt::getBM(
+        attributes = c("external_gene_name", "ensembl_gene_id"),
+        filters = "external_gene_name",
+        values = batch,
+        mart = mart
+      )
+    }, error = function(e) {
+      message("Batch ", i, "-", i + batch_size - 1, " failed: ", e$message)
+      NULL
+    })
+
+    if (!is.null(batch_res) && nrow(batch_res) > 0) {
+      results[[length(results) + 1]] <- batch_res
+    }
+  }
+
+  # Process results
+  if (length(results) == 0) {
+    warning("No mappings found in BioMart query")
+    return(input_df %>% dplyr::mutate(ensembl_id = NA_character_))
+  }
+
+  bm_res <- dplyr::bind_rows(results) %>%
+    dplyr::rename(hgnc_symbol = external_gene_name)
+
+  # Handle multi-mappings
+  if (type == "first") {
+    bm_res <- bm_res %>%
+      dplyr::group_by(.data$hgnc_symbol) %>%
+      dplyr::slice(1) %>%
+      dplyr::ungroup()
+  } else {
+    bm_res <- bm_res %>%
+      dplyr::group_by(.data$hgnc_symbol) %>%
+      dplyr::summarise(
+        ensembl_gene_id = paste(
+          unique(.data$ensembl_gene_id),
+          collapse = sep
+        ),
+        .groups = "drop"
+      )
+  }
+
+  # Merge results
+  final_df <- input_df %>%
+    dplyr::mutate(
+      query_symbol = clean_symbols(.data[[processed$col_name]])
+    ) %>%
+    dplyr::left_join(
+      bm_res,
+      by = c("query_symbol" = "hgnc_symbol")
+    ) %>%
+    dplyr::rename(ensembl_id = ensembl_gene_id) %>%
+    dplyr::select(-query_symbol)
+
+  report_mapping_stats(final_df$ensembl_id)
+  final_df
+}
+
+# Helper Functions ------------------------------------------------------------
+
+#' Process and clean gene symbols
+#' @keywords internal
+clean_symbols <- function(x) {
+  x %>%
+    stringr::str_to_upper() %>%
+    stringr::str_remove_all("[^A-Z0-9]") %>%
+    iconv(to = "UTF-8")
+}
+
+#' Process input data
+#' @keywords internal
+process_gene_input <- function(genes, gene_col) {
+  if (is.data.frame(genes)) {
+    if (!is.null(gene_col)) {
+      if (!gene_col %in% colnames(genes)) {
+        stop("Gene column '", gene_col, "' not found. Available columns: ",
+             paste(colnames(genes), collapse = ", "))
+      }
+      gene_vec <- genes[[gene_col]]
+      col_name <- gene_col
+    } else {
+      stop("Must specify gene_col when input is a data frame")
+    }
+    return(list(
+      data = genes,
+      genes = gene_vec,
+      col_name = col_name
+    ))
+  }
+
+  if (is.character(genes)) {
+    df <- data.frame(gene_symbol = genes, stringsAsFactors = FALSE)
+    return(list(
+      data = df,
+      genes = genes,
+      col_name = "gene_symbol"
+    ))
+  }
+
+  stop("Invalid input type. Supported types: data.frame or character vector")
+}
+
+#' Report mapping statistics
+#' @keywords internal
+report_mapping_stats <- function(ensembl_col) {
+  total <- length(ensembl_col)
+  na_count <- sum(is.na(ensembl_col))
+  mapped <- total - na_count
+
+  message(
+    "Mapping results:\n",
+    "  Total genes: ", total, "\n",
+    "  Mapped: ", mapped, " (", round(100 * mapped / total, 1), "%)\n",
+    "  Failed: ", na_count, " (", round(100 * na_count / total, 1), "%)"
+  )
+}
+
+
+# CpG annotation --------------------------------------------------------------
 #' Annotate CpG Sites with Gene Information
 #'
 #' This function annotates a vector of CpG site probe IDs by retrieving corresponding gene names

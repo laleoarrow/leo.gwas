@@ -2,33 +2,75 @@
 % Please edit documentation in R/tsmr_tools.R
 \name{extract_instruments_local}
 \alias{extract_instruments_local}
-\title{Extract instruments locally}
+\title{Extract instruments locally for MR Analysis}
 \usage{
 extract_instruments_local(
   dat,
   p = 5e-08,
-  N = "Neff",
   pop = "EUR",
+  phenotype_col = "Phenotype",
+  snp_col = "SNP",
+  chr_col = "CHR",
+  pos_col = "POS",
+  effect_allele_col = "A1",
+  other_allele_col = "A2",
+  beta_col = "BETA",
+  se_col = "SE",
+  pval_col = "P",
+  eaf_col = "EAF",
+  N = "Neff",
   bfile = NULL,
   plink_bin = NULL
 )
 }
 \arguments{
-\item{dat:}{Summary statistics needs: SNP, CHR, POS, A1, A2, EAF, BETA, SE, P, Phenotype, N}
+\item{dat}{Dataframe containing GWAS summary statistics}
 
-\item{p:}{P cut-off value}
+\item{p}{P-value cutoff (default = 5e-8)}
 
-\item{pop:}{param for clump_data_local}
+\item{pop}{Super-population code for LD reference (default = "EUR")}
 
-\item{bfile:}{param for clump_data_local}
+\item{phenotype_col}{Column name for phenotype (default = "Phenotype")}
+
+\item{snp_col}{Column name for SNP IDs (default = "SNP")}
+
+\item{chr_col}{Column name for chromosome (default = "CHR")}
+
+\item{pos_col}{Column name for position (default = "POS")}
+
+\item{effect_allele_col}{Column name for effect allele (default = "A1")}
+
+\item{other_allele_col}{Column name for non-effect allele (default = "A2")}
+
+\item{beta_col}{Column name for effect size (default = "BETA")}
+
+\item{se_col}{Column name for standard error (default = "SE")}
+
+\item{pval_col}{Column name for p-values (default = "P")}
+
+\item{eaf_col}{Column name for effect allele frequency (default = "EAF")}
+
+\item{N}{Column name for sample size (default = "Neff", set NULL to exclude)}
+
+\item{bfile}{Path to PLINK binary reference panel (default = NULL)}
+
+\item{plink_bin}{Path to PLINK executable (default = NULL)}
 }
 \value{
-a clumped tsmr format dataframe
+Formatted exposure data ready for MR analysis
 }
 \description{
-Extract instruments locally
+Filters SNPs by p-value threshold and performs LD clumping with flexible column mapping.
 }
-\details{
-要求dat数据中P的列名为P
+\examples{
+\dontrun{
+# Custom column names example
+extract_instruments_local(
+  dat = gwas_data,
+  phenotype_col = "Trait",
+  snp_col = "rsID",
+  chr_col = "Chromosome",
+  pos_col = "Position"
+)
 }
-\keyword{tsmr:}
+}

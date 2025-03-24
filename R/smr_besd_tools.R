@@ -100,7 +100,8 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #' Combine SMR Results for All Chromosomes
 #'
 #' This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
-#' for each unique exposure and outcome pair. The combined results are saved to a specified output directory.
+#' for each unique exposure and outcome pair (Yes, we can deal with multiple exposure in one dir [for say, the 49 sqtl from GTEx]).
+#' The combined results are saved to a specified output directory.
 #'
 #' @param dir Character. The directory containing SMR result files. Files should follow the naming convention
 #'            `exposure_chrX@outcome.smr`, where `X` represents the chromosome number.
@@ -147,7 +148,7 @@ combine_smr_res_chr <- function(dir, out_dir="") {
       files_paths <- df_tmp %>% dplyr::filter(exposures == exposure, outcomes == outcome) %>% pull("full_paths")
       res <- lapply(files_paths, data.table::fread)
       res <- do.call(rbind, res)
-      out_file <- paste0(out_dir, "/chr_combine_", exposure, "@", outcome, ".smr")
+      out_file <- paste0(out_dir, "/", exposure, "_chr_combined@", outcome, ".smr")
       cli::cli_alert_info("Write to file: {.path {out_file}}")
       data.table::fwrite(res, out_file, sep = "\t")
     }

@@ -1,13 +1,25 @@
 # F1
-#' Clump data locally
+#' Perform LD Clumping Locally or via Reference Panel
 #'
-#' @param dat a datafame with `SNP`, `pval.exposure` and `id.exposure` col
-#' @param pop Super-population to use as reference panel. Options are: AFR, AMR, EAS, EUR, SAS
-#' @param bfile If this is provided then will go ld locally
+#' This function performs LD clumping using either a local PLINK binary file (\code{bfile})
+#' or a 1000 Genomes super population panel. Requires the \code{ieugwasr} and \code{plinkbinr} packages.
+#'
+#' @param dat Dataframe containing GWAS summary statistics. Must contain columns:
+#' \code{SNP}, \code{pval.exposure}, and \code{id.exposure}.
+#' @param pop Super-population code when using online LD reference panel.
+#' Options: "AFR", "AMR", "EAS", "EUR", "SAS". Required if \code{bfile = NULL}.
+#' @param bfile Path to PLINK binary reference panel for local clumping.
+#' If provided, \code{pop} will be ignored.
+#' @param plink_bin Path to PLINK binary executable. Default tries to auto-detect.
+#' @param clump_kb Clumping window in kilobases. Default = 10000.
+#' @param clump_r2 Clumping r² threshold. Default = 0.001.
 #' @keywords tsmr:
-#' @return a subset of input dat with independant SNP
-#' @description
-#' Here is the reference:
+#' @return A subset of the input dataframe containing independent SNPs.
+#' @importFrom ieugwasr ld_clump
+#' @importFrom dplyr tibble filter
+#' @export
+#' @note
+#' Reference:
 #' https://github.com/MRCIEU/TwoSampleMR/issues/173
 #' https://blog.csdn.net/xiaozheng1213/article/details/126269969
 #' library(ieugwasr)
@@ -15,7 +27,7 @@
 #' plinkbinr::get_plink_exe()
 clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
  require(ieugwasr); require(plinkbinr)
- leo_message(" - Clumping data locally")
+ leo_log(" - Clumping data locally")
  leo_message(paste0(" - Reminder: bfile located: ", "/Users/leoarrow/project/ref/1kg.v3/EUR"))
  if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
  if (!is.null(pop) & is.null(bfile)) { leo_message("Performing LD online") }
@@ -26,7 +38,7 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
   clump_kb = 10000,
   clump_r2 = 0.001,
   pop = pop,
-  bfile = bfile, # 有bfile就会自动调用ld_clump_local
+  bfile = bfile,
   plink_bin = plinkbinr::get_plink_exe()
  )
  dat2<- subset(dat, SNP %in% dat1$rsid)
@@ -34,25 +46,109 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
 }
 
 # F2
-#' Extract instruments locally
+#' Extract instruments locally for MR Analysis
 #'
-#' @param dat: Summary statistics needs: SNP, CHR, POS, A1, A2, EAF, BETA, SE, P, Phenotype, N
-#' @param p: P cut-off value
-#' @param pop: param for clump_data_local
-#' @param bfile: param for clump_data_local
-#' @keywords tsmr:
-#' @return a clumped tsmr format dataframe
-#' @details
-#' 要求dat数据中P的列名为P
+#' Filters SNPs by p-value threshold and performs LD clumping with flexible column mapping.
 #'
-extract_instruments_local <- function(dat, p = 5e-08, N = "Neff", pop = "EUR", bfile = NULL, plink_bin = NULL) {
- instruments <- subset(dat, P < p) # 调试 dat = gwas1[1:1000,]
- leo_message(paste0(" - A total of <",dim(instruments)[1], "> SNP passed the P-value threshold"))
+#' @param dat Dataframe containing GWAS summary statistics
+#' @param p P-value cutoff (default = 5e-8)
+#' @param pop Super-population code for LD reference (default = "EUR")
+#' @param phenotype_col Column name for phenotype (default = "Phenotype")
+#' @param snp_col Column name for SNP IDs (default = "SNP")
+#' @param chr_col Column name for chromosome (default = "CHR")
+#' @param pos_col Column name for position (default = "POS")
+#' @param effect_allele_col Column name for effect allele (default = "A1")
+#' @param other_allele_col Column name for non-effect allele (default = "A2")
+#' @param beta_col Column name for effect size (default = "BETA")
+#' @param se_col Column name for standard error (default = "SE")
+#' @param pval_col Column name for p-values (default = "P")
+#' @param eaf_col Column name for effect allele frequency (default = "EAF")
+#' @param N Column name for sample size (default = "Neff", set NULL to exclude)
+#' @param bfile Path to PLINK binary reference panel (default = NULL)
+#' @param plink_bin Path to PLINK executable (default = NULL)
+#'
+#' @return Formatted exposure data ready for MR analysis
+#' @export
+#' @importFrom TwoSampleMR format_data
+#' @examples
+#' \dontrun{
+#' # Custom column names example
+#' extract_instruments_local(
+#'   dat = gwas_data,
+#'   phenotype_col = "Trait",
+#'   snp_col = "rsID",
+#'   chr_col = "Chromosome",
+#'   pos_col = "Position"
+#' )
+#' }
+extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
+                                      phenotype_col = "Phenotype",
+                                      snp_col = "SNP",
+                                      chr_col = "CHR",
+                                      pos_col = "POS",
+                                      effect_allele_col = "A1",
+                                      other_allele_col = "A2",
+                                      beta_col = "BETA",
+                                      se_col = "SE",
+                                      pval_col = "P",
+                                      eaf_col = "EAF",
+                                      N = "Neff",
+                                      bfile = NULL,
+                                      plink_bin = NULL) {
+  # check cols ---------------------------------------------------------------
+  required_cols <- c(snp_col, chr_col, pos_col, effect_allele_col,
+                     other_allele_col, beta_col, se_col, pval_col, phenotype_col)
+  missing_cols <- setdiff(required_cols, names(dat))
+  if (length(missing_cols) > 0) {
+    leo_log("Missing required columns: ", paste(missing_cols, collapse = ", "))
+    stop()
+  }
+
+  if (!is.null(N) && !N %in% names(dat)) {
+    stop("Sample size column '", N, "' not found in dataset")
+  }
+
+  # filter based on P ---------------------------------------------------------------
+  leo_log(" - Filtering SNPs by {p} as P-value threshold")
+  instruments <- dat[dat[[pval_col]] < p, ]
+  if (nrow(instruments) == 0) {
+    message("No SNPs passed the P-value threshold (p < ", p, ")")
+    return(NULL)
+  }
+  leo_message(paste0(" - <", nrow(instruments), "> SNP passed the P-value threshold"))
+
+  # build args --------------------------------------------------------
+  format_args <- list(
+    dat = instruments,
+    type = "exposure",
+    phenotype_col = phenotype_col,
+    snp_col = snp_col,
+    chr_col = chr_col,
+    pos_col = pos_col,
+    effect_allele_col = effect_allele_col,
+    other_allele_col = other_allele_col,
+    beta_col = beta_col,
+    se_col = se_col,
+    pval_col = pval_col,
+    min_pval = 1e-200
+  )
+  # optional
+  if (!is.null(eaf_col) && eaf_col %in% names(dat)) {
+    format_args$eaf_col <- eaf_col
+  } else {
+    message("Note: EAF column not found, harmonization may be affected")
+  }
+
+  if (!is.null(N)) {
+    format_args$samplesize_col <- N
+    message("Using sample size column: ", N)
+  }
+
  leo_message(" - Using effective N as default!!!")
- instruments <- format_data(
+ instruments <- TwoSampleMR::format_data(
   instruments,
   type = "exposure",
-  phenotype_col = "Phenotype",
+  phenotype_col = phenotype_col,
   snp_col = "SNP",
   chr_col = "CHR",
   pos_col = "POS",

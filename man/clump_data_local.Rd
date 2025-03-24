@@ -2,22 +2,35 @@
 % Please edit documentation in R/tsmr_tools.R
 \name{clump_data_local}
 \alias{clump_data_local}
-\title{Clump data locally}
+\title{Perform LD Clumping Locally or via Reference Panel}
 \usage{
 clump_data_local(dat, pop = NULL, bfile = NULL, plink_bin = NULL)
 }
 \arguments{
-\item{dat}{a datafame with \code{SNP}, \code{pval.exposure} and \code{id.exposure} col}
+\item{dat}{Dataframe containing GWAS summary statistics. Must contain columns:
+\code{SNP}, \code{pval.exposure}, and \code{id.exposure}.}
 
-\item{pop}{Super-population to use as reference panel. Options are: AFR, AMR, EAS, EUR, SAS}
+\item{pop}{Super-population code when using online LD reference panel.
+Options: "AFR", "AMR", "EAS", "EUR", "SAS". Required if \code{bfile = NULL}.}
 
-\item{bfile}{If this is provided then will go ld locally}
+\item{bfile}{Path to PLINK binary reference panel for local clumping.
+If provided, \code{pop} will be ignored.}
+
+\item{plink_bin}{Path to PLINK binary executable. Default tries to auto-detect.}
+
+\item{clump_kb}{Clumping window in kilobases. Default = 10000.}
+
+\item{clump_r2}{Clumping r² threshold. Default = 0.001.}
 }
 \value{
-a subset of input dat with independant SNP
+A subset of the input dataframe containing independent SNPs.
 }
 \description{
-Here is the reference:
+This function performs LD clumping using either a local PLINK binary file (\code{bfile})
+or a 1000 Genomes super population panel. Requires the \code{ieugwasr} and \code{plinkbinr} packages.
+}
+\note{
+Reference:
 https://github.com/MRCIEU/TwoSampleMR/issues/173
 https://blog.csdn.net/xiaozheng1213/article/details/126269969
 library(ieugwasr)
