@@ -10,10 +10,10 @@ GitHub Repository for "Layered Exploratory Omics (LEO)" Package
 ### Development Status
 **LEO is currently in the early stages of development**. We welcome feedback from developers, researchers, and users to help improve the product. Please note that some features may not be fully stable yet, and interfaces may change based on user feedback.
 
-### Feature Highlights (Planned)
-- **Multidimensional Data Handling**: Supports various types of omics data, including genomic, transcriptomic, and proteomic data.
-- **Layer-by-layer Analysis**: Provides step-by-step data exploration tools, allowing users to delve deeply into each layer of data.
-- **More**
+### Download
+```{R}
+devtools::install_github("laleoarrow/leo.gwas")
+```
 
 ### How to Contribute
 We encourage and welcome contributions to LEO from the community. If you are interested in contributing code or documentation, please contact me by submitting a issue.
