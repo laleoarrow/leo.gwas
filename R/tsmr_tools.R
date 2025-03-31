@@ -26,23 +26,26 @@
 #' library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
 #' plinkbinr::get_plink_exe()
 clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
- require(ieugwasr); require(plinkbinr)
- leo_log(" - Clumping data locally")
- leo_message(paste0(" - Reminder: bfile located: ", "/Users/leoarrow/project/ref/1kg.v3/EUR"))
- if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
- if (!is.null(pop) & is.null(bfile)) { leo_message("Performing LD online") }
- if (is.null(pop) & !is.null(bfile)) { leo_message("Performing LD locally") }
- # if (!is.null(pop) & !is.null(bfile)) { stop("Only one LD method can be used") }
- dat1 <- ieugwasr::ld_clump(
-  dat = dplyr::tibble(rsid=dat$SNP, pval=dat$pval.exposure, id=dat$id.exposure),
-  clump_kb = 10000,
-  clump_r2 = 0.001,
-  pop = pop,
-  bfile = bfile,
-  plink_bin = plinkbinr::get_plink_exe()
- )
- dat2<- subset(dat, SNP %in% dat1$rsid)
- return(dat2)
+  require(ieugwasr); require(plinkbinr)
+  leo_log(" - Clumping data locally")
+  if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
+  if (!is.null(pop) & is.null(bfile)) { leo_message("Performing LD online") }
+  if (is.null(pop) & !is.null(bfile)) { leo_message("Performing LD locally") }
+  # if (!is.null(pop) & !is.null(bfile)) { stop("Only one LD method can be used") }
+  dat1 <- ieugwasr::ld_clump(
+    dat = dplyr::tibble(rsid=dat$SNP, pval=dat$pval.exposure, id=dat$id.exposure),
+    clump_kb = 10000,
+    clump_r2 = 0.001,
+    pop = pop,
+    bfile = bfile,
+    plink_bin = plinkbinr::get_plink_exe()
+  )
+  if(nrow(dat1) == 0) {
+    warning("No SNPs remained after clumping")
+    return(NULL)
+  }
+  dat2<- subset(dat, SNP %in% dat1$rsid)
+  return(dat2)
 }
 
 # F2
@@ -50,9 +53,9 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
 #'
 #' Filters SNPs by p-value threshold and performs LD clumping with flexible column mapping.
 #'
-#' @param dat Dataframe containing GWAS summary statistics
+#' @param dat Dataframe containing GWAS summary statistics; change it to dataframe if it is data.table.
 #' @param p P-value cutoff (default = 5e-8)
-#' @param pop Super-population code for LD reference (default = "EUR")
+#' @param pop Super-population code for LD reference (default = NULL, as we recommend using loca bfile)
 #' @param phenotype_col Column name for phenotype (default = "Phenotype")
 #' @param snp_col Column name for SNP IDs (default = "SNP")
 #' @param chr_col Column name for chromosome (default = "CHR")
@@ -81,7 +84,7 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
 #'   pos_col = "Position"
 #' )
 #' }
-extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
+extract_instruments_local <- function(dat, p = 5e-08, pop = NULL,
                                       phenotype_col = "Phenotype",
                                       snp_col = "SNP",
                                       chr_col = "CHR",
@@ -97,7 +100,7 @@ extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
                                       plink_bin = NULL) {
   # check cols ---------------------------------------------------------------
   required_cols <- c(snp_col, chr_col, pos_col, effect_allele_col,
-                     other_allele_col, beta_col, se_col, pval_col, phenotype_col)
+                     other_allele_col, beta_col, se_col, pval_col, eaf_col, phenotype_col)
   missing_cols <- setdiff(required_cols, names(dat))
   if (length(missing_cols) > 0) {
     leo_log("Missing required columns: ", paste(missing_cols, collapse = ", "))
@@ -109,13 +112,14 @@ extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
   }
 
   # filter based on P ---------------------------------------------------------------
-  leo_log(" - Filtering SNPs by {p} as P-value threshold")
+  leo_log(" - Filtering SNPs using provided P-value threshold")
   instruments <- dat[dat[[pval_col]] < p, ]
   if (nrow(instruments) == 0) {
     message("No SNPs passed the P-value threshold (p < ", p, ")")
     return(NULL)
   }
-  leo_message(paste0(" - <", nrow(instruments), "> SNP passed the P-value threshold"))
+  n_iv <- nrow(instruments)
+  cli::cli_alert_info(" - < { n_iv } > SNP passed the P-value threshold")
 
   # build args --------------------------------------------------------
   format_args <- list(
@@ -127,6 +131,7 @@ extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
     pos_col = pos_col,
     effect_allele_col = effect_allele_col,
     other_allele_col = other_allele_col,
+    eaf_col = eaf_col,
     beta_col = beta_col,
     se_col = se_col,
     pval_col = pval_col,
@@ -144,23 +149,23 @@ extract_instruments_local <- function(dat, p = 5e-08, pop = "EUR",
     message("Using sample size column: ", N)
   }
 
- leo_message(" - Using effective N as default!!!")
- instruments <- TwoSampleMR::format_data(
-  instruments,
-  type = "exposure",
-  phenotype_col = phenotype_col,
-  snp_col = "SNP",
-  chr_col = "CHR",
-  pos_col = "POS",
-  effect_allele_col = "A1",
-  other_allele_col = "A2",
-  eaf_col = "EAF",
-  beta_col = "BETA",
-  se_col = "SE",
-  pval_col = "P",
-  samplesize_col = N,
-  min_pval = 1e-200
- )
+ instruments <- do.call(TwoSampleMR::format_data, format_args)
+ # instruments <- TwoSampleMR::format_data(
+ #  instruments,
+ #  type = "exposure",
+ #  phenotype_col = phenotype_col,
+ #  snp_col = "SNP",
+ #  chr_col = "CHR",
+ #  pos_col = "POS",
+ #  effect_allele_col = "A1",
+ #  other_allele_col = "A2",
+ #  eaf_col = "EAF",
+ #  beta_col = "BETA",
+ #  se_col = "SE",
+ #  pval_col = "P",
+ #  samplesize_col = N,
+ #  min_pval = 1e-200
+ # )
  instruments <- clump_data_local(instruments, pop = pop, bfile = bfile) # F2中执行了F1（本地Clump）
  return(instruments)
 }
