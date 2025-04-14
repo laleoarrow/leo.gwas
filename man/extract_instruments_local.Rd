@@ -7,7 +7,7 @@
 extract_instruments_local(
   dat,
   p = 5e-08,
-  pop = "EUR",
+  pop = NULL,
   phenotype_col = "Phenotype",
   snp_col = "SNP",
   chr_col = "CHR",
@@ -24,11 +24,11 @@ extract_instruments_local(
 )
 }
 \arguments{
-\item{dat}{Dataframe containing GWAS summary statistics}
+\item{dat}{Dataframe containing GWAS summary statistics; change it to dataframe if it is data.table.}
 
 \item{p}{P-value cutoff (default = 5e-8)}
 
-\item{pop}{Super-population code for LD reference (default = "EUR")}
+\item{pop}{Super-population code for LD reference (default = NULL, as we recommend using loca bfile)}
 
 \item{phenotype_col}{Column name for phenotype (default = "Phenotype")}
 
