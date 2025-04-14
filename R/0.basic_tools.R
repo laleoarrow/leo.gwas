@@ -280,6 +280,8 @@ across_df_TF <- function(df, type = "T"){
 #' while (TRUE) {
 #'   batch <- it()
 #'   if (is.null(batch)) break
+#'
+#'   # add your parallel process steps
 #'   print(batch)
 #' }
 #' @export
