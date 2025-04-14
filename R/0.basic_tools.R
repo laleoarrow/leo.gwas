@@ -258,3 +258,50 @@ across_df_TF <- function(df, type = "T"){
     df %>% dplyr::summarise(across(everything(), ~sum(!.)))
   }
 }
+
+#' Leo batch iterator builder
+#'
+#' Sometimes you need to handle a large number of iterations, but multi-core
+#' parallel computing can be tricky—memory usage may grow beyond what is
+#' actually required. This function helps by batching the iterations, so you
+#' only process a limited number of elements at a time, preventing excessive
+#' RAM consumption.
+#'
+#' @param elements A vector or list to be iterated.
+#' @param batch_size Number of elements per batch.
+#' @details Each call to the returned function yields the next batch. Returns \code{NULL} when no more elements remain.
+#' @return A function (no arguments). Repeated calls produce successive batches or \code{NULL} if finished.
+#' @importFrom base length
+#' @importFrom base min
+#' @examples
+#' # Suppose you have 25 elements and want to batch them in groups of 6
+#' nums <- 1:25
+#' it <- leo_iterator(nums, 6)
+#' while (TRUE) {
+#'   batch <- it()
+#'   if (is.null(batch)) break
+#'   print(batch)
+#' }
+#' @export
+leo_iterator <- function(elements, batch_size) {
+  total_elements <- length(elements)
+  total_rounds <- ceiling(total_elements / batch_size)
+  current_round <- 0
+
+  function() {
+    # If we've already returned all possible batches, return NULL
+    if (current_round >= total_rounds) {
+      return(NULL)
+    }
+    current_round <<- current_round + 1
+    start_index <- (current_round - 1) * batch_size + 1
+    end_index   <- min(total_elements, start_index + batch_size - 1)
+
+    # Print iteration info
+    leo_log("Round", current_round, "of", total_rounds,
+            "| elements from index", start_index, "to", end_index, "\n",
+            level = "success")
+
+    elements[start_index:end_index]
+  }
+}
