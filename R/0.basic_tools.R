@@ -288,6 +288,11 @@ leo_iterator <- function(elements, batch_size) {
   total_rounds <- ceiling(total_elements / batch_size)
   current_round <- 0
 
+  leo_log(
+    "Creating batch iterator with", total_elements, "elements in total; ",
+    "batch size =", batch_size, "; total rounds =", total_rounds, "\n"
+  )
+
   function() {
     # If we've already returned all possible batches, return NULL
     if (current_round >= total_rounds) {
