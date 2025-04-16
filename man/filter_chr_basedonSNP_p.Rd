@@ -21,13 +21,14 @@ filter_chr_basedonSNP_p(
 
 \item{p_val_col}{Character string specifying the name of the p-value column. Default is \code{"nominal_P_value"}.}
 
-\item{threshold}{Numeric value specifying the p-value threshold. Default is \code{5e-8}.}
+\item{threshold}{Numeric value specifying the p-value threshold. Default is \code{1.57e-3} (Thresh hold for the HEIDI test).}
 }
 \value{
-A filtered data frame with an added \code{index} column.
+A filtered data frame .
 }
 \description{
-This function adds an index column to the input data frame and filters chromosomes based on whether any SNP within the chromosome crosses a specified threshold. If a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained. Otherwise, all SNPs on that chromosome are removed.
+This function filters chromosomes out if no SNP within the chromosome meets threshold.
+That is, if a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained.
 }
 \examples{
 library(dplyr)

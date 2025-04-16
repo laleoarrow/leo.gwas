@@ -4,15 +4,16 @@
 
 #' Filter Chromosomes Based on SNP P-value Threshold
 #'
-#' This function adds an index column to the input data frame and filters chromosomes based on whether any SNP within the chromosome crosses a specified threshold. If a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained. Otherwise, all SNPs on that chromosome are removed.
+#' This function filters chromosomes out if no SNP within the chromosome meets threshold.
+#' That is, if a chromosome has at least one SNP that meets the threshold, all SNPs on that chromosome are retained.
 #'
 #' @param df A data frame containing SNP data.
 #' @param chr_col Character string specifying the name of the chromosome column. Default is `"CHR"`.
 #' @param snp_col Character string specifying the name of the SNP identifier column. Default is `"Variant_ID"`.
 #' @param p_val_col Character string specifying the name of the p-value column. Default is `"nominal_P_value"`.
-#' @param threshold Numeric value specifying the p-value threshold. Default is `5e-8`.
+#' @param threshold Numeric value specifying the p-value threshold. Default is `1.57e-3` (Thresh hold for the HEIDI test).
 #'
-#' @return A filtered data frame with an added `index` column.
+#' @return A filtered data frame .
 #' @export
 #' @examples
 #' library(dplyr)
@@ -53,7 +54,7 @@ filter_chr_basedonSNP_p <- function(df,
 #' @param snp_col Character string specifying the name of the SNP identifier column. Default is `"Variant_ID"`.
 #' @param gene_col Character string specifying the name of the gene column. Default is `"Gene"`.
 #' @param p_val_col Character string specifying the name of the p-value column. Default is `"nominal_P_value"`.
-#' @param threshold Numeric value specifying the p-value threshold. Default is `5e-8`.
+#' @param threshold Numeric value specifying the p-value threshold. Default is `1.57e-3` (Thresh hold for the HEIDI test).
 #'
 #' @return A filtered data frame with an added `index` column.
 #' @export
@@ -176,6 +177,7 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' ----
 #' @param hla Logical. Whether to pre-exclude the HLA region probes. Default is `False`.
 #' @param write_out Logical. Whether to write the adjusted results to a file. Default is `TRUE`.
+#' @param drop_non_heidi Logical. Whether to drop Probes without HEIDI test information. Default is `TRUE`.
 #'
 #' @return NULL
 #' @examples
@@ -191,9 +193,11 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @importFrom stringr str_replace
 #' @export
 leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "",
-                           QTL_type = "", Source = "", Tissue = "", Outcome_name = "", add_info_cols = T,
+                           QTL_type = "", Source = "", Tissue = "", Outcome_name = "",
+                           add_info_cols = T, drop_non_heidi = T,
                            hla = F, write_out = T) {
   smr_result <- vroom::vroom(smr_result_path, show_col_types = F)
+
   if (hla) {
     smr_result <- smr_result %>%
       dplyr::mutate(HLA_Probe = ifelse((ProbeChr == 6 & Probe_bp >= 25000000 & Probe_bp <= 34000000), "Yes", "No")) %>%
@@ -201,6 +205,10 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "",
     nrow_HLA_probe <- smr_result %>% filter(HLA_Probe == "Yes") %>% nrow()
     cli::cli_alert_info(" - Filtering out {.emph {nrow_HLA_probe}} probe{?s} for {basename(smr_result_path)}") # seems unnecessary
   }
+  if (drop_non_heidi) {
+    smr_result <- smr_result %>% dplyr::filter(!is.na(p_HEIDI))
+  }
+
   smr_result <- smr_result %>%
     mutate(Pass_HEIDI = ifelse(p_HEIDI >= 0.05, "Pass", "Fail"),
            N_probe = nrow(.),

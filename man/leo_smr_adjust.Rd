@@ -13,6 +13,7 @@ leo_smr_adjust(
   Tissue = "",
   Outcome_name = "",
   add_info_cols = T,
+  drop_non_heidi = T,
   hla = F,
   write_out = T
 )
@@ -36,6 +37,8 @@ If not specified, defaults to create a dir named \code{fdr} within dir-name (smr
 }}
 
 \item{add_info_cols}{Logical. Whether to add information columns for: QTL_type, Source, Tissue and Outcome. Default is \code{TRUE}.}
+
+\item{drop_non_heidi}{Logical. Whether to drop Probes without HEIDI test information. Default is \code{TRUE}.}
 
 \item{hla}{Logical. Whether to pre-exclude the HLA region probes. Default is \code{False}.}
 

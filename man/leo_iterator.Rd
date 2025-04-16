@@ -31,6 +31,8 @@ it <- leo_iterator(nums, 6)
 while (TRUE) {
   batch <- it()
   if (is.null(batch)) break
+
+  # add your parallel process steps
   print(batch)
 }
 }

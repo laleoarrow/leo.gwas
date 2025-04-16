@@ -24,7 +24,7 @@ filter_chr_basedonSNP_p_qtltools(
 
 \item{p_val_col}{Character string specifying the name of the p-value column. Default is \code{"nominal_P_value"}.}
 
-\item{threshold}{Numeric value specifying the p-value threshold. Default is \code{5e-8}.}
+\item{threshold}{Numeric value specifying the p-value threshold. Default is \code{1.57e-3} (Thresh hold for the HEIDI test).}
 }
 \value{
 A filtered data frame with an added \code{index} column.
