@@ -271,8 +271,6 @@ across_df_TF <- function(df, type = "T"){
 #' @param batch_size Number of elements per batch.
 #' @details Each call to the returned function yields the next batch. Returns \code{NULL} when no more elements remain.
 #' @return A function (no arguments). Repeated calls produce successive batches or \code{NULL} if finished.
-#' @importFrom base length
-#' @importFrom base min
 #' @examples
 #' # Suppose you have 25 elements and want to batch them in groups of 6
 #' nums <- 1:25
