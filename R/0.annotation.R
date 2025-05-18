@@ -10,6 +10,7 @@
 #' - "GRCh38" for GRCh38 Ref panel
 #' @return A dataframe with an additional 'RefSNP_id' column which contains the rsIDs.
 #' @importFrom data.table ":="
+#' @importFrom leo.basic leo_log leo_message
 #' @examples
 #' pacman::p_load(data.table, BSgenome, leo.gwas)
 #' library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
@@ -52,9 +53,9 @@ add_rsid <- function(dat, ref = "GRCh37") {
 
   # Drop NA rsid and return
   # trans.dat <- trans.dat %>% drop_na(RefSNP_id)
-  leo.gwas::leo_message("Remember to check if there is any NA in the RefSNP_id column.")
-  leo.gwas::leo_message(">>> table(is.na(dat$RefSNP_id))")
-  leo.gwas::leo_message(">>> vkh_meta %>% map_dbl(~sum(is.na(.)))")
+  leo_message("Remember to check if there is any NA in the RefSNP_id column.")
+  leo_message(">>> table(is.na(dat$RefSNP_id))")
+  leo_message(">>> vkh_meta %>% map_dbl(~sum(is.na(.)))")
 
   return(trans.dat)
 }
@@ -193,10 +194,10 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
   # Load SNP reference data
   if (ref == "GRCh37") {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh37::SNPlocs.Hsapiens.dbSNP155.GRCh37
-    leo.gwas::leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh37 database.")
+    leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh37 database.")
   } else if (ref == "GRCh38") {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh38::SNPlocs.Hsapiens.dbSNP155.GRCh38
-    leo.gwas::leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh38 database.")
+    leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh38 database.")
   } else {
     stop("Invalid reference version. Please choose 'GRCh37' or 'GRCh38'.")
   }

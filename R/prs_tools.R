@@ -74,46 +74,6 @@
 #' }
 #'
 #'
-#' #' Calculate Correlation between Two Vectors
-#' #'
-#' #' This function calculates the Spearman (default) or Pearson correlation coefficient
-#' #' and its associated p-value between two vectors.
-#' #' It automatically handles missing values.
-#' #'
-#' #' @param vector_x A numeric vector.
-#' #' @param vector_y A numeric vector of the same length as \code{vector_x}.
-#' #' @param method A character string specifying the correlation method ("spearman" or "pearson").
-#' #'               Defaults to "spearman".
-#' #' @param ... Pass to \code{\link[stats]{cor.test}}.
-#' #'
-#' #' @return A list with the correlation coefficient and p-value.
-#' #' @export
-#' #' @seealso \code{\link{correlation_draw}} for plotting correlation results.
-#' #' @examples
-#' #' vector_x <- c(1, 2, 3, 4, 5)
-#' #' vector_y <- c(5, 6, 7, 8, 7)
-#' #' result <- correlation_calculate(vector_x, vector_y, method = "pearson")
-#' correlation_calculate <- function(vector_x, vector_y, method = "spearman", ...) {
-#'   if (!method %in% c("spearman", "pearson")) {
-#'     stop("Invalid method. Choose 'spearman' or 'pearson'.")
-#'   }
-#'
-#'   # Remove NA values from both vectors consistently
-#'   valid_indices <- complete.cases(vector_x, vector_y)
-#'   vector_x <- vector_x[valid_indices]
-#'   vector_y <- vector_y[valid_indices]
-#'
-#'   # Use cor.test to get correlation coefficient and p-value
-#'   correlation_test <- cor.test(vector_x, vector_y, method = method, use = "complete.obs", ...)
-#'
-#'   # Extract correlation coefficient and p-value
-#'   result <- data.frame(
-#'     correlation_coefficient = as.numeric(correlation_test$estimate),
-#'     p_value = correlation_test$p.value
-#'   )
-#'
-#'   return(result)
-#' }
 #'
 #'
 #' # 3. 绘制 PRS 与连续变量的散点图及趋势线

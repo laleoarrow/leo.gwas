@@ -22,12 +22,15 @@ Imports:
     vroom,
     BSgenome,
     stringr,
-    cli
+    cli,
 Depends: 
-    dplyr
+    dplyr,
+    leo.basic (>= 0.0.1)
 Suggests: 
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
     Rmpfr,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     TxDb.Hsapiens.UCSC.hg38.knownGene
+Remotes:  
+    github::laleoarrow/leo.basic

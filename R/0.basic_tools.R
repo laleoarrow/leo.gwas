@@ -1,60 +1,3 @@
-#' Give Messages with my color
-#'
-#' @param ... The messages you wanna messgae, which will be pasted together
-#' @param color Str. Preferred color. Default is yellow.
-#'              Options are "31" (red), "32" (green), "34" (blue), "95" (light purple)...
-#' @param return Logical. If TRUE, returns the formatted string. If FALSE (Default), prints directly.
-#'
-#' @export
-#' @examples
-#' leo_message("This is a red message", color = "31")
-#' leo_message("This is a green message", "\nhaha", color = "32")
-#' leo_message("This is a blue ", "message", color = "34")
-#' leo_message("This is a light purple message", color = "95")
-#' leo_message(" 🦁🦁🦁 Welcome to use the LEO package ! 🦁🦁🦁")
-leo_message <- function(..., color = "31", return = FALSE) {
-  message_content <- paste0(..., collapse = " ")
-  formatted_message <- paste0("\033[", color, "m", message_content, "\033[0m")
-  message(formatted_message)
-}
-
-#' Log Messages with Timestamps
-#'
-#' Logs messages with timestamps
-#' The messages are styled using the `cli` package for enhanced readability.
-#' This function can not deal with {} function in the `cli` package.
-#'
-#' @param ... The message string to log, which will be pasted together.
-#' @param level The log level. Options are `"info"`, `"success"`, `"warning"`, and `"danger"`.
-#' @param levels All levels that is now supported.
-#'
-#' @return No return value. Outputs a formatted log message with a timestamp.
-#' @export
-#'
-#' @examples
-#' n1 <- 10; n2 <- 20
-#' leo_log("Processing the", n1, "and", n2, "files.")
-#' leo_log("Task completed successfully!", level = "success")
-#' leo_log("Potential issue detected.", level = "warning")
-#' leo_log("Error occurred during processing!", level = "danger")
-leo_log <- function(..., level = "info") {
-  msg <- paste(..., collapse = " "); timestamp <- paste0("[", format(Sys.time(), '%H:%M'),  "]")
-  timestamp_colored <- switch(level,
-                              "info" = cli::col_cyan(timestamp),     # cyan
-                              "success" = cli::col_green(timestamp), # green
-                              "warning" = cli::col_yellow(timestamp),# yellow
-                              "danger" = cli::col_red(timestamp))    # red
-  formatted_message <- paste(timestamp_colored, msg)
-  switch(level,
-         "info"    = cli::cli_alert_info(formatted_message),
-         "success" = cli::cli_alert_success(formatted_message),
-         "warning" = cli::cli_alert_warning(formatted_message),
-         "danger"  = cli::cli_alert_danger(formatted_message)
-         )
-}
-
-
-
 #' Get Unique Identifier for Genetic Data
 #'
 #' Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
@@ -309,4 +252,46 @@ leo_iterator <- function(elements, batch_size) {
 
     elements[start_index:end_index]
   }
+}
+
+# ---------------------- basic calculation ----------------------
+#' #' Calculate Correlation between Two Vectors
+#' #'
+#' #' This function calculates the Spearman (default) or Pearson correlation coefficient
+#' #' and its associated p-value between two vectors.
+#' #' It automatically handles missing values.
+#' #'
+#' #' @param vector_x A numeric vector.
+#' #' @param vector_y A numeric vector of the same length as \code{vector_x}.
+#' #' @param method A character string specifying the correlation method ("spearman" or "pearson").
+#' #'               Defaults to "spearman".
+#' #' @param ... Pass to \code{\link[stats]{cor.test}}.
+#' #'
+#' #' @return A list with the correlation coefficient and p-value.
+#' #' @export
+#' #' @seealso \code{\link{correlation_draw}} for plotting correlation results.
+#' #' @examples
+#' #' vector_x <- c(1, 2, 3, 4, 5)
+#' #' vector_y <- c(5, 6, 7, 8, 7)
+#' #' result <- correlation_calculate(vector_x, vector_y, method = "pearson")
+correlation_calculate <- function(vector_x, vector_y, method = "spearman", ...) {
+  if (!method %in% c("spearman", "pearson")) {
+    stop("Invalid method. Choose 'spearman' or 'pearson'.")
+  }
+
+  # Remove NA values from both vectors consistently
+  valid_indices <- complete.cases(vector_x, vector_y)
+  vector_x <- vector_x[valid_indices]
+  vector_y <- vector_y[valid_indices]
+
+  # Use cor.test to get correlation coefficient and p-value
+  correlation_test <- cor.test(vector_x, vector_y, method = method, use = "complete.obs", ...)
+
+  # Extract correlation coefficient and p-value
+  result <- data.frame(
+    correlation_coefficient = as.numeric(correlation_test$estimate),
+    p_value = correlation_test$p.value
+  )
+
+  return(result)
 }
