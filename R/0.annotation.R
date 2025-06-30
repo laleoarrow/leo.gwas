@@ -1582,7 +1582,7 @@ map_gene_class_using_biomarRt <- function(genes,
   if (!quiet) {
     message("✔ GRCh38 hits: ", sum(out$infer_version == "GRCh38"),
             "; GRCh37 hits: ", sum(out$infer_version == "GRCh37"),
-            "; unmapped: ",   sum(out$infer_version == "unmapped"))
+            "; unmapped: ",   sum(out$infer_version == "NA"))
   }
 
   out <- out %>%
