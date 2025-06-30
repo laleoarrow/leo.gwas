@@ -23,6 +23,7 @@ Imports:
     BSgenome,
     stringr,
     cli,
+    annotables (>= 0.2.0)
 Depends: 
     dplyr,
     leo.basic (>= 0.0.1)
@@ -33,4 +34,5 @@ Suggests:
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Remotes:  
-    github::laleoarrow/leo.basic
+    github::laleoarrow/leo.basic,
+    stephenturner/annotables

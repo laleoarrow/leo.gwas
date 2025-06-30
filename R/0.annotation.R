@@ -556,14 +556,14 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
 #' \dontrun{
 #' # Query location of TP53, BRCA1, and EGFR genes
 #' gene_symbols <- c("TP53", "BRCA1", "EGFR")
-#' map_gene_to_chrbp_using_biomart(genes = gene_symbols, genome = "hg19")
+#' map_gene_to_chrbp_using_biomaRt(genes = gene_symbols, genome = "hg19")
 #'
 #' # Using a data frame with gene symbols
 #' gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInfo = c(1, 2, 3))
-#' map_gene_to_chrbp_using_biomart(genes = gene_symbols_df, gene_col = "GeneName", genome = "hg19")
+#' map_gene_to_chrbp_using_biomaRt(genes = gene_symbols_df, gene_col = "GeneName", genome = "hg19")
 #' }
 #' @export
-map_gene_to_chrbp_using_biomart <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
+map_gene_to_chrbp_using_biomaRt <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
   # Check and set genome argument
   genome <- match.arg(genome)
   if (!requireNamespace("biomaRt", quietly = TRUE)) {
@@ -1392,4 +1392,96 @@ annotate_cpg_sites <- function(cpg_vector,
     stringsAsFactors = FALSE
   )
   return(result_df)
+}
+
+# Gene class annotation -----
+#' Map Gene Symbols to biotype & description via **annotables**
+#'
+#' 使用离线数据框 `annotables::grch38` 与 `annotables::grch37`
+#' 为基因符号添加 *biotype*、*description*，并给出来源列
+#' `infer_version`（"grch38" / "grch37" / "unmapped"）。
+#'
+#' 逻辑：
+#' 1. 先左连接 **grch38**；命中则 `infer_version = "grch38"`
+#' 2. 未命中者再补 **grch37**；命中则 `infer_version = "grch37"`
+#' 3. 仍未命中者三列均填占位，如上所述
+#'
+#' @param genes    Character vector of gene symbols，或包含基因符号的数据框/ tibble
+#' @param gene_col 列名（当 `genes` 为表格时），默认 `"Gene"`
+#' @param quiet    逻辑值；`TRUE` 时不显示进度信息
+#'
+#' @return 与输入同结构的数据，附加 `biotype`、`description`、`infer_version`
+#' @import annotables
+#' @importFrom dplyr %>% select filter distinct mutate left_join bind_rows
+#' @importFrom tibble tibble as_tibble
+#' @importFrom rlang set_names
+#' @examples
+#' \dontrun{
+#' map_gene_class_using_annotables(c("TP53","BRCA1","C14orf37"))
+#'
+#' df <- tibble::tibble(Gene = c("TP53","XIST","C14orf37"))
+#' map_gene_class_using_annotables(df, gene_col = "Gene")
+#' }
+#' @export
+map_gene_class_using_annotables <- function(genes,
+                                            gene_col = "Gene",
+                                            quiet    = FALSE) {
+
+  if (!requireNamespace("annotables", quietly = TRUE))
+    stop("Package 'annotables' is required. Install via remotes::install_github('stephenturner/annotables').")
+
+  ## ── 处理输入 ──────────────────────────────────────
+  if (is.data.frame(genes)) {
+    if (!gene_col %in% names(genes))
+      stop("Column '", gene_col, "' not found.")
+    gene_vec <- unique(genes[[gene_col]])
+    df_in    <- tibble::as_tibble(genes)
+  } else if (is.character(genes)) {
+    gene_vec <- unique(genes)
+    df_in    <- tibble::tibble(Gene = genes)
+    gene_col <- "Gene"
+  } else {
+    stop("`genes` must be a character vector or data.frame / tibble.")
+  }
+
+  if (!quiet) message("ℹ Total unique genes: ", length(gene_vec))
+
+  ## ── grch38 注释 ───────────────────────────────────
+  anno38 <- annotables::grch38 %>%
+    dplyr::select(symbol, biotype, description) %>%
+    dplyr::distinct() %>%
+    dplyr::filter(symbol %in% gene_vec) %>%
+    dplyr::mutate(infer_version = "grch38")
+
+  remaining <- setdiff(gene_vec, anno38$symbol)
+
+  ## ── grch37 补充 ───────────────────────────────────
+  anno37 <- annotables::grch37 %>%
+    dplyr::select(symbol, biotype, description) %>%
+    dplyr::distinct() %>%
+    dplyr::filter(symbol %in% remaining) %>%
+    dplyr::mutate(infer_version = "grch37")
+
+  ## ── 合并两张表 ───────────────────────────────────
+  ann_all <- dplyr::bind_rows(anno38, anno37) %>%
+    dplyr::rename(!!gene_col := symbol)
+
+  ## ── 与输入左连接 ──────────────────────────────────
+  out <- df_in %>%
+    dplyr::left_join(ann_all, by = gene_col) %>%
+    dplyr::mutate(
+      biotype       = ifelse(is.na(biotype),      "Other",     biotype),
+      description   = ifelse(is.na(description),  "unmapped",  description),
+      infer_version = ifelse(is.na(infer_version),"unmapped",  infer_version)
+    )
+
+  ## ── 汇报 ──────────────────────────────────────────
+  if (!quiet) {
+    unmapped <- sum(out$infer_version == "unmapped")
+    message("✔ grch38 hits: ", sum(out$infer_version == "grch38"),
+            "; grch37 hits: ", sum(out$infer_version == "grch37"),
+            "; unmapped: ", unmapped)
+  }
+
+  return(out)
 }
