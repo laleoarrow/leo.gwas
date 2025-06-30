@@ -1471,8 +1471,8 @@ map_gene_class_using_annotables <- function(genes,
     dplyr::left_join(ann_all, by = gene_col) %>%
     dplyr::mutate(
       biotype       = ifelse(is.na(biotype),      "Other",     biotype),
-      description   = ifelse(is.na(description),  "unmapped",  description),
-      infer_version = ifelse(is.na(infer_version),"unmapped",  infer_version)
+      description   = ifelse(is.na(description),  "NA",  description),
+      infer_version = ifelse(is.na(infer_version),"NA",  infer_version)
     )
 
   ## ── 汇报 ──────────────────────────────────────────
@@ -1485,3 +1485,117 @@ map_gene_class_using_annotables <- function(genes,
 
   return(out)
 }
+
+
+#' Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 → GRCh37 fallback)
+#'
+#' 先连接 **Ensembl GRCh38**（www.ensembl.org）批量查询 *gene_biotype* 与
+#' *description*；未命中的基因再自动回退到 **GRCh37**（grch37.ensembl.org）。
+#' 最终为每个基因追加三列：
+#' \itemize{
+#'   \item \strong{biotype}
+#'   \item \strong{description}
+#'   \item \strong{infer_version} — "GRCh38" / "GRCh37" / "unmapped"
+#' }
+#'
+#' @param genes    Character vector of gene symbols，或包含基因符号的数据框 / tibble
+#' @param gene_col 列名（当 `genes` 为表格时），默认 `"Gene"`
+#' @param quiet    逻辑值；`TRUE` 时不显示进度信息
+#'
+#' @return 输入同结构的数据，附加 `biotype`、`description`、`infer_version`
+#'
+#' @importFrom biomaRt useMart getBM
+#' @importFrom dplyr %>% distinct select filter mutate bind_rows left_join tibble as_tibble case_when
+#' @importFrom rlang set_names
+#' @importFrom stringr str_detect
+#'
+#' @examples
+#' \dontrun{
+#' map_gene_class_using_biomarRt(c("TP53", "IGHV1-69", "TRAC", "MIR21"))
+#'
+#' df <- tibble::tibble(Gene = c("TP53","XIST","SNORD14A"))
+#' map_gene_class_using_biomarRt(df, gene_col = "Gene")
+#' }
+#' @export
+map_gene_class_using_biomarRt <- function(genes,
+                                          gene_col = "Gene",
+                                          quiet    = FALSE) {
+
+  if (!requireNamespace("biomaRt", quietly = TRUE))
+    stop("Package 'biomaRt' is required. Install via BiocManager::install('biomaRt').")
+
+  ## ── 输入整理 ─────────────────────────────────────
+  if (is.data.frame(genes)) {
+    if (!gene_col %in% names(genes))
+      stop("Column '", gene_col, "' not found.")
+    gene_vec <- unique(genes[[gene_col]])
+    df_in    <- tibble::as_tibble(genes)
+  } else if (is.character(genes)) {
+    gene_vec <- unique(genes)
+    df_in    <- tibble::tibble(Gene = genes)
+    gene_col <- "Gene"
+  } else stop("`genes` must be character vector or data.frame/tibble.")
+
+  if (!quiet) message("ℹ Total unique genes: ", length(gene_vec))
+
+  ## ── 辅助函数：一次查询 ───────────────────────────
+  bm_fetch <- function(host, tag){
+    ens <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL",
+                            dataset = "hsapiens_gene_ensembl",
+                            host    = host)
+    res <- biomaRt::getBM(
+      attributes = c("external_gene_name","gene_biotype","description"),
+      filters    = "external_gene_name",
+      values     = gene_vec,
+      mart       = ens
+    )
+    if (nrow(res) == 0) return(NULL)
+    res <- res %>%
+      dplyr::rename_with(~c(gene_col, "biotype", "description"), everything()) %>%
+      dplyr::distinct(!!rlang::sym(gene_col), .keep_all = TRUE) %>%  # 1 gene 1 row
+      dplyr::mutate(infer_version = tag)
+    res
+  }
+
+  ## ── Step 1: GRCh38 ───────────────────────────────
+  ann38 <- bm_fetch("https://www.ensembl.org", "GRCh38")
+  remaining <- if (is.null(ann38)) gene_vec else setdiff(gene_vec, ann38[[gene_col]])
+
+  ## ── Step 2: GRCh37（只查缺失） ───────────────────
+  ann37 <- NULL
+  if (length(remaining) > 0) {
+    gene_vec <- remaining          # 覆盖查询目标
+    ann37 <- bm_fetch("https://grch37.ensembl.org", "GRCh37")
+  }
+
+  ## ── 合并注释 & 回补 ──────────────────────────────
+  ann_all <- dplyr::bind_rows(ann38, ann37)
+
+  out <- df_in %>%
+    dplyr::left_join(ann_all, by = gene_col) %>%
+    dplyr::mutate(
+      biotype       = ifelse(is.na(biotype),      "Other",     biotype),
+      description   = ifelse(is.na(description),  "NA",  description),
+      infer_version = ifelse(is.na(infer_version),"NA",  infer_version)
+    )
+
+  if (!quiet) {
+    message("✔ GRCh38 hits: ", sum(out$infer_version == "GRCh38"),
+            "; GRCh37 hits: ", sum(out$infer_version == "GRCh37"),
+            "; unmapped: ",   sum(out$infer_version == "unmapped"))
+  }
+
+  out <- out %>%
+    dplyr::mutate(biotype = dplyr::case_when(
+      stringr::str_detect(biotype, "^IG|^TR")               ~ "IG/TR",
+      stringr::str_detect(biotype, "pseudogene")            ~ "pseudogene",
+      stringr::str_detect(biotype, "antisense|lincRNA|lncRNA") ~ "Long_ncRNA",
+      stringr::str_detect(biotype, "^snoRNA$|^snRNA$")      ~ "sno/snRNA",
+      stringr::str_detect(biotype, "^rRNA")                 ~ "rRNA",
+      # stringr::str_detect(biotype, "misc_RNA|tRNA")         ~ "Other ncRNA",
+      stringr::str_detect(biotype, "pseudogene")            ~ "pseudogene",
+      TRUE ~ biotype)
+    )
+  return(out)
+}
+
