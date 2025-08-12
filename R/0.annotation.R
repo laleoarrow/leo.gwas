@@ -1574,7 +1574,7 @@ map_gene_class_using_biomarRt <- function(genes,
   out <- df_in %>%
     dplyr::left_join(ann_all, by = gene_col) %>%
     dplyr::mutate(
-      biotype       = ifelse(is.na(biotype),      "Other",     biotype),
+      biotype       = ifelse(is.na(biotype),      "other",     biotype),
       description   = ifelse(is.na(description),  "NA",  description),
       infer_version = ifelse(is.na(infer_version),"NA",  infer_version)
     )
@@ -1589,7 +1589,7 @@ map_gene_class_using_biomarRt <- function(genes,
     dplyr::mutate(biotype = dplyr::case_when(
       stringr::str_detect(biotype, "^IG|^TR")               ~ "IG/TR",
       stringr::str_detect(biotype, "pseudogene")            ~ "pseudogene",
-      stringr::str_detect(biotype, "antisense|lincRNA|lncRNA") ~ "Long_ncRNA",
+      stringr::str_detect(biotype, "antisense|lincRNA|lncRNA") ~ "long_ncRNA",
       stringr::str_detect(biotype, "^snoRNA$|^snRNA$")      ~ "sno/snRNA",
       stringr::str_detect(biotype, "^rRNA")                 ~ "rRNA",
       # stringr::str_detect(biotype, "misc_RNA|tRNA")         ~ "Other ncRNA",
