@@ -38,13 +38,13 @@ removing duplicates, checking consistency, matching to a reference panel,
 filtering by DAF/F_U cutoffs, and saving results.
 }
 \details{
-Steps:
+Major steps:
 \itemize{
 \item Read and standardize imputed & chip data
 \item Remove duplicates (keep smallest P for genotyped, drop multiple imputed)
 \item Merge and label GI (imputed/genotyped)
 \item Match with reference panel and compute DAF
-\item Filter by cutoffs and save full / P<1e-6 subsets
+\item Filter by cutoffs and save full / P<1e-6 subsets and output
 }
 
 Logs at each step with \code{leo_log()} for dimension, duplication, NA, etc.

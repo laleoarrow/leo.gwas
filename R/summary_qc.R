@@ -13,16 +13,24 @@
 #' @param F_U_cutoff Numeric. Min F_U required (default 0.01).
 #'
 #' @details
-#' Steps:
+#' Major steps:
 #' \itemize{
 #'   \item Read and standardize imputed & chip data
 #'   \item Remove duplicates (keep smallest P for genotyped, drop multiple imputed)
 #'   \item Merge and label GI (imputed/genotyped)
 #'   \item Match with reference panel and compute DAF
-#'   \item Filter by cutoffs and save full / P<1e-6 subsets
+#'   \item Filter by cutoffs and save full / P<1e-6 subsets and output
 #' }
 #'
 #' Logs at each step with \code{leo_log()} for dimension, duplication, NA, etc.
+#'
+#' @importFrom data.table fread as.data.table
+#' @importFrom dplyr group_by ungroup arrange slice mutate filter select bind_rows left_join case_when
+#' @importFrom tidyr drop_na
+#' @importFrom magrittr %>%
+#' @importFrom vroom vroom_write
+#' @importFrom glue glue
+#' @importFrom leo.basic leo_log
 #'
 #' @return No return value; writes QC results to \code{save_dir}.
 #' @examples
