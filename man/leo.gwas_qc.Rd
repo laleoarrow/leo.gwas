@@ -7,7 +7,7 @@
 leo.gwas_qc(
   summary_x2_p,
   summary_x2_chip_p,
-  ref_p = "~/Project/BD2025/data/zuo/ref/1KG-EAS-EAF-chrposa2a1.txt.gz",
+  ref_p = "/Users/leoarrow/Project/ref/1kg_maf/zuo_ref/1KG-EAS-EAF-chrposa2a1.txt.gz",
   save_dir = "~/Project/BD2025/data/qc/sex_split",
   save_name_prefix = "bd-ASA-41",
   DAF_cutoff = 0.2,
@@ -19,7 +19,7 @@ leo.gwas_qc(
 
 \item{summary_x2_chip_p}{Path to genotyped (chip) summary file.}
 
-\item{ref_p}{Path to reference panel (default: 1KG EAS file).}
+\item{ref_p}{Path to reference panel or loaded df}
 
 \item{save_dir}{Output directory (default: \code{"~/Project/BD2025/data/qc/sex_split"}).}
 

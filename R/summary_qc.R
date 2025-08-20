@@ -6,7 +6,7 @@
 #'
 #' @param summary_x2_p Path to imputed summary file (.assoc/.gz).
 #' @param summary_x2_chip_p Path to genotyped (chip) summary file.
-#' @param ref_p Path to reference panel (default: 1KG EAS file).
+#' @param ref_p Path to reference panel or loaded df
 #' @param save_dir Output directory (default: \code{"~/Project/BD2025/data/qc/sex_split"}).
 #' @param save_name_prefix Prefix for output file names.
 #' @param DAF_cutoff Numeric. Max |DAF| allowed (default 0.2).
@@ -38,10 +38,16 @@
 #' leo.gwas_qc("imp.assoc.gz", "chip.assoc")
 #' }
 leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
-                        ref_p = "~/Project/BD2025/data/zuo/ref/1KG-EAS-EAF-chrposa2a1.txt.gz",
+                        ref_p = "/Users/leoarrow/Project/ref/1kg_maf/zuo_ref/1KG-EAS-EAF-chrposa2a1.txt.gz",
                         save_dir = "~/Project/BD2025/data/qc/sex_split",
                         save_name_prefix = "bd-ASA-41",
                         DAF_cutoff = 0.2, F_U_cutoff = 0.01) {
+  # check if all file exists
+  if (!file.exists(summary_x2_p)) return(leo_log("File not found: {summary_x2_p}", level = "danger"))
+  if (!file.exists(summary_x2_chip_p)) return(leo_log("File not found: {summary_x2_chip_p}", level = "danger"))
+  if (class(ref_p)=="character" & !file.exists(ref_p)) return(leo_log("File not found: {ref_p}", level = "danger"))
+
+  # read files
   summary_x2 <- fread(summary_x2_p) %>% leo.gwas::get_id()
   summary_x2_chip <- fread(summary_x2_chip_p) %>% leo.gwas::get_id()
   leo.basic::leo_log("QC Start: imputed = {paste(dim(summary_x2), collapse='x')}, chip = {paste(dim(summary_x2_chip), collapse='x')}")
@@ -125,7 +131,14 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
   # zuo_ref <- add_chrpos(zuo_ref, snp_col = "SNP", ref = "GRCh37") %>% drop_na(CHR)
   # zuo_ref <- get_id(zuo_ref)
   # zuo_ref %>% fwrite("/Users/leoarrow/Project/BD2025/data/zuo/ref/1KG-EAS-EAF-chrposa2a1.txt.gz")
-  zuo_ref <- fread(ref_p)
+  if (class(ref_p)=="character") {
+    leo.basic::leo_log("Reading reference panel from {.path {ref_p}}")
+    zuo_ref <- fread(ref_p)
+  } else {
+    leo.basic::leo_log("Using provided reference panel object")
+    zuo_ref <- ref_p
+  }
+
   leo.basic::leo_log("Comparing with reference panel")
   summary_qc <- summary_qc %>%
     left_join(zuo_ref %>% select(ID, RAF = MAF, rsID = SNP), by = "ID") %>%  # Reference Allele Freq
@@ -166,3 +179,156 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 
   return(summary_qc)
 }
+
+
+# helper ----
+
+#' Helper functions for `leo.gwas_qc`
+#'
+#' Internal utilities used in the GWAS QC pipeline.
+#'
+#' @section Functions:
+#' \describe{
+#'   \item{\code{is_complementary(a1st, a2nd)}}{Check if two alleles form an A/T or C/G pair.}
+#'   \item{\code{fetch_indel(df, type)}}{Filter indels by allele-string length.}
+#'   \item{\code{fetch_non_indel(df)}}{Keep SNPs with single-base alleles.}
+#'   \item{\code{duplicated_SNP_lines(df, type, dup_columns, group_columns)}}{Get/remove duplicated SNP rows.}
+#'   \item{\code{slice1_SNP_lines(df, dup_columns, group_columns)}}{Within duplicated groups, keep first row.}
+#'   \item{\code{fetch_same_direcrtion(df_x2, df_lg)}}{Keep same-direction effects between datasets.}
+#'   \item{\code{any_na(df)}}{Count NAs per column.}
+#' }
+#'
+#' @section Value:
+#' \itemize{
+#'   \item \code{is_complementary}: logical vector.
+#'   \item \code{fetch_indel}, \code{fetch_non_indel}, \code{slice1_SNP_lines}, \code{duplicated_SNP_lines("rm")}: data frame.
+#'   \item \code{duplicated_SNP_lines("get")}: data frame with \code{count} column.
+#'   \item \code{fetch_same_direcrtion}: filtered data frame (\code{df_x2} subset).
+#'   \item \code{any_na}: named numeric vector of NA counts.
+#' }
+#'
+#' @examples
+#' # Small demo dataset
+#' df <- data.frame(
+#'   SNP = c("rs1","rs2","rs3","rs2"),
+#'   A1  = c("A","AT","C","C"),
+#'   A2  = c("T","A","G","G"),
+#'   OR  = c(1.2, 0.9, 1.1, 1.1)
+#' )
+#'
+#' # Complementary alleles
+#' is_complementary("A","T")  # TRUE
+#' is_complementary("A","G")  # FALSE
+#'
+#' # Indels and non-indels
+#' fetch_indel(df, "both")
+#' fetch_non_indel(df)
+#'
+#' # Duplicates by SNP
+#' duplicated_SNP_lines(df, "get", dup_columns = "SNP")
+#' slice1_SNP_lines(df, dup_columns = "SNP")
+#'
+#' # Same-direction effects between two datasets
+#' df2 <- transform(df, OR = c(1.1, 1.3, 0.8, 1.1))
+#' fetch_same_direcrtion(df, df2)
+#'
+#' # Count NA by column
+#' any_na(df)
+#'
+#' @name gwas_qc_helpers
+#' @keywords internal
+#'
+#' @importFrom data.table is.data.table as.data.table
+#' @importFrom dplyr filter group_by ungroup arrange mutate bind_rows slice_head
+#' @importFrom dplyr across all_of
+#' @importFrom magrittr %>%
+#' @importFrom purrr map_dbl
+NULL
+
+#' @rdname gwas_qc_helpers
+is_complementary <- function(a1st, a2nd){
+  return(
+    (a1st == "A" & a2nd == "T") |
+      (a1st == "T" & a2nd == "A") |
+      (a1st == "C" & a2nd == "G") |
+      (a1st == "G" & a2nd == "C")
+  )
+}
+
+#' @rdname gwas_qc_helpers
+fetch_indel <- function(df, type = "both"){
+  if (type == "both") {
+    return(df %>% filter(nchar(A1) > 1 & nchar(A2) > 1))
+  }
+  if (type == "A1") {
+    return(df %>% filter(nchar(A1) > 1))
+  }
+  if (type == "A2") {
+    return(df %>% filter(nchar(A2) > 1))
+  }
+}
+
+#' @rdname gwas_qc_helpers
+fetch_non_indel <- function(df){
+  return(df %>% filter(nchar(A1) == 1 & nchar(A2) == 1))
+}
+
+#' @rdname gwas_qc_helpers
+duplicated_SNP_lines <- function(df, type = "rm", dup_columns = c("SNP"), group_columns = dup_columns) {
+  if (is.data.table(df)) { df <- as.data.frame(df) }
+  duplicated_index <- duplicated(df[dup_columns]) | duplicated(df[dup_columns], fromLast = TRUE)
+  # get duplicated SNP line
+  if (type == "get") {
+    df_duplicated <- df %>%
+      filter(duplicated_index) %>%
+      group_by(across(all_of(group_columns))) %>%
+      mutate(count = n()) %>%
+      ungroup()
+    message("Duplicated SNP line count table")
+    print(table(df_duplicated$count))
+    return(df_duplicated)
+  }
+  if (type == "rm") {
+    df_clean <- df %>%
+      filter(!duplicated_index)
+    return(df_clean)
+  }
+}
+
+#' @rdname gwas_qc_helpers
+slice1_SNP_lines <- function(df, dup_columns = c("SNP"), group_columns = dup_columns) {
+  if (is.data.table(df)) { df <- as.data.frame(df) }
+
+  # 计算重复的索引
+  duplicated_index <- duplicated(df[dup_columns]) | duplicated(df[dup_columns], fromLast = TRUE)
+
+  # 处理重复行，按group_columns分组并只保留第一行
+  df_duplicated <- df %>%
+    filter(duplicated_index) %>%
+    group_by(across(all_of(group_columns))) %>%
+    slice_head(n = 1) %>%
+    ungroup()
+
+  # 保留非重复行并合并结果
+  df_new <- bind_rows(
+    df %>% filter(!duplicated_index),
+    df_duplicated
+  ) %>% arrange(across(all_of(dup_columns)))
+
+  return(df_new)
+}
+
+#' @rdname gwas_qc_helpers
+#' @export
+fetch_same_direcrtion <- function(df_x2, df_lg){
+  logi <- (df_lg$OR > 1 & df_x2$OR < 1) | (df_lg$OR < 1 & df_x2$OR > 1)
+  message(paste0("The number with opposite effect size：", sum(logi)))
+  return(df_x2 %>% filter(!logi)) # return x2 data
+}
+
+
+#' @rdname gwas_qc_helpers
+#' @export
+any_na <- function(df){ return(df %>% map_dbl(~sum(is.na(.)))) }
+
+
