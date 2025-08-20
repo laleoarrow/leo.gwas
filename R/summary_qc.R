@@ -45,7 +45,9 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
   # check if all file exists
   if (!file.exists(summary_x2_p)) return(leo_log("File not found: {summary_x2_p}", level = "danger"))
   if (!file.exists(summary_x2_chip_p)) return(leo_log("File not found: {summary_x2_chip_p}", level = "danger"))
-  if (class(ref_p)=="character" & !file.exists(ref_p)) return(leo_log("File not found: {ref_p}", level = "danger"))
+  if (class(ref_p)[1]=="character"){
+    if (!file.exists(ref_p)) return(leo_log("File not found: {ref_p}", level = "danger"))
+  }
 
   # read files
   summary_x2 <- fread(summary_x2_p) %>% leo.gwas::get_id()
