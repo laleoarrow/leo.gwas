@@ -30,7 +30,7 @@ leo.gwas_qc(
 \item{F_U_cutoff}{Numeric. Min F_U required (default 0.01).}
 }
 \value{
-No return value; writes QC results to \code{save_dir}.
+return(summary_qc); writes QC results to \code{save_dir}.
 }
 \description{
 Perform QC on GWAS summary stats by merging imputed and genotyped data,

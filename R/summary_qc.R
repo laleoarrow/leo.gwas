@@ -32,7 +32,7 @@
 #' @importFrom glue glue
 #' @importFrom leo.basic leo_log
 #'
-#' @return No return value; writes QC results to \code{save_dir}.
+#' @return return(summary_qc); writes QC results to \code{save_dir}.
 #' @examples
 #' \dontrun{
 #' leo.gwas_qc("imp.assoc.gz", "chip.assoc")
@@ -163,4 +163,6 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
   save_name <- glue::glue("{save_name_prefix}-DAF{DAF_cutoff}-FU{F_U_cutoff}-{today_str}-1e6.csv")
   leo_log("Save summary_qc with P < 1e-6 to {.path {file.path(save_dir, save_name)}}", level = "success")
   summary_qc %>% filter(P < 1e-6) %>% vroom::vroom_write(file.path(save_dir,save_name), delim = ",")
+
+  return(summary_qc)
 }
