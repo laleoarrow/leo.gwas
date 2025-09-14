@@ -28,55 +28,39 @@ correlation_draw(
 )
 }
 \arguments{
-\item{vector_x}{A numeric vector.}
+\item{vector_x}{Numeric vector.}
 
-\item{vector_y}{A numeric vector of the same length as \code{vector_x}.}
+\item{vector_y}{Numeric vector of the same length as \code{vector_x}.}
 
-\item{method}{A character string specifying the correlation method ("spearman" or "pearson").
-Defaults to "spearman".}
+\item{method}{Correlation method: \code{"spearman"} or \code{"pearson"}. Default \code{"spearman"}.}
 
-\item{color_palette}{A character string or vector specifying the color palette to use.
-Can be a palette name from \code{ggsci}, \code{RColorBrewer}, or a custom color vector.}
+\item{color_palette}{Character scalar or vector for color palette (kept for compatibility).}
 
-\item{title}{A character string for the plot title. Defaults to "Correlation Plot".}
+\item{title}{Plot title. Default \code{"Correlation Plot"}.}
 
-\item{xlab}{A character string for the x-axis label. Defaults to "Vector X".}
+\item{xlab, ylab}{Axis labels. Defaults \code{"Vector X"}, \code{"Vector Y"}.}
 
-\item{ylab}{A character string for the y-axis label. Defaults to "Vector Y".}
+\item{point_size}{Point size. Default \code{1.5}.}
 
-\item{point_size}{Numeric value for point size in the scatter plot. Defaults to 4.}
+\item{point_color}{Fill color for points (shape 21). Default \code{"#BB7CD8"}.}
 
-\item{point_color}{A character string specifying color for the scatter points. Defaults to "#BB7CD8".}
+\item{point_stroke}{Numeric stroke width for point outline. If \code{NA}, treated as \code{0}. Default \code{1}.}
 
-\item{point_stroke}{It could also be NA!!!}
+\item{alpha}{Point transparency. Default \code{0.75}.}
 
-\item{alpha}{Numeric value for the transparency of points. Defaults to 0.75.}
+\item{line_color, }{line_type, line_size Trend line color, type, size. Defaults \code{"#BB7CD8"}, \code{"dashed"}, \code{1.2}.}
 
-\item{line_color}{A character string specifying color for the trend line. Defaults to "#BB7CD8".}
+\item{ci_alpha}{Confidence ribbon alpha. Default \code{0.2}.}
 
-\item{line_type}{Character specifying the type of line ("solid", "dashed", etc.). Defaults to "dashed".}
+\item{title_size, xlab_size, ylab_size, axis_text_size}{Font sizes. Defaults \code{16}, \code{14}, \code{14}, \code{14}.}
 
-\item{line_size}{Numeric value specifying the thickness of the trend line. Defaults to 1.2.}
-
-\item{ci_alpha}{Numeric value for the transparency level of the confidence interval. Defaults to 0.6.}
-
-\item{title_size}{Numeric value for title text size. Defaults to 14.}
-
-\item{xlab_size}{Numeric value for x-axis label text size. Defaults to 12.}
-
-\item{ylab_size}{Numeric value for y-axis label text size. Defaults to 12.}
-
-\item{axis_text_size}{Numeric value for axis text size. Defaults to 10.}
-
-\item{...}{Additional arguments passed to \code{\link[stats]{cor.test}}.}
+\item{...}{Additional arguments passed to \code{correlation_calculate()}.}
 }
 \value{
-A ggplot object representing the scatter plot with correlation information.
+A \pkg{ggplot2} object.
 }
 \description{
-This function creates a scatter plot to visualize the correlation between two vectors,
-displaying the correlation coefficient and p-value on the plot.
-It uses \code{ggplot2} for visualization and \code{ggsci} for color schemes.
+This function creates a scatter plot to visualize the correlation between two vectors, displaying the correlation coefficient and p-value on the plot.
 }
 \examples{
 vector_x <- c(10, 2, 3, 4, 5)
@@ -84,7 +68,5 @@ vector_y <- c(5, 6, 7, 8, 7)
 correlation_draw(vector_x, vector_y, method = "pearson", point_size = 10, color_palette = "npg")
 }
 \seealso{
-\code{\link{correlation_calculate}} for calculating correlation coefficients and p-values.
-
-\code{\link[=leo_scale_color]{leo_scale_color()}} for applying color palettes to ggplot objects.
+\code{\link{correlation_calculate}}, \code{\link{leo_scale_color}}
 }

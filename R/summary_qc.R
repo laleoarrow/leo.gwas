@@ -133,7 +133,7 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
   # zuo_ref <- add_chrpos(zuo_ref, snp_col = "SNP", ref = "GRCh37") %>% drop_na(CHR)
   # zuo_ref <- get_id(zuo_ref)
   # zuo_ref %>% fwrite("/Users/leoarrow/Project/BD2025/data/zuo/ref/1KG-EAS-EAF-chrposa2a1.txt.gz")
-  if (class(ref_p)=="character") {
+  if (class(ref_p)[1]=="character") {
     leo.basic::leo_log("Reading reference panel from {.path {ref_p}}")
     zuo_ref <- fread(ref_p)
   } else {

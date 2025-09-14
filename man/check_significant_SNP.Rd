@@ -26,7 +26,7 @@ locate the significant SNP for conditional analysis
 \examples{
 con_dir <- "/Users/leoarrow/project/VKH2024/data/zuo/con_su" # specify the directory to store the HLA original data and subsequent conditional analysis results data
 files <- list.files(con_dir,full.names = T) \%>\% as.vector(); files # update it each time
-x1 <- fread(files[1]) \%>\% arrange(desc(CHISQ)) # read the data and sort it by CHISQ/P value
+x1 <- fread(files[1]) \%>\% arrange(desc(CHISQ)); head(x1) # ! for the first one, just read the data and sort it by CHISQ/P value
 x2 <- fread(files[2]) \%>\% arrange(P) # repeat it until no more independent signal can be found.
 x3 <- fread(files[3]) \%>\% arrange(P)
 x4 <- fread(files[4]) \%>\% arrange(P)
