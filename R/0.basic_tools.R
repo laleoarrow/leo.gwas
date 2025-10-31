@@ -73,37 +73,6 @@ chisq_p_value <- function(chisq_value, df, digits = 4, prec = 100) {
   return(p_value)
 }
 
-#' Exclude HLA region from genomic summary data
-#'
-#' This function filters out entries within the HLA region on a specified chromosome
-#' and position range. The default HLA region is set to chromosome 6, between 25Mb and 34Mb.
-#' Custom chromosome and position bounds can be specified.
-#'
-#' @param data A data frame containing genomic data.
-#' @param chromosome_col The name of the column representing chromosome numbers (default is CHR).
-#' @param position_col The name of the column representing genomic positions (default is BP).
-#' @param lower_bound The lower boundary of the HLA region in base pairs (default is 25e6).
-#' @param upper_bound The upper boundary of the HLA region in base pairs (default is 34e6).
-#'
-#' @return A data frame excluding rows that fall within the specified HLA region.
-#' @importFrom dplyr filter
-#' @export
-#' @examples
-#' example_data <- data.frame(
-#'   SNP = c("rs1", "rs2", "rs3", "rs4"),
-#'   CHR = c(6, 6, 6, 7),
-#'   POS = c(26000000, 33000000, 35000000, 29000000)
-#' )
-#' result_data <- exclude_HLA(example_data, chromosome_col="CHR", position_col="POS")
-#' print(result_data)
-exclude_HLA <- function(data, chromosome_col="CHR", position_col="BP", lower_bound=25e6, upper_bound=34e6) {
-  filtered_data <- data %>%
-    dplyr::filter(!(!!sym(chromosome_col) == 6 &
-                      !!sym(position_col) >= lower_bound &
-                      !!sym(position_col) <= upper_bound))
-  return(filtered_data)
-}
-
 #' Count or Identify Matches of a Pattern in a Vector
 #'
 #' This function counts the number of elements in a vector that contain a given pattern,
