@@ -224,28 +224,28 @@ leo_iterator <- function(elements, batch_size) {
 }
 
 # ---------------------- basic calculation ----------------------
-#' #' Calculate Correlation between Two Vectors
-#' #'
-#' #' This function calculates the Spearman (default) or Pearson correlation coefficient
-#' #' and its associated p-value between two vectors.
-#' #' It automatically handles missing values.
-#' #'
-#' #' @param vector_x A numeric vector.
-#' #' @param vector_y A numeric vector of the same length as \code{vector_x}.
-#' #' @param method A character string specifying the correlation method ("spearman" or "pearson").
-#' #'               Defaults to "spearman".
-#' #' @param ... Pass to \code{\link[stats]{cor.test}}.
-#' #'
-#' #' @return A list with the correlation coefficient and p-value.
-#' #' @export
-#' #' @seealso \code{\link{correlation_draw}} for plotting correlation results.
-#' #' @examples
-#' #' vector_x <- c(1, 2, 3, 4, 5)
-#' #' vector_y <- c(5, 6, 7, 8, 7)
-#' #' result <- correlation_calculate(vector_x, vector_y, method = "pearson")
+#' Calculate Correlation between Two Vectors
+#'
+#' This function calculates the Spearman (default) or Pearson correlation coefficient
+#' and its associated p-value between two vectors.
+#' It automatically handles missing values.
+#'
+#' @param vector_x A numeric vector.
+#' @param vector_y A numeric vector of the same length as \code{vector_x}.
+#' @param method A character string specifying the correlation method ("spearman" or "pearson").
+#'               Defaults to "spearman".
+#' @param ... Pass to \code{\link[stats]{cor.test}}.
+#'
+#' @return A list with the correlation coefficient and p-value.
+#' @export
+#' @seealso \code{\link{correlation_draw}} for plotting correlation results.
+#' @examples
+#' vector_x <- c(1, 2, 2, 4, 5)
+#' vector_y <- c(5, 6, 7, 8, 7)
+#' result <- correlation_calculate(vector_x, vector_y, method = "pearson")
 correlation_calculate <- function(vector_x, vector_y, method = "spearman", ...) {
-  if (!method %in% c("spearman", "pearson")) {
-    stop("Invalid method. Choose 'spearman' or 'pearson'.")
+  if (!method %in% c("spearman", "pearson", "kendall")) {
+    stop("Invalid method. Choose 'spearman', 'pearson', or 'kendall'.")
   }
 
   # Remove NA values from both vectors consistently

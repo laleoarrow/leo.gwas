@@ -4,28 +4,25 @@
 #' This function performs LD clumping using either a local PLINK binary file (\code{bfile})
 #' or a 1000 Genomes super population panel. Requires the \code{ieugwasr} and \code{plinkbinr} packages.
 #'
-#' @param dat Dataframe containing GWAS summary statistics. Must contain columns:
-#' \code{SNP}, \code{pval.exposure}, and \code{id.exposure}.
-#' @param pop Super-population code when using online LD reference panel.
-#' Options: "AFR", "AMR", "EAS", "EUR", "SAS". Required if \code{bfile = NULL}.
-#' @param bfile Path to PLINK binary reference panel for local clumping.
-#' If provided, \code{pop} will be ignored.
-#' @param plink_bin Path to PLINK binary executable. Default tries to auto-detect.
-#' @param clump_kb Clumping window in kilobases. Default = 10000.
-#' @param clump_r2 Clumping r² threshold. Default = 0.001.
+#' @param dat Data frame with columns `SNP`, `pval.exposure`; optional `id.exposure`.
+#' @param pop 1000G super-pop for online clumping (AFR/AMR/EAS/EUR/SAS). Used when `bfile` is NULL.
+#' @param bfile PLINK reference panel prefix for local clumping (without .bed/.bim/.fam). If set, `pop` is ignored.
+#' @param plink_bin Path to PLINK executable (auto-detect via plinkbinr if NULL and `bfile` is set).
+#' @param clump_kb Window size in kb. Default 10000.
+#' @param clump_r2 r^2 threshold. Default 0.001.
 #' @keywords tsmr:
-#' @return A subset of the input dataframe containing independent SNPs.
-#' @importFrom ieugwasr ld_clump
-#' @importFrom dplyr tibble filter
 #' @export
-#' @note
-#' Reference:
-#' https://github.com/MRCIEU/TwoSampleMR/issues/173
-#' https://blog.csdn.net/xiaozheng1213/article/details/126269969
+#' @examples
+#' # Reference:
+#' # - https://github.com/MRCIEU/TwoSampleMR/issues/173
+#' # - https://blog.csdn.net/xiaozheng1213/article/details/126269969
 #' library(ieugwasr)
 #' library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
 #' plinkbinr::get_plink_exe()
-clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
+clump_data_local <- function(dat, pop = NULL, bfile = NULL,
+                             clump_kb = 10000,
+                             clump_r2 = 0.001,
+                             plink_bin = plinkbinr::get_plink_exe()) {
   require(ieugwasr); require(plinkbinr)
   leo_log(" - Clumping data locally")
   if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
@@ -34,11 +31,11 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL, plink_bin = NULL) {
   # if (!is.null(pop) & !is.null(bfile)) { stop("Only one LD method can be used") }
   dat1 <- ieugwasr::ld_clump(
     dat = dplyr::tibble(rsid=dat$SNP, pval=dat$pval.exposure, id=dat$id.exposure),
-    clump_kb = 10000,
-    clump_r2 = 0.001,
+    clump_kb = clump_kb,
+    clump_r2 = clump_r2,
     pop = pop,
     bfile = bfile,
-    plink_bin = plinkbinr::get_plink_exe()
+    plink_bin = plink_bin
   )
   if(nrow(dat1) == 0) {
     warning("No SNPs remained after clumping")

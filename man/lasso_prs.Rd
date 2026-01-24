@@ -4,7 +4,7 @@
 \alias{lasso_prs}
 \alias{lasso_prs_target}
 \alias{lasso_prs_rank}
-\title{Iterative Lasso PRS utilities}
+\title{Iterative Lasso PRS (iLasso) utilities}
 \usage{
 lasso_prs(
   a1_matrix,
@@ -24,7 +24,7 @@ lasso_prs_rank(model, rank, auc_history)
 
 \item{divide_ratio}{numeric; train fraction per iteration (default 0.7).}
 
-\item{iterative}{integer; number of iterations (default 100).}
+\item{iterative}{integer; number of iterations (default 100) - If set to 1, then regular lasso is performed.}
 
 \item{nfolds}{integer; CV folds for glmnet (default 10).}
 

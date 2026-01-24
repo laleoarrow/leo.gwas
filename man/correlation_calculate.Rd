@@ -2,46 +2,33 @@
 % Please edit documentation in R/0.basic_tools.R
 \name{correlation_calculate}
 \alias{correlation_calculate}
-\title{#' Calculate Correlation between Two Vectors
-#'
-#' This function calculates the Spearman (default) or Pearson correlation coefficient
-#' and its associated p-value between two vectors.
-#' It automatically handles missing values.
-#'
-#' @param vector_x A numeric vector.
-#' @param vector_y A numeric vector of the same length as \code{vector_x}.
-#' @param method A character string specifying the correlation method ("spearman" or "pearson").
-#'               Defaults to "spearman".
-#' @param ... Pass to \code{\link[stats]{cor.test}}.
-#'
-#' @return A list with the correlation coefficient and p-value.
-#' @export
-#' @seealso \code{\link{correlation_draw}} for plotting correlation results.
-#' @examples
-#' vector_x <- c(1, 2, 3, 4, 5)
-#' vector_y <- c(5, 6, 7, 8, 7)
-#' result <- correlation_calculate(vector_x, vector_y, method = "pearson")}
+\title{Calculate Correlation between Two Vectors}
 \usage{
 correlation_calculate(vector_x, vector_y, method = "spearman", ...)
 }
+\arguments{
+\item{vector_x}{A numeric vector.}
+
+\item{vector_y}{A numeric vector of the same length as \code{vector_x}.}
+
+\item{method}{A character string specifying the correlation method ("spearman" or "pearson").
+Defaults to "spearman".}
+
+\item{...}{Pass to \code{\link[stats]{cor.test}}.}
+}
+\value{
+A list with the correlation coefficient and p-value.
+}
 \description{
-#' Calculate Correlation between Two Vectors
-#'
-#' This function calculates the Spearman (default) or Pearson correlation coefficient
-#' and its associated p-value between two vectors.
-#' It automatically handles missing values.
-#'
-#' @param vector_x A numeric vector.
-#' @param vector_y A numeric vector of the same length as \code{vector_x}.
-#' @param method A character string specifying the correlation method ("spearman" or "pearson").
-#'               Defaults to "spearman".
-#' @param ... Pass to \code{\link[stats]{cor.test}}.
-#'
-#' @return A list with the correlation coefficient and p-value.
-#' @export
-#' @seealso \code{\link{correlation_draw}} for plotting correlation results.
-#' @examples
-#' vector_x <- c(1, 2, 3, 4, 5)
-#' vector_y <- c(5, 6, 7, 8, 7)
-#' result <- correlation_calculate(vector_x, vector_y, method = "pearson")
+This function calculates the Spearman (default) or Pearson correlation coefficient
+and its associated p-value between two vectors.
+It automatically handles missing values.
+}
+\examples{
+vector_x <- c(1, 2, 2, 4, 5)
+vector_y <- c(5, 6, 7, 8, 7)
+result <- correlation_calculate(vector_x, vector_y, method = "pearson")
+}
+\seealso{
+\code{\link{correlation_draw}} for plotting correlation results.
 }

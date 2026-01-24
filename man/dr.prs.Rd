@@ -10,13 +10,19 @@ dr.prs(
   stage2_bfile = "./data/zuo/bed/SNP_for_PRS/VKH-ASA-for_prs_snplist",
   summary_file = "./output/part1-gwas/prs/snp_for_prs.txt",
   output_dir = "./output/part1-gwas/prs/b1t2",
+  method = c(1, 2, 3),
+  dr_optimazation = TRUE,
   snp_col = "SNP.meta",
   a1_col = "A1",
   weight_col = "OR_Final",
   weight_type = "OR",
   divide_ratio = 0.7,
   iLasso_iteration = 1000,
+  nfolds = 10,
   plink_bin = plinkbinr::get_plink_exe(),
+  clump = T,
+  clump_include_hla = F,
+  clump_param = NULL,
   seed = 725
 )
 
@@ -31,6 +37,8 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{output_dir}{Directory to save the output files.}
 
+\item{method}{Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.}
+
 \item{snp_col}{Column name in the summary statistics for SNP IDs (default: "SNP.meta").}
 
 \item{a1_col}{Column name in the summary statistics for effect allele (default: "A1").}
@@ -39,9 +47,21 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{weight_type}{Type of weights, either "OR" (default) or "Beta". If "OR", it will calculate Beta values.}
 
+\item{divide_ratio}{Proportion of stage1 data in iLasso (default: 0.7).}
+
+\item{iLasso_iteration}{Number of iterations for iLasso model (default: 1000).}
+
 \item{plink_bin}{Path to the PLINK binary executable (default: \code{plinkbinr::get_plink_exe()}).}
 
-\item{seed}{Random seed. Default: 725}
+\item{clump}{Place holder for future clumping function.}
+
+\item{clump_include_hla}{Place holder for future clumping function.}
+
+\item{clump_param}{Place holder for future clumping function.}
+
+\item{seed}{Random seed (Default: 725).}
+
+\item{dr.optimazation}{Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).}
 }
 \value{
 A list with:

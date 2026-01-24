@@ -5,6 +5,7 @@
 #' * lasso [to capture linear relationship]
 #' * catboost [to capture non-linear relationship]
 #' It also calculated PRS with plink using traditional additive model.
+#'
 #' @param stage1_bfile Path to the stage1 PLINK binary files. Normally it is the one generates summary data. If only 1 source of individual data is available, you can split it into 2 non-overlap datasets.
 #' @param stage2_bfile Path to the stage2 PLINK binary files, i.e., the target dataset for PRS calculation.
 #' @param summary_file Path to the summary statistics file or a data frame containing SNPs, alleles, and weights. Note this summary only contains refined SNP for PRS calculation.
@@ -14,7 +15,14 @@
 #' @param weight_col Column name in the summary statistics for weights (default: "OR_Final").
 #' @param weight_type Type of weights, either "OR" (default) or "Beta". If "OR", it will calculate Beta values.
 #' @param plink_bin Path to the PLINK binary executable (default: `plinkbinr::get_plink_exe()`).
-#' @param seed Random seed. Default: 725
+#' @param divide_ratio Proportion of stage1 data in iLasso (default: 0.7).
+#' @param iLasso_iteration Number of iterations for iLasso model (default: 1000).
+#' @param method Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.
+#' @param seed Random seed (Default: 725).
+#' @param dr.optimazation Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).
+#' @param clump Place holder for future clumping function.
+#' @param clump_include_hla Place holder for future clumping function.
+#' @param clump_param Place holder for future clumping function.
 #'
 #' @return A list with:
 #'   - lasso_importance, catboost_importance, combined_rank
@@ -27,13 +35,23 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
                    stage2_bfile="./data/zuo/bed/SNP_for_PRS/VKH-ASA-for_prs_snplist",
                    summary_file="./output/part1-gwas/prs/snp_for_prs.txt",
                    output_dir="./output/part1-gwas/prs/b1t2",
+                   method = c(1,2,3), dr_optimazation = TRUE,
                    snp_col="SNP.meta", a1_col="A1",
                    weight_col="OR_Final", weight_type = "OR",
                    divide_ratio = 0.7,
-                   iLasso_iteration = 1000,
+                   iLasso_iteration = 1000, nfolds = 10,
                    plink_bin = plinkbinr::get_plink_exe(),
+                   clump = T, clump_include_hla = F, clump_param = NULL, # Yet to be implemented
                    seed = 725){
   require("data.table"); require("dplyr")
+  # method switch: 1=PLINK, 2=CatBoost, 3=iLasso
+  method <- sort(unique(as.integer(method))); if (length(method) == 0L) method <- 1L
+  stopifnot(all(method %in% c(1,2,3)))
+  do_plink   <- 1L %in% method
+  do_cat     <- 2L %in% method
+  do_lasso   <- 3L %in% method
+  do_combine <- do_cat && do_lasso
+  leo.basic::leo_log("Methods selected: {paste(method, collapse = ', ')} (1=PLINK, 2=CatBoost, 3=iLasso)")
   # check if all file exists
   if (!file.exists(paste0(stage1_bfile, ".bed"))) return(leo.basic::leo_log("Base .bed file not found.", level = "danger"))
   if (!file.exists(paste0(stage1_bfile, ".bim"))) return(leo.basic::leo_log("Base .bim file not found.", level = "danger"))
@@ -42,7 +60,7 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
   if (!file.exists(paste0(stage2_bfile, ".bim"))) return(leo.basic::leo_log("Target .bim file not found.", level = "danger"))
   if (!file.exists(paste0(stage2_bfile, ".fam"))) return(leo.basic::leo_log("Target .fam file not found.", level = "danger"))
   if (!dir.exists(output_dir)) {dir.create(output_dir, recursive = TRUE); leo.basic::leo_log("Output directory created: {output_dir}")}
-  if (is.character(summary_file) & !file.exists(summary_file)) return(leo.basic::leo_log("sumstats_file must be a file path or a data.frame.", level = "danger"))
+  if (is.character(summary_file) & !file.exists(summary_file)) return(leo.basic::leo_log("summary_file must be a file path or a data.frame.", level = "danger"))
 
   # clean summary stats file
   if (is.character(summary_file)) {
@@ -67,165 +85,194 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
   if (snp_overlap1 != nrow(summary)) leo.basic::leo_log("Only {snp_overlap1} of {nrow(summary)} SNPs found in stage1 .bim; match_rate = {round(snp_overlap1/nrow(summary), 3)}", level = "warning")
   if (snp_overlap2 != nrow(summary)) leo.basic::leo_log("Only {snp_overlap2} of {nrow(summary)} SNPs found in stage2 .bim; match_rate = {round(snp_overlap2/nrow(summary), 3)}", level = "warning")
 
-  # calculate traditional PRS with plink
-  leo.basic::leo_log("Calculating traditional PRS with PLINK...")
+  # ---- export SNP file once (shared by PLINK & A1 matrix extraction) ----
   plink_score_prefix <- paste0("plink_prs.", format(Sys.time(), "%Y%m%d"))
   snp_file <- file.path(output_dir, paste0(plink_score_prefix, ".txt"))
   summary %>% data.table::fwrite(snp_file, sep = "\t", row.names = FALSE, quote = FALSE)
-  leo.basic::leo_log("SNP file for PLINK PRS saved to {.path {snp_file}}")
+  leo.basic::leo_log("SNP file for downstream saved to {.path {snp_file}}")
 
-  plink_prs(bfile = stage2_bfile,
-            snp_file = snp_file,
-            output_prefix = file.path(output_dir, plink_score_prefix))
-  plink_prs <- fread(file.path(output_dir, paste0(plink_score_prefix, ".profile")))
-  plink_prs_vis <- prs.roc_hist_density(prs_score = plink_prs$SCORESUM,
-                                        phenotype = plink_prs$PHENO)
+  # calculate traditional PRS with plink
+  plink_prs <- NULL; plink_prs_vis <- NULL; auc_best <- NA_real_
+  if (do_plink) {
+    leo.basic::leo_log("Calculating traditional PRS with PLINK...")
+    plink_prs(bfile = stage2_bfile,
+              snp_file = snp_file,
+              output_prefix = file.path(output_dir, plink_score_prefix))
+    plink_prs <- fread(file.path(output_dir, paste0(plink_score_prefix, ".profile")))
+    plink_prs_vis <- prs.roc_hist_density(prs_score = plink_prs$SCORESUM,
+                                          phenotype = plink_prs$PHENO)
+    auc_best <- as.numeric(plink_prs_vis$roc_value)
+  } else {
+    leo.basic::leo_log("Skip PLINK scoring (method excludes 1).", level = "warning")
+  }
 
   # plink_get_a1_matrix
-  leo.basic::leo_log("Extracting genotype matrix for PRS calculation...")
-  s1_a1_matrix <- plink_get_a1_matrix(bfile = stage1_bfile, summary = snp_file,
-                                      output_dir = output_dir,
-                                      output_name = "stage1_a1_matrix",
-                                      snp_col = "SNP", a1_col = "A1")
-  s2_a1_matrix <- plink_get_a1_matrix(bfile = stage2_bfile, summary = snp_file,
-                                      output_dir = output_dir,
-                                      output_name = "stage2_a1_matrix",
-                                      snp_col = "SNP", a1_col = "A1")
+  m1 <- NULL; m2 <- NULL
+  if (do_cat || do_lasso) {
+    leo.basic::leo_log("Extracting genotype matrix for PRS calculation...")
+    s1_a1_matrix <- plink_get_a1_matrix(bfile = stage1_bfile, summary = snp_file,
+                                        output_dir = output_dir, output_name = "stage1_a1_matrix",
+                                        snp_col = "SNP", a1_col = "A1")
+    s2_a1_matrix <- plink_get_a1_matrix(bfile = stage2_bfile, summary = snp_file,
+                                        output_dir = output_dir, output_name = "stage2_a1_matrix",
+                                        snp_col = "SNP", a1_col = "A1")
+    m1 <- fread(file.path(output_dir, "stage1_a1_matrix.raw"))
+    m2 <- fread(file.path(output_dir, "stage2_a1_matrix.raw"))
+  } else {
+    leo.basic::leo_log("Skip genotype matrix extraction (no CatBoost/iLasso requested).", level = "warning")
+  }
 
   # build CatBoost model
-  m1_p <- file.path(output_dir, paste0("stage1_a1_matrix", ".raw"))
-  m2_p <- file.path(output_dir, paste0("stage2_a1_matrix", ".raw"))
-  m1 <- fread(m1_p)
-  m2 <- fread(m2_p)
-
-  train_catboost <- catboost_prs(m1, divide = T, divide_ratio = divide_ratio)
-  catboost_stage2 <- catboost_prs_target(m2, model = train_catboost$model)
-  leo.basic::leo_log("CatBoost PRS AUC on target set: {round(catboost_stage2$perf$roc_value, 4)}")
-  catboost_rank <- catboost_prs_rank(model = train_catboost$model,
-                                     pool = train_catboost$train_pool,
-                                     pool_df = train_catboost$x_train)
+  train_catboost <- NULL; catboost_stage2 <- NULL; catboost_rank <- NULL
+  if (do_cat) {
+    train_catboost <- catboost_prs(m1, divide = TRUE, divide_ratio = divide_ratio)
+    catboost_stage2 <- catboost_prs_target(m2, model = train_catboost$model)
+    leo.basic::leo_log("CatBoost PRS AUC on target set: {round(catboost_stage2$perf$roc_value, 4)}")
+    catboost_rank <- catboost_prs_rank(model = train_catboost$model,
+                                       pool = train_catboost$train_pool,
+                                       pool_df = train_catboost$x_train)
+  } else {
+    leo.basic::leo_log("CatBoost disabled (method excludes 2).", level = "warning")
+  }
 
   # build iLasso model
-  leo.basic::leo_log("Building iLasso model for PRS ranking...")
-  train_lasso <- lasso_prs(m1, divide_ratio = divide_ratio, iterative = iLasso_iteration)
-  lasso_stage2 <- lasso_prs_target(m2, model = train_lasso$model, lambda = train_lasso$lambda, score_type = "link")
-  leo.basic::leo_log("Lasso PRS AUC on target set: {round(lasso_stage2$perf$roc_value, 4)}")
-  lasso_rank <- lasso_prs_rank(model = train_lasso$model, rank = train_lasso$feature_rank, auc_history = train_lasso$auc_history)
-  # lasso_vis1 <- gglasso(no_cv_lasso = train_lasso$model$glmnet.fit, cv_lasso = train_lasso$model)
-  # lasso_vis2 <- ggcvlasso(train_lasso$model)
+  train_lasso <- NULL; lasso_stage2 <- NULL; lasso_rank <- NULL
+  if (do_lasso) {
+    leo.basic::leo_log("Building iLasso model for PRS ranking...")
+    train_lasso <- lasso_prs(m1, divide_ratio = divide_ratio, iterative = iLasso_iteration, nfolds = nfolds)
+    if (is.null(train_lasso$model) || is.null(train_lasso$lambda)) {
+      leo.basic::leo_log("iLasso produced no valid model; skip Lasso target scoring.", level = "warning")
+      lasso_stage2 <- list(pred_df = NULL, perf = list(roc_value = NA_real_))
+      lasso_rank   <- tibble::tibble(Feature = character(0), count = integer(0))
+    } else {
+      lasso_stage2 <- lasso_prs_target(m2, model = train_lasso$model, lambda = train_lasso$lambda, score_type = "link")
+      leo.basic::leo_log("Lasso PRS AUC on target set: {round(lasso_stage2$perf$roc_value, 4)}")
+      lasso_rank <- lasso_prs_rank(model = train_lasso$model, rank = train_lasso$feature_rank, auc_history = train_lasso$auc_history)
+    }
+    # lasso_vis1 <- gglasso(no_cv_lasso = train_lasso$model$glmnet.fit, cv_lasso = train_lasso$model)
+    # lasso_vis2 <- ggcvlasso(train_lasso$model)
+  } else {
+    leo.basic::leo_log("iLasso disabled (method excludes 3).", level = "warning")
+  }
 
-  # overall rank
-  rank1 <- catboost_rank$importance_df %>% mutate(rank1 = dplyr::dense_rank(Importance))
-  rank2 <- train_lasso$feature_rank %>% mutate(rank2 = dplyr::dense_rank(count))
-  rank_combined <- left_join(rank1 %>% select(Feature, rank1),
-                             rank2 %>% select(Feature, rank2),
-                             by = c("Feature" = "Feature")) %>%
-    mutate(rank_combined = combine_rank(rank1, rank2,
-                                        auc1 = as.numeric(train_catboost$perf$roc_value),
-                                        auc2 = as.numeric(train_lasso$perf_test$roc_value)),
-           rank_censor = dplyr::dense_rank(rank_combined)) %>%
-    arrange(rank_censor)
+  # ---- combine ranks if both available ----
+  if (dr_optimazation) {
+    rank_combined <- NULL
+    id_deleted <- character(0)
+    if (do_cat && do_lasso && do_plink) {
+      # overall rank
+      rank1 <- catboost_rank$importance_df %>% mutate(rank1 = dplyr::dense_rank(Importance))
+      rank2 <- train_lasso$feature_rank %>% mutate(rank2 = dplyr::dense_rank(count))
+      rank_combined <- left_join(rank1 %>% select(Feature, rank1),
+                                 rank2 %>% select(Feature, rank2),
+                                 by = "Feature") %>%
+        mutate(rank_combined = combine_rank(rank1, rank2,
+                                            auc1 = as.numeric(train_catboost$perf$roc_value),
+                                            auc2 = as.numeric(train_lasso$perf_test$roc_value)),
+               rank_censor = dplyr::dense_rank(rank_combined)) %>%
+        arrange(rank_censor)
+      # Optimizing PRS
+      id_deleted <- character(0)               # chr:pos that have been deleted
+      improve_ids    <- character(0)           # all chr:pos that led to improvement
+      improve_labels <- character(0)
 
+      base_dir <- file.path(output_dir, "dr.prs"); dir.create(base_dir, showWarnings = FALSE, recursive = TRUE)
 
-  # Optimizing PRS
-  auc_best   <- as.numeric(plink_prs_vis$roc_value)
-  id_deleted <- character(0)                  # chr:pos that have been deleted
-  improve_ids    <- character(0)              # all chr:pos that led to improvement
-  improve_labels <- character(0)
+      leo.basic::leo_log("---- Start Greedy search to optimize PRS based on censor rank ----")
+      leo.basic::leo_log("Initial AUC = {round(auc_best,4)}; {nrow(rank_combined)} SNP{?s} to try")
 
-  base_dir <- file.path(output_dir, "dr.prs")
-  dir.create(base_dir, showWarnings = FALSE, recursive = TRUE)
+      round_idx <- 0L
+      repeat {
+        round_idx <- round_idx + 1L
+        round_dir <- file.path(base_dir, sprintf("round%d", round_idx))
+        dir.create(round_dir, showWarnings = FALSE, recursive = TRUE)
+        leo.basic::leo_log("Round {sprintf('%d', round_idx)} -> temp files at {.path {round_dir}}")
 
-  leo.basic::leo_log("---- Start Greedy search to optimize PRS based on censor rank ----")
-  leo.basic::leo_log("Initial AUC = {round(auc_best,4)}; {nrow(rank_combined)} SNP{?s} to try")
+        improved <- FALSE
+        for (j in seq_len(nrow(rank_combined))) {
+          # current SNP (label vs id)
+          snp_to_drop    <- rank_combined$Feature[j]                              # e.g., "22:30253222_C(/A)"
+          snp_id_to_drop <- stringr::str_extract(snp_to_drop, "^[0-9]+:[0-9]+")   # e.g., "22:30253222"
+          if (snp_id_to_drop %in% id_deleted) next
 
-  round_idx <- 0L
-  repeat {
-    round_idx <- round_idx + 1L
-    round_dir <- file.path(base_dir, sprintf("round%d", round_idx))
-    dir.create(round_dir, showWarnings = FALSE, recursive = TRUE)
-    leo.basic::leo_log("Round {sprintf('%d', round_idx)} -> temp files at {.path {round_dir}}")
+          rank_tag     <- rank_combined$rank_censor[j]
+          rank_tag_str <- sprintf("%d.", as.integer(rank_tag))
 
-    improved <- FALSE
-    for (j in seq_len(nrow(rank_combined))) {
-      # current SNP (label vs id)
-      snp_to_drop    <- rank_combined$Feature[j]                              # e.g., "22:30253222_C(/A)"
-      snp_id_to_drop <- stringr::str_extract(snp_to_drop, "^[0-9]+:[0-9]+")   # e.g., "22:30253222"
-      if (snp_id_to_drop %in% id_deleted) next
+          leo.basic::leo_log("Try delete --> {.emph {snp_to_drop}}")
 
-      rank_tag     <- rank_combined$rank_censor[j]
-      rank_tag_str <- sprintf("%d.", as.integer(rank_tag))
+          # candidate summary = original - deleted - current
+          summary_i <- summary %>% dplyr::filter(!SNP %in% c(id_deleted, snp_id_to_drop))
 
-      leo.basic::leo_log("Try delete --> {.emph {snp_to_drop}}")
+          # file stubs under round dir
+          file_stub  <- sprintf("%s%s@%s", rank_tag_str, plink_score_prefix, snp_id_to_drop)
+          out_prefix <- file.path(round_dir, file_stub)
+          snp_file   <- file.path(round_dir, paste0(file_stub, ".txt"))
 
-      # candidate summary = original - deleted - current
-      summary_i <- summary %>% dplyr::filter(!SNP %in% c(id_deleted, snp_id_to_drop))
+          # write SNP file
+          data.table::fwrite(summary_i, snp_file, sep = "\t", quote = FALSE, row.names = FALSE)
+          leo.basic::leo_log("SNP file saved: {.path {snp_file}}")
 
-      # file stubs under round dir
-      file_stub  <- sprintf("%s%s@%s", rank_tag_str, plink_score_prefix, snp_id_to_drop)
-      out_prefix <- file.path(round_dir, file_stub)
-      snp_file   <- file.path(round_dir, paste0(file_stub, ".txt"))
+          # run PRS & evaluate
+          plink_prs(bfile = stage2_bfile, snp_file = snp_file, output_prefix = out_prefix)
+          prof <- data.table::fread(paste0(out_prefix, ".profile"))
+          vis  <- prs.roc_hist_density(prs_score = prof$SCORESUM, phenotype = prof$PHENO)
+          auc_i <- as.numeric(vis$roc_value)
 
-      # write SNP file
-      data.table::fwrite(summary_i, snp_file, sep = "\t", quote = FALSE, row.names = FALSE)
-      leo.basic::leo_log("SNP file saved: {.path {snp_file}}")
+          if (auc_i >= auc_best) {
+            # accept and stop this round
+            auc_best      <- auc_i
+            id_deleted    <- c(id_deleted, snp_id_to_drop)
+            improve_ids   <- c(improve_ids, snp_id_to_drop)
+            improve_labels<- c(improve_labels, snp_to_drop)
+            improved      <- TRUE
+            leo.basic::leo_log("ACCEPT: AUC={round(auc_i,4)}; move to next round", level = "success")
+            break
+          } else {
+            leo.basic::leo_log("REJECT: AUC={round(auc_i,4)}", level = "danger")
+          }
+        }
+        if (!improved) { leo.basic::leo_log("No improvement this round. Stop.", level = "warning"); break }
+        leo.basic::leo_log("Round {round_idx} finished with improvement; continue.", level = "success")
+      }
 
-      # run PRS & evaluate
-      plink_prs(bfile = stage2_bfile, snp_file = snp_file, output_prefix = out_prefix)
-      prof <- data.table::fread(paste0(out_prefix, ".profile"))
-      vis  <- prs.roc_hist_density(prs_score = prof$SCORESUM, phenotype = prof$PHENO)
-      auc_i <- as.numeric(vis$roc_value)
-
-      if (auc_i >= auc_best) {
-        # accept and stop this round
-        auc_best      <- auc_i
-        id_deleted    <- c(id_deleted, snp_id_to_drop)
-        improve_ids   <- c(improve_ids, snp_id_to_drop)
-        improve_labels<- c(improve_labels, snp_to_drop)
-        improved      <- TRUE
-        leo.basic::leo_log("ACCEPT: AUC={round(auc_i,4)}; move to next round", level = "success")
-        break
+      # final report: who contributed improvements
+      if (length(improve_ids) == 0) {
+        leo.basic::leo_log("No improvement over baseline. Best AUC = {round(auc_best,4)}", level = "warning")
       } else {
-        leo.basic::leo_log("REJECT: AUC={round(auc_i,4)}", level = "danger")
+        leo.basic::leo_log("Best AUC = {round(auc_best,4)}; improvements came from dropping:", level = "success")
+        # concise print
+        print(tibble::tibble(order = seq_along(improve_ids), snp_label = improve_labels, snp_id = improve_ids))
       }
     }
-
-    if (!improved) { leo.basic::leo_log("No improvement this round. Stop.", level = "warning"); break }
-    leo.basic::leo_log("Round {round_idx} finished with improvement; continue.", level = "success")
-  }
-
-  # final report: who contributed improvements
-  if (length(improve_ids) == 0) {
-    leo.basic::leo_log("No improvement over baseline. Best AUC = {round(auc_best,4)}", level = "warning")
   } else {
-    leo.basic::leo_log("Best AUC = {round(auc_best,4)}; improvements came from dropping:", level = "success")
-    # concise print
-    print(tibble::tibble(order = seq_along(improve_ids), snp_label = improve_labels, snp_id = improve_ids))
+    leo.basic::leo_log("Skip DuoRank optimization (dr_optimazation = FALSE).", level = "warning")
   }
+
 
   # return
-  return(list(combined_rank = rank_combined,
+  return(list(combined_rank = if (exists("rank_combined")) rank_combined else NULL,
               # CatBoost
-              catboost = list(model = train_catboost$model,
-                              stage2_pred = catboost_stage2$pred_df,
-                              stage2_perf = catboost_stage2$perf,
-                              rank  = catboost_rank),
+              catboost = if (do_cat) list(model = train_catboost$model,
+                                          stage2_pred = catboost_stage2$pred_df,
+                                          stage2_perf = catboost_stage2$perf,
+                                          rank  = catboost_rank) else NULL,
               # iLasso
-              ilasso = list(model = train_lasso$model,
-                            lambda = train_lasso$lambda,
-                            stage2_pred = lasso_stage2$pred_df,
-                            stage2_perf = lasso_stage2$perf,
-                            rank  = lasso_rank),
-              # plink
-              plink = list(prs_file = file.path(output_dir, paste0(plink_score_prefix, ".profile")),
-                           prs_df   = plink_prs,
-                           perf     = plink_prs_vis),
-              final_snp = summary %>% dplyr::filter(!SNP %in% id_deleted) %>% dplyr::pull(SNP),
-              final_best_auc = auc_best,
-              # auc
-              list(catboost = catboost_stage2$perf$roc_value,
-                   ilasso   = lasso_stage2$perf$roc_value,
-                   full_plink = plink_prs_vis$roc_value)
+              ilasso = if (do_lasso) list(model = train_lasso$model,
+                                          lambda = train_lasso$lambda,
+                                          stage2_pred = lasso_stage2$pred_df,
+                                          stage2_perf = lasso_stage2$perf,
+                                          rank  = lasso_rank) else NULL,
+              # PLINK
+              plink = if (do_plink) list(prs_file = file.path(output_dir, paste0(plink_score_prefix, ".profile")),
+                                         snp_file = snp_file,
+                                         prs_df   = plink_prs,
+                                         perf     = plink_prs_vis) else NULL,
+              final_snp = summary %>% dplyr::filter(!SNP %in% (if (exists("id_deleted")) id_deleted else character(0))) %>% dplyr::pull(SNP),
+              final_best_auc = if (do_cat && do_lasso && do_plink && isTRUE(dr_optimazation) && exists("auc_best")) auc_best
+                               else if (do_plink) as.numeric(plink_prs_vis$roc_value) else NA_real_,
+              auc = list(catboost   = if (do_cat)   as.numeric(catboost_stage2$perf$roc_value) else NA_real_,
+                         ilasso     = if (do_lasso) as.numeric(lasso_stage2$perf$roc_value)    else NA_real_,
+                         full_plink = if (do_plink) as.numeric(plink_prs_vis$roc_value)        else NA_real_)
   ))
 }
 
@@ -538,13 +585,13 @@ catboost_prs_rank <- function(model, pool, pool_df,
 }
 
 # lasso ----
-#' Iterative Lasso PRS utilities
+#' Iterative Lasso PRS (iLasso) utilities
 #'
 #' Train, apply and visualize iterative Lasso-based PRS models with success gating.
 #'
 #' @param a1_matrix data.frame; PLINK A1 matrix.
 #' @param divide_ratio numeric; train fraction per iteration (default 0.7).
-#' @param iterative integer; number of iterations (default 100).
+#' @param iterative integer; number of iterations (default 100) - If set to 1, then regular lasso is performed.
 #' @param nfolds integer; CV folds for glmnet (default 10).
 #' @param seed integer; base random seed (default 725).
 #' @param score_type character; "link" (linear score, default) or "response" (probability).
@@ -611,7 +658,7 @@ lasso_prs <- function(a1_matrix, divide_ratio = 0.7, iterative = 100, nfolds = 1
     if (!length(nonzero_idx)) {
       auc_history <- dplyr::bind_rows(auc_history, dplyr::tibble(iteration = i, train_auc = NA_real_, test_auc = NA_real_,
                                                                  pass = FALSE, p_u_test = NA_real_, p_delong = NA_real_, n_feat = 0L))
-      next
+      if (iterative > 1L) next # keep going when iterative == 1L (we still want a valid single-run model)
     }
 
     # predictions
@@ -621,21 +668,30 @@ lasso_prs <- function(a1_matrix, divide_ratio = 0.7, iterative = 100, nfolds = 1
     roc_test   <- suppressMessages(pROC::roc(y_test,  score_test,  quiet = TRUE))
 
     # success rules: (1) test separation; (2) no train-test AUC diff
-    p_u  <- stats::wilcox.test(score_test[y_test == 0], score_test[y_test == 1], exact = FALSE)$p.value
-    p_dl <- suppressMessages(pROC::roc.test(roc_train, roc_test, method = "delong")$p.value)
+    p_u  <- stats::wilcox.test(score_test[y_test == 0], score_test[y_test == 1], exact = FALSE)$p.value # u test
+    p_dl <- suppressMessages(pROC::roc.test(roc_train, roc_test, method = "delong")$p.value) # delong test
     ok <- (p_u < 0.05) && (p_dl >= 0.05)
     auc_history <- dplyr::bind_rows(auc_history, dplyr::tibble(iteration = i,
                                                                train_auc = as.numeric(roc_train$auc),
                                                                test_auc  = as.numeric(roc_test$auc),
                                                                pass = ok, p_u_test = p_u, p_delong = p_dl,
                                                                n_feat = length(nonzero_idx)))
-    if (ok) {
+
+    # single-run: always keep this model (overwrite to ensure exactly-one model)
+    if (iterative == 1) {
+      success_n = as.integer(ok)
+      if (length(nonzero_idx)) feature_count[nonzero_idx] <- feature_count[nonzero_idx] + 1L
+      best_model <- list(test_auc = as.numeric(roc_test$auc),
+                         model = cv_fit, lambda = lambda,
+                         train_idx = idx, test_idx = setdiff(seq_len(n_total), idx))
+    }
+
+    if (iterative > 1 && ok) {
       success_n <- success_n + 1L
       feature_count[nonzero_idx] <- feature_count[nonzero_idx] + 1L
       if (as.numeric(roc_test$auc) > best_model$test_auc)
         best_model <- list(test_auc = as.numeric(roc_test$auc),
-                           model = cv_fit,
-                           lambda = lambda,
+                           model = cv_fit, lambda = lambda,
                            train_idx = idx, test_idx = setdiff(seq_len(n_total), idx))
     }
   }
@@ -664,6 +720,7 @@ lasso_prs <- function(a1_matrix, divide_ratio = 0.7, iterative = 100, nfolds = 1
        success_n = success_n, attempts = attempts,
        auc_history = auc_history, feature_rank = feature_freq)
 }
+
 #' @rdname lasso_prs
 #' @export
 lasso_prs_target <- function(a1_matrix, model, lambda, score_type = "link"){
@@ -798,6 +855,7 @@ plink_get_a1_matrix <- function(bfile, summary, output_dir, output_name,
 }
 
 plink_prs <- function(bfile, snp_file, output_prefix, plink_bin = plinkbinr::get_plink_exe()) {
+  # This function calculate the PRS using PLINK
   if (!file.exists(paste0(bfile, ".bed"))) stop("Base .bed file not found.")
   if (!file.exists(paste0(bfile, ".bim"))) stop("Base .bim file not found.")
   if (!file.exists(paste0(bfile, ".fam"))) stop("Base .fam file not found.")
@@ -812,6 +870,85 @@ plink_prs <- function(bfile, snp_file, output_prefix, plink_bin = plinkbinr::get
   leo.basic::leo_log("PRS calculation completed. Output saved to {.path {output_prefix}.profile}", level = "success")
 }
 
+plink_prs_target <- function(bfile, snp_file, output_prefix, plink_bin = plinkbinr::get_plink_exe()){
+  # This function evaluate
+  stage3_plink <- plink_prs(bfile = "./data/zuo/bed/SNP_for_PRS/stage3/VKH-ASA-141s-1012s-ALL-PRS",
+                            snp_file = snp_file, output_prefix = output_prefix, plink_bin = plink_bin)
+  stage3_plink_p <- paste(file.path(output_dir, "stage3_plink"), "profile", sep = ".")
+  stage3_prs_plink <- fread(stage3_plink_p)
+  stage3_prs_plink <- stage3_prs_plink %>% mutate(PHENO = ifelse(PHENO == 1, 0L, 1L))
+}
+
+# plink clump ----
+#' HLA-aware PLINK clumping (Yet implemented)
+#'
+#' Simple wrapper:
+#'   "none"       -> drop HLA (chr6:25–34Mb), clump non-HLA only
+#'   "all"        -> keep all HLA (no clump), clump non-HLA, then union
+#'   "just_clump" -> clump all variants together
+#'
+#' Input: `{output}.clump.txt` with columns "SNP","P".
+#' Defaults follow common PRS C+T: --clump-p1 1, --clump-p2 1, --clump-r2 0.1, --clump-kb 250.
+#'
+#' @param bfile PLINK bfile for LD reference.
+#' @param hla_keep One of c("all","none","just_clump").
+#' @param output Output prefix; expects `{output}.clump.txt`.
+#' @param plink_bin Path to PLINK.
+#'
+#' @return Character vector of kept SNPs; also writes `{output}.kept.snps.txt`.
+#' @export
+#' @importFrom data.table fread fwrite
+#' @importFrom dplyr left_join select transmute
+#' @importFrom stats setNames
+plink_clump_hla_aware <- function(bfile, hla_keep = c("all","none","just_clump"),
+                                  output, plink_bin = plinkbinr::get_plink_exe()) {
+  # basic checks
+  if (!file.exists(paste0(bfile, ".bed"))) stop("Base .bed file not found.")
+  if (!file.exists(paste0(bfile, ".bim"))) stop("Base .bim file not found.")
+  if (!file.exists(paste0(bfile, ".fam"))) stop("Base .fam file not found.")
+  hla_keep <- match.arg(hla_keep)
+
+  in_file <- paste0(output, ".clump.txt"); out_pref <- paste0(output, ".run")
+  if (!file.exists(in_file)) stop("Input file not found: {output}.clump.txt (need columns: SNP, P)")
+
+  # annotate CHR/BP to mark HLA region
+  bim <- data.table::fread(paste0(bfile, ".bim"), header = F, col.names = c("CHR","SNP","CM","BP","A1","A2"))
+  in_df <- data.table::fread(in_file)
+  if (!all(c("SNP","P") %in% colnames(in_df))) stop("Input must have columns: SNP, P")
+  in_df <- dplyr::left_join(in_df, bim %>% dplyr::select(CHR, SNP, BP), by = "SNP")
+  in_hla <- with(in_df, CHR == 6 & BP >= 25e6 & BP <= 34e6)
+  df_hla <- in_df[in_hla, , drop = F]; df_non <- in_df[!in_hla, , drop = F]
+
+  # helper: run PLINK clump on 2-col file (SNP,P)
+  run_clump <- function(df, tag) {
+    if (nrow(df) == 0) return(character(0))
+    tag_in <- paste0(out_pref, ".", tag, ".in.txt"); tag_out <- paste0(out_pref, ".", tag)
+    data.table::fwrite(df %>% dplyr::transmute(SNP, P = as.numeric(P)), tag_in, sep = "\t", quote = F, col.names = T)
+    cmd <- paste(plink_bin, "--bfile", bfile, "--clump", tag_in,
+                 "--clump-snp-field", "SNP", "--clump-p-field", "P",
+                 "--clump-p1", 1, "--clump-p2", 1, "--clump-r2", 0.1, "--clump-kb", 250, "--out", tag_out)
+    base::system(cmd)
+    clumped <- paste0(tag_out, ".clumped")
+    if (!file.exists(clumped)) { leo.basic::leo_log("No .clumped for {tag}; return empty.", level = "warning"); return(character(0)) }
+    tbl <- tryCatch(data.table::fread(clumped, fill = T), error = function(e) NULL)
+    if (is.null(tbl) || !"SNP" %in% colnames(tbl)) { leo.basic::leo_log("Parse .clumped failed for {tag}.", level = "danger"); return(character(0)) }
+    unique(as.character(tbl$SNP))
+  }
+
+  # modes
+  if (hla_keep == "none") {
+    keep <- run_clump(df_non %>% dplyr::select(SNP, P), "nonHLA")
+  } else if (hla_keep == "all") {
+    keep_non <- run_clump(df_non %>% dplyr::select(SNP, P), "nonHLA")
+    keep <- unique(c(keep_non, df_hla$SNP))
+  } else {
+    keep <- run_clump(in_df %>% dplyr::select(SNP, P), "all")
+  }
+
+  data.table::fwrite(data.frame(SNP = keep), paste0(output, ".kept.snps.txt"), sep = "\t", quote = F, col.names = T)
+  leo.basic::leo_log("Clump done ({hla_keep}): input={nrow(in_df)}, kept={length(keep)}; saved -> {output}.kept.snps.txt", level = "success")
+  return(keep)
+}
 # vis ----
 prs.roc_hist_density <- function(prs_score, phenotype,
                                  ctrl_case_level = c(1,2),
