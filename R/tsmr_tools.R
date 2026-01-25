@@ -19,6 +19,9 @@
 #' library(ieugwasr)
 #' library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
 #' plinkbinr::get_plink_exe()
+#'
+#' # Note: after using this, please check `leo_clump` column to see if they are all TRUE
+#' # If it's contains F, it means no SNPs remained after clumping or something bad happened
 clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                              clump_kb = 10000,
                              clump_r2 = 0.001,
@@ -27,8 +30,9 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL,
   if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
   if (!is.null(pop) & is.null(bfile)) { leo_log("Performing LD online") }
   if (is.null(pop) & !is.null(bfile)) { leo_log("Performing LD locally") }
-
   # if (!is.null(pop) & !is.null(bfile)) { stop("Only one LD method can be used") }
+
+  id0 <- if ("id.exposure" %in% names(dat)) unique(dat$id.exposure)[1] else NA
   dat1 <- tryCatch(
     ieugwasr::ld_clump(dat = dplyr::tibble(rsid=dat$SNP,
                                            pval=dat$pval.exposure,
@@ -39,7 +43,6 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                        bfile = bfile,
                        plink_bin = plink_bin),
     error = function(e) {
-      id0 <- if ("id.exposure" %in% names(dat)) unique(dat$id.exposure)[1] else NA
       if (is.na(id0) || length(id0) == 0) id0 <- "NA"
       leo_log(sprintf("ld_clump failed (id=%s): %s", id0, conditionMessage(e)), level = "danger")
       NULL

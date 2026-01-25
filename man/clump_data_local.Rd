@@ -37,5 +37,8 @@ or a 1000 Genomes super population panel. Requires the \code{ieugwasr} and \code
 library(ieugwasr)
 library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
 plinkbinr::get_plink_exe()
+
+# Note: after using this, please check `leo_clump` column to see if they are all TRUE
+# If it's contains F, it means no SNPs remained after clumping or something bad happened
 }
 \keyword{tsmr:}
