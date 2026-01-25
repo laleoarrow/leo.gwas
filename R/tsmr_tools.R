@@ -24,24 +24,36 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                              clump_r2 = 0.001,
                              plink_bin = plinkbinr::get_plink_exe()) {
   require(ieugwasr); require(plinkbinr)
-  leo_log(" - Clumping data locally")
   if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
-  if (!is.null(pop) & is.null(bfile)) { leo_message("Performing LD online") }
-  if (is.null(pop) & !is.null(bfile)) { leo_message("Performing LD locally") }
+  if (!is.null(pop) & is.null(bfile)) { leo_log("Performing LD online") }
+  if (is.null(pop) & !is.null(bfile)) { leo_log("Performing LD locally") }
+
   # if (!is.null(pop) & !is.null(bfile)) { stop("Only one LD method can be used") }
-  dat1 <- ieugwasr::ld_clump(
-    dat = dplyr::tibble(rsid=dat$SNP, pval=dat$pval.exposure, id=dat$id.exposure),
-    clump_kb = clump_kb,
-    clump_r2 = clump_r2,
-    pop = pop,
-    bfile = bfile,
-    plink_bin = plink_bin
+  dat1 <- tryCatch(
+    ieugwasr::ld_clump(dat = dplyr::tibble(rsid=dat$SNP,
+                                           pval=dat$pval.exposure,
+                                           id=dat$id.exposure),
+                       clump_kb = clump_kb,
+                       clump_r2 = clump_r2,
+                       pop = pop,
+                       bfile = bfile,
+                       plink_bin = plink_bin),
+    error = function(e) {
+      id0 <- if ("id.exposure" %in% names(dat)) unique(dat$id.exposure)[1] else NA
+      if (is.na(id0) || length(id0) == 0) id0 <- "NA"
+      leo_log(sprintf("ld_clump failed (id=%s): %s", id0, conditionMessage(e)), level = "danger")
+      NULL
+    }
   )
-  if(nrow(dat1) == 0) {
-    warning("No SNPs remained after clumping")
-    return(NULL)
+
+  if (is.null(dat1) || nrow(dat1) == 0) {
+    dat$leo_clump <- FALSE
+    leo_log(sprintf("No SNPs remained after clumping (id=%s)", id0), level = "danger")
+    return(dat)
   }
-  dat2<- subset(dat, SNP %in% dat1$rsid)
+
+  dat2 <- subset(dat, SNP %in% dat1$rsid)
+  dat2$leo_clump <- TRUE
   return(dat2)
 }
 
