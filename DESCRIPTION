@@ -10,20 +10,33 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
+    annotables (>= 0.2.0),
+    AnnotationDbi,
+    biomaRt,
+    BSgenome,
+    caret,
+    catboost,
+    cli,
     data.table,
-    tidyverse,
+    GenomicFeatures,
     ggplot2,
     ggsci,
+    glmnet,
+    glue,
     ieugwasr,
     LDlinkR,
+    magrittr,
     MungeSumstats,
     plinkbinr,
-    TwoSampleMR,
-    vroom,
-    BSgenome,
+    pROC,
+    purrr,
+    RColorBrewer,
+    rlang,
+    rtracklayer,
     stringr,
-    cli,
-    annotables (>= 0.2.0)
+    tidyr,
+    TwoSampleMR,
+    vroom
 Depends: 
     dplyr,
     leo.basic (>= 0.0.1)
@@ -35,4 +48,11 @@ Suggests:
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Remotes:  
     github::laleoarrow/leo.basic,
-    stephenturner/annotables
+    github::catboost/catboost/catboost/R-package,
+    stephenturner/annotables,
+    bioc::AnnotationDbi,
+    bioc::biomaRt,
+    bioc::BSgenome,
+    bioc::GenomicFeatures,
+    bioc::MungeSumstats,
+    bioc::rtracklayer
