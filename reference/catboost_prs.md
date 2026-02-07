@@ -64,4 +64,5 @@ These functions require installed catboost. Training with
 
 ## See also
 
-`catboost.train`, `catboost.get_feature_importance`
+`catboost::catboost.train()`,
+`catboost::catboost.get_feature_importance()`
