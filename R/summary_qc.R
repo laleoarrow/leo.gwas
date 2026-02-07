@@ -248,6 +248,7 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 NULL
 
 #' @rdname gwas_qc_helpers
+#' @export
 is_complementary <- function(a1st, a2nd){
   return(
     (a1st == "A" & a2nd == "T") |
@@ -258,6 +259,7 @@ is_complementary <- function(a1st, a2nd){
 }
 
 #' @rdname gwas_qc_helpers
+#' @export
 fetch_indel <- function(df, type = "both"){
   if (type == "both") {
     return(df %>% filter(nchar(A1) > 1 & nchar(A2) > 1))
@@ -271,11 +273,13 @@ fetch_indel <- function(df, type = "both"){
 }
 
 #' @rdname gwas_qc_helpers
+#' @export
 fetch_non_indel <- function(df){
   return(df %>% filter(nchar(A1) == 1 & nchar(A2) == 1))
 }
 
 #' @rdname gwas_qc_helpers
+#' @export
 duplicated_SNP_lines <- function(df, type = "rm", dup_columns = c("SNP"), group_columns = dup_columns) {
   if (is.data.table(df)) { df <- as.data.frame(df) }
   duplicated_index <- duplicated(df[dup_columns]) | duplicated(df[dup_columns], fromLast = TRUE)
@@ -298,6 +302,7 @@ duplicated_SNP_lines <- function(df, type = "rm", dup_columns = c("SNP"), group_
 }
 
 #' @rdname gwas_qc_helpers
+#' @export
 slice1_SNP_lines <- function(df, dup_columns = c("SNP"), group_columns = dup_columns) {
   if (is.data.table(df)) { df <- as.data.frame(df) }
 
