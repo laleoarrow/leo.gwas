@@ -29,7 +29,6 @@ Imports:
     leo.basic (>= 0.0.1),
     magrittr,
     MungeSumstats,
-    plinkbinr,
     pROC,
     purrr,
     RColorBrewer,
@@ -43,13 +42,13 @@ Suggests:
     caret,
     catboost,
     minfi,
+    plinkbinr,
     Rmpfr,
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Remotes: 
-    github::explodecomputer/plinkbinr,
     github::MRCIEU/ieugwasr,
     github::MRCIEU/TwoSampleMR,
     github::catboost/catboost/catboost/R-package,
