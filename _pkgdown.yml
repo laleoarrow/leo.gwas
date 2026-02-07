@@ -89,3 +89,9 @@ reference:
   - leo.gwas_qc
   - check_significant_SNP
 
+
+articles:
+- title: Tutorials
+  navbar: Tutorials
+  contents:
+  - installation

@@ -42,9 +42,11 @@ Imports:
 Suggests: 
     caret,
     catboost,
+    knitr,
     minfi,
     plinkbinr,
     Rmpfr,
+    rmarkdown,
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -66,3 +68,4 @@ Config/leo.gwas/suggests_usage: caret -> dr.prs(), catboost_prs(),
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+VignetteBuilder: knitr
