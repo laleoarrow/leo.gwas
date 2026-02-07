@@ -10,20 +10,17 @@ commands when specific dependencies fail.
 ``` r
 options(timeout = 1000000)
 
-# 1) Install leo.basic first
-pak::pkg_install("github::laleoarrow/leo.basic")
+# 1) Install pak
+install.packages("pak", repos = "https://cloud.r-project.org")
 
-# 2) Install heavy/optional dependencies through leo.basic helper
-# If your helper function name is install.deps, use this:
-leo.basic::install.deps("leo.gwas")
+# 2) Install leo.basic
+pak::pkg_install("laleoarrow/leo.basic")
 
-# If your local leo.basic uses install_deps naming, use this instead:
-# leo.basic::install_deps("leo.gwas")
+# 3) Use leo.basic helper to install leo.gwas dependencies with multiple CPU cores
+leo.basic::install_deps("leo.gwas", ncpus = 8)
 
-# 3) Install leo.gwas
-pak::pkg_install("github::laleoarrow/leo.gwas")
-# or
-# devtools::install_github("laleoarrow/leo.gwas")
+# 4) Install leo.gwas
+pak::pkg_install("laleoarrow/leo.gwas")
 ```
 
 ## Fallback commands for common failures
