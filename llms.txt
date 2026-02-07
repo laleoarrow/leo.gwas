@@ -292,3 +292,9 @@ Summary statistics QC from `R/summary_qc.R`.
 - [`check_significant_SNP()`](https://laleoarrow.github.io/leo.gwas/reference/check_significant_SNP.md)
   : locate the significant SNP for conditional analysis
 
+# Articles
+
+### Tutorials
+
+- [Installation
+  Tutorial](https://laleoarrow.github.io/leo.gwas/articles/installation.md):
