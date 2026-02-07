@@ -78,7 +78,7 @@ RAM consumption.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Suppose you have 25 elements and want to batch them in groups of 6</span></span></span>
 <span class="r-in"><span><span class="va">nums</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span></span></span>
 <span class="r-in"><span><span class="va">it</span> <span class="op">&lt;-</span> <span class="fu">leo_iterator</span><span class="op">(</span><span class="va">nums</span>, <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BBBB;">[16:26:07]</span> Creating batch iterator with 25 elements in total;  batch size = 6 ; total rounds = 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BBBB;">[16:34:23]</span> Creating batch iterator with 25 elements in total;  batch size = 6 ; total rounds = 5 </span>
 <span class="r-in"><span><span class="kw">while</span> <span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu">it</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span> <span class="kw">break</span></span></span>
@@ -86,15 +86,15 @@ RAM consumption.</p>
 <span class="r-in"><span>  <span class="co"># add your parallel process steps</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">batch</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:26:07]</span> Round 1 of 5 | elements from index 1 to 6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:34:23]</span> Round 1 of 5 | elements from index 1 to 6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5 6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:26:07]</span> Round 2 of 5 | elements from index 7 to 12 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:34:23]</span> Round 2 of 5 | elements from index 7 to 12 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  7  8  9 10 11 12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:26:07]</span> Round 3 of 5 | elements from index 13 to 18 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:34:23]</span> Round 3 of 5 | elements from index 13 to 18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 13 14 15 16 17 18</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:26:07]</span> Round 4 of 5 | elements from index 19 to 24 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:34:23]</span> Round 4 of 5 | elements from index 19 to 24 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 19 20 21 22 23 24</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:26:07]</span> Round 5 of 5 | elements from index 25 to 25 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">[16:34:23]</span> Round 5 of 5 | elements from index 25 to 25 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 25</span>
 </code></pre></div>
     </div>
