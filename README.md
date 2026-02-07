@@ -1,6 +1,5 @@
-# leo.gwas
+# LEO.GWAS from Layered Exploratory Omics (LEO)
 
-Layered Exploratory Omics (LEO)
 
 <!-- badges: start -->
 [![Dev status](https://img.shields.io/badge/dev%20status-experimental-orange.svg)](https://github.com/laleoarrow/leo.gwas)
@@ -52,5 +51,6 @@ citation("leo.gwas")
 ```
 
 **We look forward to collaborating with researchers and developers worldwide to advance innovation and progress in genomic data analysis!**
+
 
 
