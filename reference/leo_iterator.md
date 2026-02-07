@@ -38,7 +38,7 @@ when no more elements remain.
 # Suppose you have 25 elements and want to batch them in groups of 6
 nums <- 1:25
 it <- leo_iterator(nums, 6)
-#> ℹ [16:50:16] Creating batch iterator with 25 elements in total;  batch size = 6 ; total rounds = 5 
+#> ℹ [16:53:55] Creating batch iterator with 25 elements in total;  batch size = 6 ; total rounds = 5 
 while (TRUE) {
   batch <- it()
   if (is.null(batch)) break
@@ -46,14 +46,14 @@ while (TRUE) {
   # add your parallel process steps
   print(batch)
 }
-#> ✔ [16:50:16] Round 1 of 5 | elements from index 1 to 6 
+#> ✔ [16:53:55] Round 1 of 5 | elements from index 1 to 6 
 #> [1] 1 2 3 4 5 6
-#> ✔ [16:50:16] Round 2 of 5 | elements from index 7 to 12 
+#> ✔ [16:53:55] Round 2 of 5 | elements from index 7 to 12 
 #> [1]  7  8  9 10 11 12
-#> ✔ [16:50:16] Round 3 of 5 | elements from index 13 to 18 
+#> ✔ [16:53:55] Round 3 of 5 | elements from index 13 to 18 
 #> [1] 13 14 15 16 17 18
-#> ✔ [16:50:16] Round 4 of 5 | elements from index 19 to 24 
+#> ✔ [16:53:55] Round 4 of 5 | elements from index 19 to 24 
 #> [1] 19 20 21 22 23 24
-#> ✔ [16:50:16] Round 5 of 5 | elements from index 25 to 25 
+#> ✔ [16:53:55] Round 5 of 5 | elements from index 25 to 25 
 #> [1] 25
 ```

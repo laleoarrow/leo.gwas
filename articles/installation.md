@@ -61,12 +61,12 @@ devtools::install_github("VPetukhov/ggrastr", build_vignettes = FALSE)
 ## Verify installation
 
 ``` r
-devtools::load_all()
+library(leo.gwas)
 packageVersion("leo.gwas")
 ```
 
-If `load_all()` succeeds without crashing, core installation is
-complete.
+If [`library(leo.gwas)`](https://laleoarrow.github.io/leo.gwas/) and
+`packageVersion("leo.gwas")` run successfully, installation is complete.
 
 ## Notes
 
