@@ -1,6 +1,4 @@
-# leo.gwas
-
-Layered Exploratory Omics (LEO)
+# LEO.GWAS from Layered Exploratory Omics (LEO)
 
 > Unveiling the Depths of Genomic Data, Layer by Layer.
 
