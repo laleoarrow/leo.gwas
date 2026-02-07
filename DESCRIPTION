@@ -2,7 +2,7 @@ Package: leo.gwas
 Title: Layered Exploratory Omics (LEO)
 Version: 0.0.2
 Authors@R: 
-    person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
+    person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0001-0927-4468"))
 Description: Although in early development, the Layered Exploratory Omics
     (LEO) is a tool specifically designed for deep analysis of genomic
@@ -10,7 +10,7 @@ Description: Although in early development, the Layered Exploratory Omics
     researchers uncover the complex biological information hidden behind
     their data.
 URL: https://laleoarrow.github.io/leo.gwas/
-License: GPL (>= 3)
+License: file LICENSE
 Imports: 
     annotables (>= 0.2.0),
     AnnotationDbi,
@@ -49,15 +49,12 @@ Suggests:
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Remotes: 
-    bioc::AnnotationDbi,
-    bioc::biomaRt,
-    bioc::BSgenome,
-    bioc::GenomicFeatures,
-    bioc::MungeSumstats,
-    bioc::rtracklayer,
+    github::explodecomputer/plinkbinr,
+    github::MRCIEU/ieugwasr,
+    github::MRCIEU/TwoSampleMR,
     github::catboost/catboost/catboost/R-package,
     github::laleoarrow/leo.basic,
-    stephenturner/annotables
+    github::stephenturner/annotables
 Config/leo.gwas/suggests_usage: caret -> dr.prs(), catboost_prs(),
     lasso_prs(); catboost -> dr.prs(), catboost_prs(),
     catboost_prs_target(), catboost_prs_rank(); minfi ->

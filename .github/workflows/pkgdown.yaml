@@ -33,7 +33,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, github::explodecomputer/plinkbinr, github::MRCIEU/ieugwasr, github::MRCIEU/TwoSampleMR, local::.
           needs: website
           dependencies: '"hard"'
 
