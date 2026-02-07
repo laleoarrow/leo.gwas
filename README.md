@@ -7,6 +7,8 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![R](https://img.shields.io/badge/R-language-red.svg)](https://www.r-project.org/)
+[![R-CMD-check](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
 > Unveiling the Depths of Genomic Data, Layer by Layer.
