@@ -16,6 +16,7 @@ Imports:
     BSgenome,
     cli,
     data.table,
+    dplyr,
     GenomicFeatures,
     ggplot2,
     ggsci,
@@ -23,6 +24,7 @@ Imports:
     glue,
     ieugwasr,
     LDlinkR,
+    leo.basic (>= 0.0.1),
     magrittr,
     MungeSumstats,
     plinkbinr,
@@ -35,16 +37,22 @@ Imports:
     tidyr,
     TwoSampleMR,
     vroom
-Depends: 
-    dplyr,
-    leo.basic (>= 0.0.1)
 Suggests: 
+    # dr.prs(), catboost_prs(), lasso_prs()
     caret,
+    # dr.prs(), catboost_prs(), catboost_prs_target(), catboost_prs_rank()
     catboost,
+    # annotate_cpg_sites()
+    minfi,
+    # add_rsid(), add_rsid_using_ref()
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
+    # add_rsid(), add_rsid_using_ref()
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
+    # chisq_p_value()
     Rmpfr,
+    # map_gene_to_chrbp_using_TxDb()
     TxDb.Hsapiens.UCSC.hg19.knownGene,
+    # map_gene_to_chrbp_using_TxDb()
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Remotes:  
     github::laleoarrow/leo.basic,

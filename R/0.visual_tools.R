@@ -573,5 +573,3 @@ plot_gsMap_color <- function(annos, anno_colors = NULL, color = NULL,
   hi_map <- final_map[hi_levels]
   list(final_map = final_map, hi_levels = hi_levels, hi_map = hi_map)
 }
-
-

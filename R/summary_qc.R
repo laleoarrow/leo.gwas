@@ -332,5 +332,3 @@ fetch_same_direcrtion <- function(df_x2, df_lg){
 #' @rdname gwas_qc_helpers
 #' @export
 any_na <- function(df){ return(df %>% map_dbl(~sum(is.na(.)))) }
-
-

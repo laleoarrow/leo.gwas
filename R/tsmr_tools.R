@@ -665,5 +665,3 @@ mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_n
   )
   return(res_lap_pair)
 }
-
-

@@ -1355,7 +1355,6 @@ report_mapping_stats <- function(ensembl_col) {
 #' @return A data frame with two columns:
 #'   - `CpG_Site`: The original CpG site probe IDs.
 #'   - `Gene`: The associated gene names. `NA` if no gene annotation is found.
-#' @importFrom minfi getAnnotation
 #' @importFrom dplyr filter pull mutate select
 #' @importFrom cli cli_alert_info cli_alert_success
 #' @examples
@@ -1370,17 +1369,16 @@ report_mapping_stats <- function(ensembl_col) {
 #' @export
 annotate_cpg_sites <- function(cpg_vector,
                                annotation_package = "IlluminaHumanMethylation450kanno.ilmn12.hg19") {
+  if (!requireNamespace("minfi", quietly = TRUE)) stop("Package 'minfi' is required. Install with BiocManager::install('minfi').", call. = FALSE)
   cli::cli_alert_info("Loading annotation package '{annotation_package}'...")
   cli::cat_bullet("Please do pre-library the required package", bullet_col = "blue")
-  # Check if annotation package is installed
-  if (annotation_package == "IlluminaHumanMethylation450kanno.ilmn12.hg19") {
-    library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-  } else if (annotation_package == "IlluminaHumanMethylationEPICanno.ilm10b4.hg19") {
-    library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
-  } else {
+  if (!annotation_package %in% c("IlluminaHumanMethylation450kanno.ilmn12.hg19", "IlluminaHumanMethylationEPICanno.ilm10b4.hg19")) {
     stop("Invalid annotation package. Please use either 'IlluminaHumanMethylation450kanno.ilmn12.hg19' or 'IlluminaHumanMethylationEPICanno.ilm10b4.hg19'.")
   }
-  annotation_data_full <- minfi::getAnnotation(get(annotation_package))
+  if (!requireNamespace(annotation_package, quietly = TRUE)) {
+    stop("Package '", annotation_package, "' is required. Install with BiocManager::install('", annotation_package, "').", call. = FALSE)
+  }
+  annotation_data_full <- minfi::getAnnotation(minfi::getAnnotationObject(annotation_package))
   # mapping
   cli::cli_alert_info("Filtering annotation data for provided CpG sites...")
   annotation_subset <- annotation_data_full[cpg_vector, , drop = FALSE]
@@ -1598,4 +1596,3 @@ map_gene_class_using_biomarRt <- function(genes,
     )
   return(out)
 }
-
