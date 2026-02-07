@@ -1,6 +1,21 @@
 template:
   bootstrap: 5
+  light-switch: true
 url: https://laleoarrow.github.io/leo.gwas/
+
+navbar:
+  structure:
+    left: [reference, articles, news]
+    right: [search, github, home, lightswitch]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/laleoarrow/leo.gwas
+      aria-label: GitHub repository
+    home:
+      icon: fa-home
+      href: https://laleoarrow.github.io/leo.gwas/
+      aria-label: Package home
 reference:
 - title: Basic Utilities
   desc: Core helper functions from `R/0.basic_tools.R`.
