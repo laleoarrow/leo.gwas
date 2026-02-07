@@ -1,0 +1,66 @@
+# Map Ensembl Gene IDs to Gene Symbols using biomaRt
+
+This function uses biomaRt to retrieve gene symbols based on Ensembl
+gene IDs.
+
+## Usage
+
+``` r
+map_ensg_to_gene_using_biomaRt(
+  ensembl_ids,
+  ensembl_col = NULL,
+  type = c("combine", "first"),
+  sep = "/",
+  genome = c("hg19", "hg38"),
+  verbose = F
+)
+```
+
+## Arguments
+
+- ensembl_ids:
+
+  A character vector of Ensembl gene IDs, or a data frame containing
+  this information.
+
+- ensembl_col:
+
+  If `ensembl_ids` is a data frame, specify the column name containing
+  the Ensembl gene IDs.
+
+- type:
+
+  How to handle cases where one Ensembl ID maps to multiple gene
+  symbols. Options are "combine" (default) to combine them with a
+  separator or "first" to only use the first symbol.
+
+- sep:
+
+  The separator to deal with one ensg mapped to multiple gene. Default
+  with "/".
+
+- genome:
+
+  The genome version to use: "hg19" or "hg38".
+
+- verbose:
+
+  Logical indicating whether to print the unmapped information.
+
+## Value
+
+A data frame containing Ensembl gene IDs and corresponding gene symbols.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Query using Ensembl gene IDs
+ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648")
+map_ensg_to_gene_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
+
+# Use a data frame as input
+gene_df <- data.frame(ensembl_id = ensembl_ids, value = c(1.2, 3.4, 5.6))
+map_ensg_to_gene_using_biomaRt(ensembl_ids = gene_df, ensembl_col = "ensembl_id", genome = "hg19")
+} # }
+```

@@ -1,0 +1,276 @@
+![Static Badge](https://img.shields.io/badge/R-language-red) \# Layered
+Exploratory Omics (LEO) \# leo.gwas GitHub Repository for “Layered
+Exploratory Omics (LEO)” Package \> “Unveiling the Depths of Genomic
+Data, Layer by Layer”
+
+### Introduction
+
+**Layered Exploratory Omics** (LEO) is a tool specifically designed for
+deep analysis of genomic data. It employs a multi-layered exploratory
+approach to help researchers (**mostly myself**) uncover the complex
+biological information hidden behind their data. Combining cutting-edge
+statistical and computational methodologies, LEO offers a user-friendly
+interface and powerful data-processing capabilities, enabling users
+ranging from beginners to advanced to effectively explore and analyze
+their omics data.
+
+### Development Status
+
+**LEO is currently in the early stages of development**. We welcome
+feedback from developers, researchers, and users to help improve the
+product. Please note that some features may not be fully stable yet, and
+interfaces may change based on user feedback.
+
+### Download
+
+`{R} devtools::install_github("laleoarrow/leo.gwas")`
+
+### How to Contribute
+
+We encourage and welcome contributions to LEO from the community. If you
+are interested in contributing code or documentation, please contact me
+by submitting a issue.
+
+### License
+
+LEO is released under the GNU General Public License v3.0. This includes
+certain permissions and restrictions, particularly concerning patents
+and copyright. Your use, duplication, modification, and distribution of
+LEO are bound by the terms of GPL v3.0. For more detailed information,
+please refer to the LICENSE file.
+
+### Contact Information
+
+For more information or assistance, please contact us at [Ao
+Lu](https://laleoarrow.github.io/leo.gwas/luao@stu.cqmu.edu.cn).
+
+**We look forward to collaborating with researchers and developers
+worldwide to advance innovation and progress in genomic data analysis!**
+
+# Package index
+
+## Basic Utilities
+
+Core helper functions from `R/0.basic_tools.R`.
+
+- [`across_df_na()`](https://laleoarrow.github.io/leo.gwas/reference/across_df_na.md)
+  : Across a df to count na
+
+- [`across_df_TF()`](https://laleoarrow.github.io/leo.gwas/reference/across_df_TF.md)
+  : Across a df to count TRUE and FALSE
+
+- [`is_complementary()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_indel()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_non_indel()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`duplicated_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`slice1_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_same_direcrtion()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`any_na()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  :
+
+  Helper functions for `leo.gwas_qc`
+
+- [`chisq_p_value()`](https://laleoarrow.github.io/leo.gwas/reference/chisq_p_value.md)
+  : Give precise p-value for chi-square test
+
+- [`count_duplicate_element()`](https://laleoarrow.github.io/leo.gwas/reference/count_duplicate_element.md)
+  : Count or Identify Duplicates in a Vector
+
+- [`count_matching_elements()`](https://laleoarrow.github.io/leo.gwas/reference/count_matching_elements.md)
+  : Count or Identify Matches of a Pattern in a Vector
+
+- [`get_id()`](https://laleoarrow.github.io/leo.gwas/reference/get_id.md)
+  : Get Unique Identifier for Genetic Data
+
+## Annotation
+
+Annotation and mapping workflows from `R/0.annotation.R`.
+
+- [`add_rsid()`](https://laleoarrow.github.io/leo.gwas/reference/add_rsid.md)
+  : Convert CHR:BP to rsID (not recommended)
+
+- [`add_rsid_using_ref()`](https://laleoarrow.github.io/leo.gwas/reference/add_rsid_using_ref.md)
+  : Add rsID based on local reference file (recommended)
+
+- [`add_chrpos()`](https://laleoarrow.github.io/leo.gwas/reference/add_chrpos.md)
+  : Convert rsID to CHR & BP
+
+- [`annotate_cpg_sites()`](https://laleoarrow.github.io/leo.gwas/reference/annotate_cpg_sites.md)
+  : Annotate CpG Sites with Gene Information
+
+- [`leo_map_GtoCP()`](https://laleoarrow.github.io/leo.gwas/reference/leo_map_GtoCP.md)
+  : Map Gene Symbols to Genomic Positions
+
+- [`map_gene_to_chrbp_using_TxDb()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_to_chrbp_using_TxDb.md)
+  : Map Gene Symbols Using Bioconductor Packages
+
+- [`map_gene_to_chrbp_using_gtf()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_to_chrbp_using_gtf.md)
+  : Map Gene Symbols Using GTF File
+
+- [`map_gene_to_chrbp_using_biomaRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_to_chrbp_using_biomart.md)
+  : Map Gene Symbols to Genomic Positions Using biomaRt
+
+- [`map_gene_to_tss_using_gtf()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_to_tss_using_gtf.md)
+  : Map Genes to Their TSS Positions
+
+- [`map_ensg_to_chrbp_using_biomaRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_ensg_to_chrbp_using_biomaRt.md)
+  : Map Ensembl Gene IDs to Genomic Positions using biomaRt
+
+- [`map_ensg_to_tss_using_biomaRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_ensg_to_tss_using_biomaRt.md)
+  : Map Ensembl Gene IDs to TSS Using biomaRt
+
+- [`map_ensg_to_gene_using_org.Hs.eg.db()`](https://laleoarrow.github.io/leo.gwas/reference/map_ensg_to_gene_using_org.Hs.eg.db.md)
+  :
+
+  Map Ensembl IDs to Gene Symbols using `org.Hs.eg.db`
+
+- [`map_ensg_to_gene_using_biomaRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_ensg_to_gene_using_biomaRt.md)
+  : Map Ensembl Gene IDs to Gene Symbols using biomaRt
+
+- [`map_gene_to_ensembl()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_to_ensembl.md)
+  : Map Gene Symbols to Ensembl IDs
+
+- [`map_gene_class_using_annotables()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_class_using_annotables.md)
+  :
+
+  Map Gene Symbols to biotype & description via **annotables**
+
+- [`map_gene_class_using_biomarRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_class_using_biomarRt.md)
+  :
+
+  Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 →
+  GRCh37 fallback)
+
+## Visualization
+
+Plotting and locus visualization from `R/0.visual_tools.R`.
+
+- [`leo_scale_color()`](https://laleoarrow.github.io/leo.gwas/reference/leo_scale_color.md)
+  : Apply Color Palette to ggplot
+- [`correlation_calculate()`](https://laleoarrow.github.io/leo.gwas/reference/correlation_calculate.md)
+  : Calculate Correlation between Two Vectors
+- [`correlation_draw()`](https://laleoarrow.github.io/leo.gwas/reference/correlation_draw.md)
+  : Draw Correlation between Two Vectors
+- [`group_comparison_draw()`](https://laleoarrow.github.io/leo.gwas/reference/group_comparison_draw.md)
+  : Draw Group Comparison for a Continuous Variable
+- [`ld_ps_index()`](https://laleoarrow.github.io/leo.gwas/reference/ld_ps_index.md)
+  : Loci_plot: Calculate the LD-matrix (LD r2) for the index SNP
+- [`locuszoomr_loc()`](https://laleoarrow.github.io/leo.gwas/reference/locuszoomr_loc.md)
+  : Loci_plot: prepare the locus data for locuszoomr
+- [`plot_gsMap()`](https://laleoarrow.github.io/leo.gwas/reference/plot_gsMap.md)
+  : Plot gsMap (full & highlight) with robust color mapping
+- [`plot_gsMap_color()`](https://laleoarrow.github.io/leo.gwas/reference/plot_gsMap_color.md)
+  : Build color maps for gsMap plots (helper function)
+- [`save_regional_plot()`](https://laleoarrow.github.io/leo.gwas/reference/save_regional_plot.md)
+  : Loci_plot: save_regional_plot
+
+## PRS and ML
+
+PRS modeling and ranking from `R/prs_tools.R`.
+
+- [`dr.prs()`](https://laleoarrow.github.io/leo.gwas/reference/dr.prs.md)
+  [`combine_rank()`](https://laleoarrow.github.io/leo.gwas/reference/dr.prs.md)
+  : DuoRank PRS (Dr.PRS)
+- [`catboost_prs()`](https://laleoarrow.github.io/leo.gwas/reference/catboost_prs.md)
+  [`catboost_prs_target()`](https://laleoarrow.github.io/leo.gwas/reference/catboost_prs.md)
+  [`catboost_prs_rank()`](https://laleoarrow.github.io/leo.gwas/reference/catboost_prs.md)
+  : CatBoost PRS utilities
+- [`lasso_prs()`](https://laleoarrow.github.io/leo.gwas/reference/lasso_prs.md)
+  [`lasso_prs_target()`](https://laleoarrow.github.io/leo.gwas/reference/lasso_prs.md)
+  [`lasso_prs_rank()`](https://laleoarrow.github.io/leo.gwas/reference/lasso_prs.md)
+  : Iterative Lasso PRS (iLasso) utilities
+- [`plink_clump_hla_aware()`](https://laleoarrow.github.io/leo.gwas/reference/plink_clump_hla_aware.md)
+  : HLA-aware PLINK clumping (Yet implemented)
+
+## Two-Sample MR
+
+MR data prep and analysis from `R/tsmr_tools.R`.
+
+- [`clump_data_local()`](https://laleoarrow.github.io/leo.gwas/reference/clump_data_local.md)
+  : Perform LD Clumping Locally or via Reference Panel
+
+- [`extract_instruments_local()`](https://laleoarrow.github.io/leo.gwas/reference/extract_instruments_local.md)
+  : Extract instruments locally for MR Analysis
+
+- [`find_proxy()`](https://laleoarrow.github.io/leo.gwas/reference/find_proxy.md)
+  : find_proxy
+
+- [`format_outcome()`](https://laleoarrow.github.io/leo.gwas/reference/format_outcome.md)
+  : format outcome data
+
+- [`is_complementary()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_indel()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_non_indel()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`duplicated_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`slice1_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`fetch_same_direcrtion()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`any_na()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  :
+
+  Helper functions for `leo.gwas_qc`
+
+- [`filter_chr_basedonSNP_p()`](https://laleoarrow.github.io/leo.gwas/reference/filter_chr_basedonSNP_p.md)
+  : Filter Chromosomes Based on SNP P-value Threshold
+
+- [`filter_chr_basedonSNP_p_qtltools()`](https://laleoarrow.github.io/leo.gwas/reference/filter_chr_basedonSNP_p_qtltools.md)
+  :
+
+  Filter Chromosomes Based on SNP P-value Threshold for `.qtltoolsnomi`
+  files
+
+- [`leo_iterator()`](https://laleoarrow.github.io/leo.gwas/reference/leo_iterator.md)
+  : Leo batch iterator builder
+
+- [`mr_one_pair()`](https://laleoarrow.github.io/leo.gwas/reference/mr_one_pair.md)
+  : perform_mr_for_one_pair
+
+- [`mr_scatter_plot_modified()`](https://laleoarrow.github.io/leo.gwas/reference/mr_scatter_plot_modified.md)
+  : Modified MR Scatter Plot
+
+- [`mrlap_one_pair()`](https://laleoarrow.github.io/leo.gwas/reference/mrlap_one_pair.md)
+  : mrlap_one_pair
+
+## SMR and BESD
+
+SMR/BESD processing from `R/smr_besd_tools.R`.
+
+- [`combine_smr_res_chr()`](https://laleoarrow.github.io/leo.gwas/reference/combine_smr_res_chr.md)
+  : Combine SMR Results for All Chromosomes
+
+- [`combine_smr_res_1outcome()`](https://laleoarrow.github.io/leo.gwas/reference/combine_smr_res_1outcome.md)
+  :
+
+  Combine `.fdr` files for one or multiple outcomes (seperately)
+
+- [`leo_smr_adjust()`](https://laleoarrow.github.io/leo.gwas/reference/leo_smr_adjust.md)
+  : Adjust SMR Results with FDR and Bonferroni Corrections
+
+- [`leo_smr_adjust_loop()`](https://laleoarrow.github.io/leo.gwas/reference/leo_smr_adjust_loop.md)
+  : Batch Adjust SMR Results with FDR and Bonferroni Corrections
+
+- [`leo_smr_extract_sig_res()`](https://laleoarrow.github.io/leo.gwas/reference/leo_smr_extract_sig_res.md)
+  :
+
+  Extract significant results from `.all` files
+
+- [`leo_smr_merge_shared_probes()`](https://laleoarrow.github.io/leo.gwas/reference/leo_smr_merge_shared_probes.md)
+  : Merge multiple SMR files and keep only shared probes for 2 outcomes
+
+## HLA Tools
+
+HLA region helpers from `R/hla_tools.R`.
+
+- [`HLA_get()`](https://laleoarrow.github.io/leo.gwas/reference/HLA_get.md)
+  : Extract HLA region from genomic summary data
+- [`HLA_exclude()`](https://laleoarrow.github.io/leo.gwas/reference/HLA_exclude.md)
+  : Exclude HLA region from genomic summary data
+
+## Summary QC
+
+Summary statistics QC from `R/summary_qc.R`.
+
+- [`leo.gwas_qc()`](https://laleoarrow.github.io/leo.gwas/reference/leo.gwas_qc.md)
+  : GWAS summary QC pipeline (chip + imputed)
+- [`check_significant_SNP()`](https://laleoarrow.github.io/leo.gwas/reference/check_significant_SNP.md)
+  : locate the significant SNP for conditional analysis
+
