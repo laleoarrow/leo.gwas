@@ -1,4 +1,4 @@
-# LEO.GWAS from Layered Exploratory Omics (LEO)
+# Layered Exploratory Omics (LEO) - LEO.GWAS
 
 
 <!-- badges: start -->
@@ -51,6 +51,7 @@ citation("leo.gwas")
 ```
 
 **We look forward to collaborating with researchers and developers worldwide to advance innovation and progress in genomic data analysis!**
+
 
 
 
