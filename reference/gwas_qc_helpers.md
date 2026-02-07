@@ -81,21 +81,36 @@ df <- data.frame(
 
 # Complementary alleles
 is_complementary("A","T")  # TRUE
-#> Error in is_complementary("A", "T"): could not find function "is_complementary"
+#> [1] TRUE
 is_complementary("A","G")  # FALSE
-#> Error in is_complementary("A", "G"): could not find function "is_complementary"
+#> [1] FALSE
 
 # Indels and non-indels
 fetch_indel(df, "both")
-#> Error in fetch_indel(df, "both"): could not find function "fetch_indel"
+#> [1] SNP A1  A2  OR 
+#> <0 rows> (or 0-length row.names)
 fetch_non_indel(df)
-#> Error in fetch_non_indel(df): could not find function "fetch_non_indel"
+#>   SNP A1 A2  OR
+#> 1 rs1  A  T 1.2
+#> 2 rs3  C  G 1.1
+#> 3 rs2  C  G 1.1
 
 # Duplicates by SNP
 duplicated_SNP_lines(df, "get", dup_columns = "SNP")
-#> Error in duplicated_SNP_lines(df, "get", dup_columns = "SNP"): could not find function "duplicated_SNP_lines"
+#> Duplicated SNP line count table
+#> 
+#> 2 
+#> 2 
+#> # A tibble: 2 × 5
+#>   SNP   A1    A2       OR count
+#>   <chr> <chr> <chr> <dbl> <int>
+#> 1 rs2   AT    A       0.9     2
+#> 2 rs2   C     G       1.1     2
 slice1_SNP_lines(df, dup_columns = "SNP")
-#> Error in slice1_SNP_lines(df, dup_columns = "SNP"): could not find function "slice1_SNP_lines"
+#>   SNP A1 A2  OR
+#> 1 rs1  A  T 1.2
+#> 2 rs2 AT  A 0.9
+#> 3 rs3  C  G 1.1
 
 # Same-direction effects between two datasets
 df2 <- transform(df, OR = c(1.1, 1.3, 0.8, 1.1))
