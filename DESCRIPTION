@@ -14,8 +14,6 @@ Imports:
     AnnotationDbi,
     biomaRt,
     BSgenome,
-    caret,
-    catboost,
     cli,
     data.table,
     GenomicFeatures,
@@ -41,6 +39,8 @@ Depends:
     dplyr,
     leo.basic (>= 0.0.1)
 Suggests: 
+    caret,
+    catboost,
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
     Rmpfr,

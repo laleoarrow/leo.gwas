@@ -41,6 +41,10 @@ Each function returns a list; contents depend on task (training, target predicti
 \description{
 Train, apply, and rank CatBoost polygenic risk score (PRS) models.
 }
+\details{
+These functions require installed \pkg{catboost}. Training with \code{divide = TRUE}
+also requires \pkg{caret} for stratified data splitting.
+}
 \seealso{
 \code{\link[catboost]{catboost.train}}, \code{\link[catboost]{catboost.get_feature_importance}}
 }

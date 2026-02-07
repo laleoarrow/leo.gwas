@@ -51,6 +51,8 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
   do_cat     <- 2L %in% method
   do_lasso   <- 3L %in% method
   do_combine <- do_cat && do_lasso
+  if (do_cat) .check_catboost(context = "Method 2 (CatBoost)")
+  if (do_cat || do_lasso) .check_caret(context = "method 2/3 splitting")
   leo.basic::leo_log("Methods selected: {paste(method, collapse = ', ')} (1=PLINK, 2=CatBoost, 3=iLasso)")
   # check if all file exists
   if (!file.exists(paste0(stage1_bfile, ".bed"))) return(leo.basic::leo_log("Base .bed file not found.", level = "danger"))
@@ -298,6 +300,9 @@ combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){
 #'
 #' Train, apply, and rank CatBoost polygenic risk score (PRS) models.
 #'
+#' These functions require installed \pkg{catboost}. Training with \code{divide = TRUE}
+#' also requires \pkg{caret} for stratified data splitting.
+#'
 #' @param a1_matrix A1 matrix (with PHENOTYPE and ID columns).
 #' @param divide Logical; split into train/val sets. Default FALSE.
 #' @param divide_ratio Numeric; train proportion if divide=TRUE. Default 0.5.
@@ -313,9 +318,9 @@ combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){
 #' @export
 #' @rdname catboost_prs
 #' @importFrom dplyr mutate select across
-#' @importFrom caret createDataPartition
-#' @importFrom catboost catboost.load_pool catboost.train catboost.predict catboost.get_feature_importance
 catboost_prs <- function(a1_matrix, divide = F, divide_ratio = 0.5){
+  .check_catboost()
+  .check_caret()
   df <- a1_matrix %>% mutate(PHENOTYPE = ifelse(PHENOTYPE == 1, 0L, 1L)) %>% select(-c(FID, IID, PAT, MAT, SEX))  # 0 is ctrl/ 1 is control
   if (divide) {
     set.seed(725)
@@ -328,16 +333,16 @@ catboost_prs <- function(a1_matrix, divide = F, divide_ratio = 0.5){
     x_val  <- val_df  %>% select(-PHENOTYPE) %>% mutate(across(everything(), as.numeric))
     y_val  <- val_df$PHENOTYPE
 
-    train_pool <- catboost.load_pool(data = x_train, label = y_train)
-    val_pool  <- catboost.load_pool(data = x_val,  label = y_val)
+    train_pool <- catboost::catboost.load_pool(data = x_train, label = y_train)
+    val_pool  <- catboost::catboost.load_pool(data = x_val,  label = y_val)
   } else {
     train_df <- df
     x_train <- train_df %>% select(-PHENOTYPE) %>% mutate(across(everything(), as.numeric))
     y_train <- train_df$PHENOTYPE
-    train_pool <- catboost.load_pool(data = x_train, label = y_train)
+    train_pool <- catboost::catboost.load_pool(data = x_train, label = y_train)
   }
 
-  model <- catboost.train(train_pool, NULL, params = list(loss_function = "Logloss",
+  model <- catboost::catboost.train(train_pool, NULL, params = list(loss_function = "Logloss",
                                                           eval_metric   = "AUC",
                                                           iterations    = 1000,
                                                           depth         = 7,
@@ -351,10 +356,10 @@ catboost_prs <- function(a1_matrix, divide = F, divide_ratio = 0.5){
                                                           rsm            = 0.8,
                                                           train_dir      = file.path(tempdir(), "catboost_model") ) )
   if (divide) {
-    pred_score <- catboost.predict(model, val_pool)
+    pred_score <- catboost::catboost.predict(model, val_pool)
     perf <- prs.roc_hist_density(pred_score, y_val, ctrl_case_level = c(0,1))
   } else {
-    pred_score <- catboost.predict(model, train_pool)
+    pred_score <- catboost::catboost.predict(model, train_pool)
     leo.basic::leo_log("No validation set; performance evaluated on training set.", level = "warning")
     perf <- prs.roc_hist_density(pred_score, y_train, ctrl_case_level = c(0,1))
   }
@@ -371,12 +376,13 @@ catboost_prs <- function(a1_matrix, divide = F, divide_ratio = 0.5){
 #' @rdname catboost_prs
 #' @export
 catboost_prs_target <- function(a1_matrix, model){
+  .check_catboost()
   df <- a1_matrix %>% mutate(PHENOTYPE = ifelse(PHENOTYPE == 1, 0L, 1L)) %>% select(-c(FID, IID, PAT, MAT, SEX))
   test_df <- df
   x_test <- test_df %>% select(-PHENOTYPE) %>% mutate(across(everything(), as.numeric))
   y_test <- test_df$PHENOTYPE
-  test_pool  <- catboost.load_pool(data = x_test,  label = y_test)
-  pred_score <- catboost.predict(model, test_pool)
+  test_pool  <- catboost::catboost.load_pool(data = x_test,  label = y_test)
+  pred_score <- catboost::catboost.predict(model, test_pool)
   perf <- prs.roc_hist_density(pred_score, y_test, ctrl_case_level = c(0,1))
 
   pred_df <- data.frame(FID = a1_matrix$FID,
@@ -393,10 +399,11 @@ catboost_prs_target <- function(a1_matrix, model){
 catboost_prs_rank <- function(model, pool, pool_df,
                               types = c("FeatureImportance", "ShapValues", "Interaction"),
                               top_k = NULL) {
+  .check_catboost()
   return_list <- list(); types <- as.vector(types)
   for (type in types) {
     leo.basic::leo_log("Calculating CatBoost importance (type = {type})...")
-    importance <- catboost.get_feature_importance(model,
+    importance <- catboost::catboost.get_feature_importance(model,
                                                   pool = pool,
                                                   type = type)
     # FeatureImportance
@@ -614,8 +621,8 @@ catboost_prs_rank <- function(model, pool, pool_df,
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef predict wilcox.test
 #' @importFrom pROC roc roc.test
-#' @importFrom caret createDataPartition
 lasso_prs <- function(a1_matrix, divide_ratio = 0.7, iterative = 100, nfolds = 10, score_type = "link", seed = 725){
+  .check_caret()
   # prepare base frame
   base_df <- a1_matrix %>% dplyr::mutate(PHENOTYPE = ifelse(PHENOTYPE == 1, 0L, 1L)) %>% dplyr::select(-c(FID, IID, PAT, MAT, SEX))
   n_total <- nrow(base_df); p <- ncol(base_df) - 1
@@ -1126,4 +1133,22 @@ ggcvlasso <- function(cv_lasso, pos = "right", guide_cols = 1) {
                    plot.margin = grid::unit(c(0.5, 0.5, 0.5, 0.5), "cm")) +
     ggplot2::guides(col = ggplot2::guide_legend(ncol = guide_cols))
   return(p)
+}
+
+# helper ----
+.catboost_install_message <- function(context = NULL){
+  context_txt <- if (is.null(context)) "" else paste0(context, "\n")
+  paste0(context_txt,
+         "Package 'catboost' is required.\n",
+         "Install (binary, recommended as of 2026-02):\n",
+         "  pak::pak('url::https://github.com/catboost/catboost/releases/download/v1.2.8/catboost-R-darwin-universal2-1.2.8.tgz')\n",
+         "See: https://catboost.ai/docs/en/installation/r-installation-binary-installation")
+}
+
+.check_catboost <- function(context = NULL){
+  if (!requireNamespace("catboost", quietly = TRUE)) stop(.catboost_install_message(context = context), call. = FALSE)
+}
+
+.check_caret <- function(context = NULL){
+  if (!requireNamespace("caret", quietly = TRUE)) stop(paste0("Package 'caret' is required", if (is.null(context)) "." else paste0(" (", context, ")."), " Install with install.packages('caret')."), call. = FALSE)
 }
