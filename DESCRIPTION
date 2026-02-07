@@ -4,11 +4,13 @@ Version: 0.0.2
 Authors@R: 
     person("Ao", "Lu", , "luao@stu.cqmu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-0927-4468"))
-Description: Although in early development, the Layered Exploratory Omics (LEO) is a tool specifically designed for deep analysis of genomic data. It employs a multi-layered exploratory approach to help researchers uncover the complex biological information hidden behind their data.
+Description: Although in early development, the Layered Exploratory Omics
+    (LEO) is a tool specifically designed for deep analysis of genomic
+    data. It employs a multi-layered exploratory approach to help
+    researchers uncover the complex biological information hidden behind
+    their data.
+URL: https://laleoarrow.github.io/leo.gwas/
 License: GPL (>= 3)
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Imports: 
     annotables (>= 0.2.0),
     AnnotationDbi,
@@ -38,29 +40,32 @@ Imports:
     TwoSampleMR,
     vroom
 Suggests: 
-    # dr.prs(), catboost_prs(), lasso_prs()
     caret,
-    # dr.prs(), catboost_prs(), catboost_prs_target(), catboost_prs_rank()
     catboost,
-    # annotate_cpg_sites()
     minfi,
-    # add_rsid(), add_rsid_using_ref()
-    SNPlocs.Hsapiens.dbSNP155.GRCh37,
-    # add_rsid(), add_rsid_using_ref()
-    SNPlocs.Hsapiens.dbSNP155.GRCh38,
-    # chisq_p_value()
     Rmpfr,
-    # map_gene_to_chrbp_using_TxDb()
+    SNPlocs.Hsapiens.dbSNP155.GRCh37,
+    SNPlocs.Hsapiens.dbSNP155.GRCh38,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
-    # map_gene_to_chrbp_using_TxDb()
     TxDb.Hsapiens.UCSC.hg38.knownGene
-Remotes:  
-    github::laleoarrow/leo.basic,
-    github::catboost/catboost/catboost/R-package,
-    stephenturner/annotables,
+Remotes: 
     bioc::AnnotationDbi,
     bioc::biomaRt,
     bioc::BSgenome,
     bioc::GenomicFeatures,
     bioc::MungeSumstats,
-    bioc::rtracklayer
+    bioc::rtracklayer,
+    github::catboost/catboost/catboost/R-package,
+    github::laleoarrow/leo.basic,
+    stephenturner/annotables
+Config/leo.gwas/suggests_usage: caret -> dr.prs(), catboost_prs(),
+    lasso_prs(); catboost -> dr.prs(), catboost_prs(),
+    catboost_prs_target(), catboost_prs_rank(); minfi ->
+    annotate_cpg_sites(); SNPlocs.Hsapiens.dbSNP155.GRCh37 -> add_rsid(),
+    add_rsid_using_ref(); SNPlocs.Hsapiens.dbSNP155.GRCh38 -> add_rsid(),
+    add_rsid_using_ref(); Rmpfr -> chisq_p_value();
+    TxDb.Hsapiens.UCSC.hg19.knownGene -> map_gene_to_chrbp_using_TxDb();
+    TxDb.Hsapiens.UCSC.hg38.knownGene -> map_gene_to_chrbp_using_TxDb()
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

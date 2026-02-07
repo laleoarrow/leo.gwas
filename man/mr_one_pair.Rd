@@ -33,23 +33,18 @@ list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 \code{perform_mr_for_one_pair} perform a MR for one pair of exp and out
 }
 \examples{
-clusterEvalQ(cl, {
-library(vroom)
-library(tidyverse)
-library(TwoSampleMR)
-library(ggplot2)
-library(ggsci)
-source("./code/1.0.tsmr_packages.R")
+\dontrun{
+# dat_h is harmonized TwoSampleMR data with columns:
+# exposure, outcome, mr_keep, beta.exposure, beta.outcome, etc.
+out <- mr_one_pair(
+  dat_h = dat_h,
+  exp = "BMI",
+  out = "T1D",
+  save_plot = FALSE,
+  res_dir = "./output/tsmr",
+  fig_dir = "./figure/tsmr"
+)
+names(out)
 })
-clusterExport(cl, varlist = c("uni_pair","dat_h"))
->>>>>>>>>>>>>  draw and save draw   >>>>>>>>>>>>>
-p1: Scatter plot
-p2: Forest plot
-p3: Funnel plot
-p4: LOO plot
-For Forest: width = 7, height = 8 (T1D)
-For Forest: width = 7, height = 10 (T2D)
-For others: width = 7, height = 6
-fig_dir <- "./figure/tsmr"
 }
 \keyword{tsmr:}

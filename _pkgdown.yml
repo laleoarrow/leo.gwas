@@ -1,0 +1,91 @@
+template:
+  bootstrap: 5
+url: https://laleoarrow.github.io/leo.gwas/
+reference:
+- title: Basic Utilities
+  desc: Core helper functions from `R/0.basic_tools.R`.
+  contents:
+  - across_df_na
+  - across_df_TF
+  - any_na
+  - chisq_p_value
+  - count_duplicate_element
+  - count_matching_elements
+  - get_id
+- title: Annotation
+  desc: Annotation and mapping workflows from `R/0.annotation.R`.
+  contents:
+  - add_rsid
+  - add_rsid_using_ref
+  - add_chrpos
+  - annotate_cpg_sites
+  - leo_map_GtoCP
+  - map_gene_to_chrbp_using_TxDb
+  - map_gene_to_chrbp_using_gtf
+  - map_gene_to_chrbp_using_biomaRt
+  - map_gene_to_tss_using_gtf
+  - map_ensg_to_chrbp_using_biomaRt
+  - map_ensg_to_tss_using_biomaRt
+  - map_ensg_to_gene_using_org.Hs.eg.db
+  - map_ensg_to_gene_using_biomaRt
+  - map_gene_to_ensembl
+  - map_gene_class_using_annotables
+  - map_gene_class_using_biomarRt
+- title: Visualization
+  desc: Plotting and locus visualization from `R/0.visual_tools.R`.
+  contents:
+  - leo_scale_color
+  - correlation_calculate
+  - correlation_draw
+  - group_comparison_draw
+  - ld_ps_index
+  - locuszoomr_loc
+  - plot_gsMap
+  - plot_gsMap_color
+  - save_regional_plot
+- title: PRS and ML
+  desc: PRS modeling and ranking from `R/prs_tools.R`.
+  contents:
+  - dr.prs
+  - combine_rank
+  - catboost_prs
+  - catboost_prs_target
+  - catboost_prs_rank
+  - lasso_prs
+  - lasso_prs_target
+  - lasso_prs_rank
+  - plink_clump_hla_aware
+- title: Two-Sample MR
+  desc: MR data prep and analysis from `R/tsmr_tools.R`.
+  contents:
+  - clump_data_local
+  - extract_instruments_local
+  - find_proxy
+  - format_outcome
+  - fetch_same_direcrtion
+  - filter_chr_basedonSNP_p
+  - filter_chr_basedonSNP_p_qtltools
+  - leo_iterator
+  - mr_one_pair
+  - mr_scatter_plot_modified
+  - mrlap_one_pair
+- title: SMR and BESD
+  desc: SMR/BESD processing from `R/smr_besd_tools.R`.
+  contents:
+  - combine_smr_res_chr
+  - combine_smr_res_1outcome
+  - leo_smr_adjust
+  - leo_smr_adjust_loop
+  - leo_smr_extract_sig_res
+  - leo_smr_merge_shared_probes
+- title: HLA Tools
+  desc: HLA region helpers from `R/hla_tools.R`.
+  contents:
+  - HLA_get
+  - HLA_exclude
+- title: Summary QC
+  desc: Summary statistics QC from `R/summary_qc.R`.
+  contents:
+  - leo.gwas_qc
+  - check_significant_SNP
+

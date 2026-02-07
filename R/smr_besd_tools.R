@@ -362,7 +362,7 @@ combine_smr_res_1outcome <- function(dir, outcome, out_dir = file.path(dir, "com
 #' (depending on \code{pass_type} argument), and writes the significant subset
 #' to a new file (e.g., `smr_res_YYYYMMDD_iri3.sig.all`).
 #'
-#' @param dir        Character. The main `combine_1outcome` folder from \func{combine_smr_res_1outcome}.
+#' @param dir        Character. The main `combine_1outcome` folder from \link{combine_smr_res_1outcome}.
 #' @param pass_type  Character. Which significance criterion to use:
 #'                   one of \code{c("FDR", "Bonferroni", "both")}.
 #'                   - "FDR": keep rows where \code{Pass_FDR == "Pass"}

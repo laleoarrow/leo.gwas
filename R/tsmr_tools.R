@@ -366,15 +366,19 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' @export
 #' @return list(res_pair=res_pair, res_pair_presso=res_pair_presso)
 #' @examples
-#' clusterEvalQ(cl, {
-#' library(vroom)
-#' library(tidyverse)
-#' library(TwoSampleMR)
-#' library(ggplot2)
-#' library(ggsci)
-#' source("./code/1.0.tsmr_packages.R")
+#' \dontrun{
+#' # dat_h is harmonized TwoSampleMR data with columns:
+#' # exposure, outcome, mr_keep, beta.exposure, beta.outcome, etc.
+#' out <- mr_one_pair(
+#'   dat_h = dat_h,
+#'   exp = "BMI",
+#'   out = "T1D",
+#'   save_plot = FALSE,
+#'   res_dir = "./output/tsmr",
+#'   fig_dir = "./figure/tsmr"
+#' )
+#' names(out)
 #' })
-#' clusterExport(cl, varlist = c("uni_pair","dat_h"))
 mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
   # Initialize
   pairname <- paste0(exp, " VS ", out); leo_message(paste0(" - MR Pair: ", pairname))
@@ -439,15 +443,15 @@ mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./ou
   # vroom::vroom_write(res_pair_presso, res_path)
 
   if (save_plot) {
-    #' >>>>>>>>>>>>>  draw and save draw   >>>>>>>>>>>>>
-    #' p1: Scatter plot
-    #' p2: Forest plot
-    #' p3: Funnel plot
-    #' p4: LOO plot
-    #' For Forest: width = 7, height = 8 (T1D)
-    #' For Forest: width = 7, height = 10 (T2D)
-    #' For others: width = 7, height = 6
-    #' fig_dir <- "./figure/tsmr"
+    # >>>>>>>>>>>>>  draw and save draw   >>>>>>>>>>>>>
+    # p1: Scatter plot
+    # p2: Forest plot
+    # p3: Funnel plot
+    # p4: LOO plot
+    # For Forest: width = 7, height = 8 (T1D)
+    # For Forest: width = 7, height = 10 (T2D)
+    # For others: width = 7, height = 6
+    # fig_dir <- "./figure/tsmr"
     # >>>>>>>>>>>>> Scatter Plot >>>>>>>>>>>>>>>>>>>
     # p1 <- mr_scatter_plot_modified(mr_results = res_pair, dat = dat_h_pair); p1[[1]]
     p1 <- mr_scatter_plot(mr_results = res_pair, dat = dat_h_pair)

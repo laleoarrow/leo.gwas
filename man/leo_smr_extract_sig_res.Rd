@@ -7,7 +7,7 @@
 leo_smr_extract_sig_res(dir, pass_type = c("FDR", "Bonferroni"), out_dir = "")
 }
 \arguments{
-\item{dir}{Character. The main \code{combine_1outcome} folder from \func{combine_smr_res_1outcome}.}
+\item{dir}{Character. The main \code{combine_1outcome} folder from \link{combine_smr_res_1outcome}.}
 
 \item{pass_type}{Character. Which significance criterion to use:
 one of \code{c("FDR", "Bonferroni", "both")}.
