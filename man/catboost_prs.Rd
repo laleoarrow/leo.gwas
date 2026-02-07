@@ -46,5 +46,5 @@ These functions require installed \pkg{catboost}. Training with \code{divide = T
 also requires \pkg{caret} for stratified data splitting.
 }
 \seealso{
-\code{\link[catboost]{catboost.train}}, \code{\link[catboost]{catboost.get_feature_importance}}
+\code{catboost::catboost.train()}, \code{catboost::catboost.get_feature_importance()}
 }

@@ -314,7 +314,7 @@ combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){
 #'
 #' @return Each function returns a list; contents depend on task (training, target prediction, ranking).
 #'
-#' @seealso \code{\link[catboost]{catboost.train}}, \code{\link[catboost]{catboost.get_feature_importance}}
+#' @seealso \code{catboost::catboost.train()}, \code{catboost::catboost.get_feature_importance()}
 #' @export
 #' @rdname catboost_prs
 #' @importFrom dplyr mutate select across
