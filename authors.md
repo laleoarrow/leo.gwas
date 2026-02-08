@@ -8,12 +8,12 @@
 ## Citation
 
 Lu A (2026). *leo.gwas: Layered Exploratory Omics (LEO)*. R package
-version 0.0.2, <https://laleoarrow.github.io/leo.gwas/>.
+version 0.0.3, <https://laleoarrow.github.io/leo.gwas/>.
 
     @Manual{,
       title = {leo.gwas: Layered Exploratory Omics (LEO)},
       author = {Ao Lu},
       year = {2026},
-      note = {R package version 0.0.2},
+      note = {R package version 0.0.3},
       url = {https://laleoarrow.github.io/leo.gwas/},
     }
