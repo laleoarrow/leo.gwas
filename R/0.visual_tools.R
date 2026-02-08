@@ -267,7 +267,7 @@ ld_ps_index <- function(gwas, index = "rs999", # ps for pre-select
 #' @param loci_data output from ld_ps_index
 #' @param gene gene loci
 #' @param index_snp indexed snp
-#' @param online_ld whether to use online LD; default is F
+#' @param online_ld whether to use online LD; default is FALSE
 #' @param flank flank size for the locus plot
 #' @return prepared data which could be pass to save_regional_plot
 #' @importFrom rtracklayer import.bw

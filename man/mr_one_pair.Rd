@@ -20,7 +20,7 @@ mr_one_pair(
 
 \item{out}{a str indicating the outcome in dat_h}
 
-\item{save_plot}{only save the plot if T, defaut T.}
+\item{save_plot}{only save the plot if TRUE, default TRUE.}
 
 \item{res_dir}{dir path where the result fo MR analysis stored}
 

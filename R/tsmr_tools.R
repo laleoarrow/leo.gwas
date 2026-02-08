@@ -369,7 +369,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' @param out a str indicating the outcome in dat_h
 #' @param res_dir dir path where the result fo MR analysis stored
 #' @param fig_dir dir path where the figure of MR analysis stored
-#' @param save_plot only save the plot if T, defaut T.
+#' @param save_plot only save the plot if TRUE, default TRUE.
 #'
 #' @keywords tsmr:
 #' @export
