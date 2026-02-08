@@ -12,6 +12,7 @@
 #' @importFrom data.table ":="
 #' @importFrom leo.basic leo_log leo_message
 #' @examples
+#' \dontrun{
 #' pacman::p_load(data.table, BSgenome, leo.gwas)
 #' library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
 #' library("SNPlocs.Hsapiens.dbSNP155.GRCh38") # for GRCh38
@@ -20,6 +21,7 @@
 #'   BP = c(15211, 15820)
 #' )
 #' result <- add_rsid(df); result
+#' }
 #' @export
 add_rsid <- function(dat, ref = "GRCh37") {
   if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(dat))) {
@@ -661,7 +663,7 @@ map_gene_to_chrbp_using_biomaRt <- function(genes, gene_col = NULL, genome = c("
 #' map_ensg_to_chrbp_using_biomaRt(ensembl_ids = gene_df, ensembl_col = "ensembl_id", genome = "hg19")
 #' }
 #' @export
-map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), verbose = F) {
+map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), verbose = FALSE) {
   # Load required package
   if (!requireNamespace("biomaRt", quietly = TRUE)) {
     stop("Package 'biomaRt' is required. Please install it using BiocManager::install('biomaRt').")

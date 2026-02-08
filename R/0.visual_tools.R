@@ -267,12 +267,12 @@ ld_ps_index <- function(gwas, index = "rs999", # ps for pre-select
 #' @param loci_data output from ld_ps_index
 #' @param gene gene loci
 #' @param index_snp indexed snp
-#' @param online_ld whether to use online LD; default is F
+#' @param online_ld whether to use online LD; default is FALSE
 #' @param flank flank size for the locus plot
 #' @return prepared data which could be pass to save_regional_plot
 #' @importFrom rtracklayer import.bw
 #' @export
-locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
+locuszoomr_loc <- function(loci_data, gene, online_ld = FALSE, index_snp, flank) {
   #   ----- loc_plot using `locuszoomr`
   loc <- locus(data = loci_data,
                gene = gene,
@@ -310,8 +310,8 @@ locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
 #' @param filter_gene_biotype Character vector of gene biotypes to filter.
 #'
 #' @export
-save_regional_plot <- function(path, loc, gene, save = T, title = expression(paste(italic("CLPSL1"), " (T1D)")),
-                               labels = c("index"), filter_gene_biotype = c("protein_coding"), border = F, width = 7.5, height = 5.5){
+save_regional_plot <- function(path, loc, gene, save = TRUE, title = expression(paste(italic("CLPSL1"), " (T1D)")),
+                               labels = c("index"), filter_gene_biotype = c("protein_coding"), border = FALSE, width = 7.5, height = 5.5){
   # Check if the path exists; interactively create the path if not
   if (!dir.exists(dirname(path))) {
     create_dir <- readline(prompt = "Directory does not exist. Do you want to create it? (yes/no): ")
@@ -375,7 +375,9 @@ save_regional_plot <- function(path, loc, gene, save = T, title = expression(pas
 #' @importFrom glue glue
 #' @importFrom leo.basic leo_log
 #'
+#' @export
 #' @examples
+#' \dontrun{
 #' # Simulate & write a small CSV
 #' set.seed(1)
 #' df <- data.frame(sx = rnorm(60), sy = rnorm(60),
@@ -390,6 +392,7 @@ save_regional_plot <- function(path, loc, gene, save = T, title = expression(pas
 #'            anno_colors = anno_cols, reverse_x = FALSE, reverse_y = TRUE,
 #'            save_folder = tempdir(), basename = "Demo.Base", traitname = "trait",
 #'            highlight_tissue = "Brain", highlight_color = "#FFD700", other_grey = "grey60")
+#' }
 plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
                        color = NULL, anno_colors = NULL,
                        reverse_x = FALSE, reverse_y = TRUE, save_folder = "./figure/gsmap/tmp",
@@ -501,7 +504,9 @@ plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
 #'   \item{hi_map}{named colors for highlight levels only (for highlight-only plot)}
 #'
 #' @importFrom leo.basic leo_log leo_discrete_color
+#' @export
 #' @examples
+#' \dontrun{
 #' library(patchwork)
 #' library(ggplot2)
 #' # Simulate a small dataframe
@@ -525,6 +530,7 @@ plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
 #'   ggplot2::geom_point() +
 #'   ggplot2::scale_color_manual(values = cm$hi_map, name = "Highlight")
 #' gg | gg_hi
+#' }
 plot_gsMap_color <- function(annos, anno_colors = NULL, color = NULL,
                              highlight_tissue = NULL, highlight_color = NULL) {
   # Validate & normalize levels

@@ -8,7 +8,7 @@ mr_one_pair(
   dat_h,
   exp = "",
   out = "",
-  save_plot = T,
+  save_plot = TRUE,
   res_dir = "./output/tsmr",
   fig_dir = "./figure/tsmr"
 )
@@ -20,9 +20,9 @@ mr_one_pair(
 
 \item{out}{a str indicating the outcome in dat_h}
 
-\item{save_plot}{only save the plot if T, defaut T.}
+\item{save_plot}{only save the plot if TRUE, default TRUE.}
 
-\item{res_dir}{dir path where the result fo MR analysis stored}
+\item{res_dir}{dir path where the result of MR analysis stored}
 
 \item{fig_dir}{dir path where the figure of MR analysis stored}
 }

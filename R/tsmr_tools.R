@@ -13,6 +13,7 @@
 #' @keywords tsmr:
 #' @export
 #' @examples
+#' \dontrun{
 #' # Reference:
 #' # - https://github.com/MRCIEU/TwoSampleMR/issues/173
 #' # - https://blog.csdn.net/xiaozheng1213/article/details/126269969
@@ -22,6 +23,7 @@
 #'
 #' # Note: after using this, please check `leo_clump` column to see if they are all TRUE
 #' # If it's contains F, it means no SNPs remained after clumping or something bad happened
+#' }
 clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                              clump_kb = 10000,
                              clump_r2 = 0.001,
@@ -365,9 +367,9 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' @param dat_h harmonized data
 #' @param exp a str indicating the exposure in dat_h
 #' @param out a str indicating the outcome in dat_h
-#' @param res_dir dir path where the result fo MR analysis stored
+#' @param res_dir dir path where the result of MR analysis stored
 #' @param fig_dir dir path where the figure of MR analysis stored
-#' @param save_plot only save the plot if T, defaut T.
+#' @param save_plot only save the plot if TRUE, default TRUE.
 #'
 #' @keywords tsmr:
 #' @export
@@ -387,7 +389,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' names(out)
 #' }
 #' @importFrom TwoSampleMR mr harmonise_data mr_scatter_plot mr_forest_plot mr_funnel_plot mr_heterogeneity mr_leaveoneout mr_pleiotropy_test mr_singlesnp mr_egger_regression mr_egger_regression_bootstrap default_parameters mr_leaveoneout_plot
-mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
+mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = TRUE, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
   # Initialize
   pairname <- paste0(exp, " VS ", out); leo_message(paste0(" - MR Pair: ", pairname))
   if (!dir.exists(res_dir)) {dir.create(res_dir, recursive = T)}; leo_message(paste0(" - Setting Check: `res_dir` using ", res_dir))
@@ -541,10 +543,12 @@ mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./ou
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' p1 <- mr_scatter_plot_modified(mr_results = res_pair, dat = dat_h_pair)
 #' print(p1[[1]])
+#' }
 mr_scatter_plot_modified <- function(mr_results, dat) {
-  #' library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
+  # library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
   mrres <- plyr::dlply(dat, c("id.exposure", "id.outcome"), function(d) {
     d <- plyr::mutate(d)
     if (nrow(d) < 2 | sum(d$mr_keep) == 0) {

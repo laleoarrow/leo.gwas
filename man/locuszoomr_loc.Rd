@@ -4,14 +4,14 @@
 \alias{locuszoomr_loc}
 \title{Loci_plot: prepare the locus data for locuszoomr}
 \usage{
-locuszoomr_loc(loci_data, gene, online_ld = F, index_snp, flank)
+locuszoomr_loc(loci_data, gene, online_ld = FALSE, index_snp, flank)
 }
 \arguments{
 \item{loci_data}{output from ld_ps_index}
 
 \item{gene}{gene loci}
 
-\item{online_ld}{whether to use online LD; default is F}
+\item{online_ld}{whether to use online LD; default is FALSE}
 
 \item{index_snp}{indexed snp}
 

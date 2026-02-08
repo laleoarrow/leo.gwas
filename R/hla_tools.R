@@ -91,7 +91,7 @@ check_significant_SNP <- function(x, environment.list, significance_level = 5e-8
 #'   CHR = c(6, 6, 6, 7),
 #'   POS = c(26000000, 33000000, 35000000, 29000000)
 #' )
-#' result_data <- exclude_HLA(example_data, chromosome_col="CHR", position_col="POS")
+#' result_data <- HLA_exclude(example_data, chromosome_col="CHR", position_col="POS")
 #' print(result_data)
 HLA_exclude <- function(data, chromosome_col="CHR", position_col="BP", lower_bound=25e6, upper_bound=34e6) {
   filtered_data <- data %>%

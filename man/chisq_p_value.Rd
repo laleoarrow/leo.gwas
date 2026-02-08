@@ -24,9 +24,11 @@ This is because the p-value is so small that R rounds it to 0. This function giv
 a more precise p-value.
 }
 \examples{
+\dontrun{
 # install.packages("Rmpfr")
 library(Rmpfr)
 chisq_value <- 2629; df <- 1
 p_value <- chisq_p_value(chisq_value, df)
 print(p_value)
+}
 }

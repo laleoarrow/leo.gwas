@@ -18,8 +18,9 @@ When the slope of two method is really close, the scatter plot may not properly 
 Change the line type here mannually herein then.
 }
 \examples{
+\dontrun{
 p1 <- mr_scatter_plot_modified(mr_results = res_pair, dat = dat_h_pair)
 print(p1[[1]])
-library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
+}
 }
 \keyword{tsmr:}
