@@ -187,6 +187,7 @@ across_df_TF <- function(df, type = "T"){
 #' @details Each call to the returned function yields the next batch. Returns \code{NULL} when no more elements remain.
 #' @return A function (no arguments). Repeated calls produce successive batches or \code{NULL} if finished.
 #' @examples
+#' \dontrun{
 #' # Suppose you have 25 elements and want to batch them in groups of 6
 #' nums <- 1:25
 #' it <- leo_iterator(nums, 6)
@@ -196,6 +197,7 @@ across_df_TF <- function(df, type = "T"){
 #'
 #'   # add your parallel process steps
 #'   print(batch)
+#' }
 #' }
 #' @export
 leo_iterator <- function(elements, batch_size) {

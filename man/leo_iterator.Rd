@@ -25,6 +25,7 @@ RAM consumption.
 Each call to the returned function yields the next batch. Returns \code{NULL} when no more elements remain.
 }
 \examples{
+\dontrun{
 # Suppose you have 25 elements and want to batch them in groups of 6
 nums <- 1:25
 it <- leo_iterator(nums, 6)
@@ -34,5 +35,6 @@ while (TRUE) {
 
   # add your parallel process steps
   print(batch)
+}
 }
 }
