@@ -467,9 +467,20 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
     }
   }
 
+
   # Create TxDb object from GTF file
   message("Creating TxDb object from GTF file...")
+  
+  # Check if makeTxDbFromGFF is available (requires txdbmaker backend)
+  if (!exists("makeTxDbFromGFF", where = asNamespace("GenomicFeatures"), mode = "function")) {
+    stop("GenomicFeatures::makeTxDbFromGFF is not available.\n",
+         "This function requires the 'txdbmaker' package as a backend.\n",
+         "Please install it: BiocManager::install('txdbmaker')",
+         call. = FALSE)
+  }
+  
   txdb <- suppressWarnings( GenomicFeatures::makeTxDbFromGFF(gtf_file, format = "gtf") )
+
 
   # Retrieve gene locations
   gene_locations <- GenomicFeatures::genes(txdb)
