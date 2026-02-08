@@ -60,5 +60,5 @@ out <- mr_one_pair(
   fig_dir = "./figure/tsmr"
 )
 names(out)
-} # })
+} # }
 ```
