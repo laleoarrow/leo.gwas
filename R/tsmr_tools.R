@@ -367,7 +367,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' @param dat_h harmonized data
 #' @param exp a str indicating the exposure in dat_h
 #' @param out a str indicating the outcome in dat_h
-#' @param res_dir dir path where the result fo MR analysis stored
+#' @param res_dir dir path where the result of MR analysis stored
 #' @param fig_dir dir path where the figure of MR analysis stored
 #' @param save_plot only save the plot if TRUE, default TRUE.
 #'

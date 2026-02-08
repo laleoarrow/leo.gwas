@@ -22,7 +22,7 @@ mr_one_pair(
 
 \item{save_plot}{only save the plot if TRUE, default TRUE.}
 
-\item{res_dir}{dir path where the result fo MR analysis stored}
+\item{res_dir}{dir path where the result of MR analysis stored}
 
 \item{fig_dir}{dir path where the figure of MR analysis stored}
 }
