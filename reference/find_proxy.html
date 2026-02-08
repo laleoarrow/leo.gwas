@@ -107,15 +107,19 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#' # This function can be used when many iv can not locate corresponding snp</span></span></span>
-<span class="r-in"><span><span class="co">#' # in the outcome in tsmr analysis</span></span></span>
-<span class="r-in"><span><span class="co">#' miss_iv &lt;- iv[!iv$SNP %in% dat_h$SNP,] # iv is estracted iv via tsmr package;</span></span></span>
-<span class="r-in"><span><span class="co">#' # dat_h is a standard output of harmonise_data()</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis</span></span></span>
+<span class="r-in"><span><span class="co"># iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()</span></span></span>
+<span class="r-in"><span><span class="va">miss_iv</span> <span class="op">&lt;-</span> <span class="va">iv</span><span class="op">[</span><span class="op">!</span><span class="va">iv</span><span class="op">$</span><span class="va">SNP</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">dat_h</span><span class="op">$</span><span class="va">SNP</span>,<span class="op">]</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'iv' not found</span>
+<span class="r-in"><span><span class="va">miss_snp</span> <span class="op">&lt;-</span> <span class="va">miss_iv</span><span class="op">$</span><span class="va">SNP</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'miss_iv' not found</span>
+<span class="r-in"><span><span class="va">outcome_snp</span> <span class="op">&lt;-</span> <span class="va">iri_nc</span><span class="op">$</span><span class="va">SNP</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'iri_nc' not found</span>
 <span class="r-in"><span><span class="va">proxy_output_path</span> <span class="op">&lt;-</span> <span class="st">"Full path to where you wanna store the LDlinkR output"</span></span></span>
 <span class="r-in"><span> <span class="va">proxy_iv</span> <span class="op">&lt;-</span> <span class="fu">find_proxy</span><span class="op">(</span><span class="va">miss_iv</span>, <span class="va">miss_snp</span>, <span class="va">outcome_snp</span>,</span></span>
-<span class="r-in"><span>             proxy_file <span class="op">=</span> <span class="st">"/Users/leoarrow/project/iridocyclitis/output/tsmr//combined_query_snp_list_grch38.txt"</span>,</span></span>
-<span class="r-in"><span>             proxy_output_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in find_proxy(miss_iv, miss_snp, outcome_snp, proxy_file = "/Users/leoarrow/project/iridocyclitis/output/tsmr//combined_query_snp_list_grch38.txt",     proxy_output_path = NULL):</span> could not find function "find_proxy"</span>
+<span class="r-in"><span>                        proxy_file <span class="op">=</span> <span class="st">"./combined_query_snp_list_grch38.txt"</span>,</span></span>
+<span class="r-in"><span>                        proxy_output_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in find_proxy(miss_iv, miss_snp, outcome_snp, proxy_file = "./combined_query_snp_list_grch38.txt",     proxy_output_path = NULL):</span> could not find function "find_proxy"</span>
 <span class="r-in"><span> <span class="co"># bak</span></span></span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">target.snp</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">SNP</span> <span class="co"># target snp</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>

@@ -2,9 +2,9 @@
 
 This function combines SMR (Summary-data-based Mendelian Randomization)
 result files across all chromosomes for each unique exposure and outcome
-pair (Yes, we can deal with multiple exposure in one dir for say, the 49
-sqtl from GTEx). The combined results are saved to a specified output
-directory.
+pair (Yes, we can deal with multiple exposure in one dir (for say, the
+49 sqtl from GTEx)). The combined results are saved to a specified
+output directory.
 
 ## Usage
 

@@ -4,9 +4,9 @@ Dr.PRS is designed to rank the importance for PRS inputs and futher
 optimazation. It takes two none-overlap stage plink file (bfile) for
 machine learning modeling:
 
-- lasso to capture linear relationship
+- lasso (to capture linear relationship)
 
-- catboost to capture non-linear relationship It also calculated PRS
+- catboost (to capture non-linear relationship) It also calculated PRS
   with plink using traditional additive model.
 
 ## Usage

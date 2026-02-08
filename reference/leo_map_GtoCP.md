@@ -61,14 +61,16 @@ if (FALSE) { # \dontrun{
 leo_map_GtoCP(genes = c("TP53", "BRCA1", "EGFR"), method = "bioconductor", genome = "hg19")
 
 # Using Bioconductor method with a data frame
-leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
+leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"),
+                                 value = c(1.2, 3.4, 5.6)),
               gene_col = "gene_name", method = "bioconductor", genome = "hg19")
 
 # Using GTF method with a character vector of gene symbols
 leo_map_GtoCP(genes = c("TP53", "BRCA1", "EGFR"), method = "gtf", genome = "hg38")
 
 # Using GTF method with a data frame
-leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"), value = c(1.2, 3.4, 5.6)),
+leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"),
+                                 value = c(1.2, 3.4, 5.6)),
               gene_col = "gene_name", method = "gtf", genome = "hg38",
               download_dir = "~/project/ref/gtf")
 } # }

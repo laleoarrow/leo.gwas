@@ -74,10 +74,9 @@ correlation_draw(
 
   Point transparency. Default `0.75`.
 
-- line_color, :
+- line_color, line_type, line_size:
 
-  line_type, line_size Trend line color, type, size. Defaults
-  `"#BB7CD8"`, `"dashed"`, `1.2`.
+  Trend line color, type, size. Defaults `"#BB7CD8"`, `"dashed"`, `1.2`.
 
 - ci_alpha:
 

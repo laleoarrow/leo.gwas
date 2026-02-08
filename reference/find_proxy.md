@@ -62,15 +62,19 @@ a updated missiv with `proxy.snp` `proxy.effect.allele`
 ## Examples
 
 ``` r
-#' # This function can be used when many iv can not locate corresponding snp
-#' # in the outcome in tsmr analysis
-#' miss_iv <- iv[!iv$SNP %in% dat_h$SNP,] # iv is estracted iv via tsmr package;
-#' # dat_h is a standard output of harmonise_data()
+# This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
+# iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
+miss_iv <- iv[!iv$SNP %in% dat_h$SNP,]
+#> Error: object 'iv' not found
+miss_snp <- miss_iv$SNP
+#> Error: object 'miss_iv' not found
+outcome_snp <- iri_nc$SNP
+#> Error: object 'iri_nc' not found
 proxy_output_path <- "Full path to where you wanna store the LDlinkR output"
  proxy_iv <- find_proxy(miss_iv, miss_snp, outcome_snp,
-             proxy_file = "/Users/leoarrow/project/iridocyclitis/output/tsmr//combined_query_snp_list_grch38.txt",
-             proxy_output_path = NULL)
-#> Error in find_proxy(miss_iv, miss_snp, outcome_snp, proxy_file = "/Users/leoarrow/project/iridocyclitis/output/tsmr//combined_query_snp_list_grch38.txt",     proxy_output_path = NULL): could not find function "find_proxy"
+                        proxy_file = "./combined_query_snp_list_grch38.txt",
+                        proxy_output_path = NULL)
+#> Error in find_proxy(miss_iv, miss_snp, outcome_snp, proxy_file = "./combined_query_snp_list_grch38.txt",     proxy_output_path = NULL): could not find function "find_proxy"
  # bak
  proxy_iv$target.snp <- proxy_iv$SNP # target snp
 #> Error: object 'proxy_iv' not found

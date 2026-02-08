@@ -1,4 +1,4 @@
-# perform_mr_for_one_pair
+# One-Click Perform 2SMR
 
 `perform_mr_for_one_pair` perform a MR for one pair of exp and out
 

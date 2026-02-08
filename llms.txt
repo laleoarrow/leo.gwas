@@ -240,7 +240,7 @@ MR data prep and analysis from `R/tsmr_tools.R`.
   : Leo batch iterator builder
 
 - [`mr_one_pair()`](https://laleoarrow.github.io/leo.gwas/reference/mr_one_pair.md)
-  : perform_mr_for_one_pair
+  : One-Click Perform 2SMR
 
 - [`mr_scatter_plot_modified()`](https://laleoarrow.github.io/leo.gwas/reference/mr_scatter_plot_modified.md)
   : Modified MR Scatter Plot
