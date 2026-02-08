@@ -22,6 +22,20 @@ interfaces may change based on user feedback.
 
 ### Download
 
+**Method 1: via r-universe (Recommended)**
+
+``` r
+# Enable the r-universe repository
+options(repos = c(
+    laleoarrow = 'https://laleoarrow.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+# Install leo.gwas
+install.packages('leo.gwas')
+```
+
+**Method 2: via GitHub**
+
 ``` r
 devtools::install_github("laleoarrow/leo.gwas", dependencies = TRUE)
 # or
