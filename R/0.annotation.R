@@ -458,17 +458,16 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
     download_dir <- "~/Project/ref/gtf" 
   }
   
-  # Expand tilde and check if directory exists or can be created
+  # Expand tilde
   download_dir <- path.expand(download_dir)
+  using_temp_dir <- FALSE
+  
+  # Check if directory exists
   if (!dir.exists(download_dir)) {
-    tryCatch({
-      dir.create(download_dir, recursive = TRUE)
-      message(paste0(">>> Created download_dir: ", download_dir))
-    }, error = function(e) {
-      # Fallback to temp directory if creation fails
-      download_dir <<- tempdir()
-      message(paste0("! Could not create ", download_dir, ", using temp directory: ", download_dir))
-    })
+    message(paste0(">>> Directory ", download_dir, " does not exist."))
+    download_dir <- tempdir()
+    message(paste0(">>> Using temporary directory: ", download_dir))
+    using_temp_dir <- TRUE
   } else {
     message(paste0(">>> Using download_dir: ", download_dir))
   }
@@ -484,6 +483,17 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
       gtf_url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.gtf.gz"
       gtf_file <- file.path(download_dir, basename(gtf_url))
     }
+    
+    # Auto-cleanup if using temp directory
+    if (using_temp_dir) {
+      on.exit({
+        if (file.exists(gtf_file)) {
+          message(paste0("Cleaning up temporary GTF file: ", gtf_file))
+          unlink(gtf_file)
+        }
+      }, add = TRUE)
+    }
+    
     if (!file.exists(gtf_file)) {
       message("Downloading GTF file...")
       utils::download.file(gtf_url, destfile = gtf_file)
