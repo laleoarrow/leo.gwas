@@ -11,7 +11,6 @@
 [![test-coverage](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml)
 [![r-universe](https://laleoarrow.r-universe.dev/badges/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
 [![Version](https://laleoarrow.r-universe.dev/badges/:version/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
-[![Downloads](https://img.shields.io/github/downloads/laleoarrow/leo.gwas/total.svg)](https://github.com/laleoarrow/leo.gwas/releases)
 [![Repo Size](https://img.shields.io/github/repo-size/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas)
 [![Last Commit](https://img.shields.io/github/last-commit/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/commits/main)
 [![Issues](https://img.shields.io/github/issues/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/issues)
@@ -32,8 +31,8 @@
 ```r
 # Enable the r-universe repository
 options(repos = c(
-    laleoarrow = 'https://laleoarrow.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
+        laleoarrow = 'https://laleoarrow.r-universe.dev',
+        CRAN = 'https://cloud.r-project.org'))
 
 # Install leo.gwas
 install.packages('leo.gwas')

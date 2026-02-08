@@ -661,14 +661,14 @@ mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_n
   wd <- getwd()
   if (log) {setwd(log_path)}
   A <- MRlap::MRlap(exposure = exposure_data,
-             exposure_name = exposure_name,
-             outcome = outcome_data,
-             outcome_name = outcome_name,
-             ld = ld_path,
-             hm3 = hm3_path,
-             save_logfiles = log,
-             do_pruning = FALSE,
-             user_SNPsToKeep = dat_h_mrlap$SNP
+                    exposure_name = exposure_name,
+                    outcome = outcome_data,
+                    outcome_name = outcome_name,
+                    ld = ld_path,
+                    hm3 = hm3_path,
+                    save_logfiles = log,
+                    do_pruning = FALSE,
+                    user_SNPsToKeep = dat_h_mrlap$SNP
              )
   setwd(wd)
 
