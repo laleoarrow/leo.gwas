@@ -9,6 +9,11 @@
 [![R](https://img.shields.io/badge/R-language-red.svg)](https://www.r-project.org/)
 [![R-CMD-check](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml)
+[![Downloads](https://img.shields.io/github/downloads/laleoarrow/leo.gwas/total.svg)](https://github.com/laleoarrow/leo.gwas/releases)
+[![Repo Size](https://img.shields.io/github/repo-size/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas)
+[![Last Commit](https://img.shields.io/github/last-commit/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/commits/main)
+[![Issues](https://img.shields.io/github/issues/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/issues)
+[![Visitor](https://visitor-badge.laobi.icu/badge?page_id=laleoarrow.leo.gwas)](https://github.com/laleoarrow/leo.gwas)
 <!-- badges: end -->
 
 > Unveiling the Depths of Genomic Data, Layer by Layer.
