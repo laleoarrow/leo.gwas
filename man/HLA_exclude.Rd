@@ -37,6 +37,6 @@ example_data <- data.frame(
   CHR = c(6, 6, 6, 7),
   POS = c(26000000, 33000000, 35000000, 29000000)
 )
-result_data <- exclude_HLA(example_data, chromosome_col="CHR", position_col="POS")
+result_data <- HLA_exclude(example_data, chromosome_col="CHR", position_col="POS")
 print(result_data)
 }
