@@ -377,6 +377,7 @@ save_regional_plot <- function(path, loc, gene, save = TRUE, title = expression(
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' # Simulate & write a small CSV
 #' set.seed(1)
 #' df <- data.frame(sx = rnorm(60), sy = rnorm(60),
@@ -391,6 +392,7 @@ save_regional_plot <- function(path, loc, gene, save = TRUE, title = expression(
 #'            anno_colors = anno_cols, reverse_x = FALSE, reverse_y = TRUE,
 #'            save_folder = tempdir(), basename = "Demo.Base", traitname = "trait",
 #'            highlight_tissue = "Brain", highlight_color = "#FFD700", other_grey = "grey60")
+#' }
 plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
                        color = NULL, anno_colors = NULL,
                        reverse_x = FALSE, reverse_y = TRUE, save_folder = "./figure/gsmap/tmp",
