@@ -51,6 +51,7 @@ Suggests:
     catboost,
     knitr,
     minfi,
+    pacman,
     plinkbinr,
     Rmpfr,
     rmarkdown,

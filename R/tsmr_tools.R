@@ -543,8 +543,10 @@ mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = TRUE, res_dir= ".
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' p1 <- mr_scatter_plot_modified(mr_results = res_pair, dat = dat_h_pair)
 #' print(p1[[1]])
+#' }
 mr_scatter_plot_modified <- function(mr_results, dat) {
   #' library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
   mrres <- plyr::dlply(dat, c("id.exposure", "id.outcome"), function(d) {
