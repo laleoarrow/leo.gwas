@@ -502,6 +502,7 @@ plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
 #'
 #' @importFrom leo.basic leo_log leo_discrete_color
 #' @examples
+#' \dontrun{
 #' library(patchwork)
 #' library(ggplot2)
 #' # Simulate a small dataframe
@@ -525,6 +526,7 @@ plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
 #'   ggplot2::geom_point() +
 #'   ggplot2::scale_color_manual(values = cm$hi_map, name = "Highlight")
 #' gg | gg_hi
+#' }
 plot_gsMap_color <- function(annos, anno_colors = NULL, color = NULL,
                              highlight_tissue = NULL, highlight_color = NULL) {
   # Validate & normalize levels

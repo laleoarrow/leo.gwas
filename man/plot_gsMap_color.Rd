@@ -33,6 +33,7 @@ A list with:
 gsMap_plot Helper to build color mappings (partial fill, highlight override).
 }
 \examples{
+\dontrun{
 library(patchwork)
 library(ggplot2)
 # Simulate a small dataframe
@@ -56,4 +57,5 @@ gg_hi <- ggplot2::ggplot(df, ggplot2::aes(sx, sy, color = annotation)) +
   ggplot2::geom_point() +
   ggplot2::scale_color_manual(values = cm$hi_map, name = "Highlight")
 gg | gg_hi
+}
 }

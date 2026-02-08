@@ -12,6 +12,7 @@
 #' @importFrom data.table ":="
 #' @importFrom leo.basic leo_log leo_message
 #' @examples
+#' \dontrun{
 #' pacman::p_load(data.table, BSgenome, leo.gwas)
 #' library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
 #' library("SNPlocs.Hsapiens.dbSNP155.GRCh38") # for GRCh38
@@ -20,6 +21,7 @@
 #'   BP = c(15211, 15820)
 #' )
 #' result <- add_rsid(df); result
+#' }
 #' @export
 add_rsid <- function(dat, ref = "GRCh37") {
   if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(dat))) {

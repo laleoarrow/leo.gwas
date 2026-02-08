@@ -25,6 +25,7 @@ and it appends the corresponding rsID by querying the SNPlocs.Hsapiens.dbSNP155.
 The function returns a dataframe with the rsIDs included.
 }
 \examples{
+\dontrun{
 pacman::p_load(data.table, BSgenome, leo.gwas)
 library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
 library("SNPlocs.Hsapiens.dbSNP155.GRCh38") # for GRCh38
@@ -33,4 +34,5 @@ df <- data.frame(
   BP = c(15211, 15820)
 )
 result <- add_rsid(df); result
+}
 }
