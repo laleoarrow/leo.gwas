@@ -64,11 +64,13 @@ get_id <- function(x, count_A1_A2 = F) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # install.packages("Rmpfr")
 #' library(Rmpfr)
 #' chisq_value <- 2629; df <- 1
 #' p_value <- chisq_p_value(chisq_value, df)
 #' print(p_value)
+#' }
 chisq_p_value <- function(chisq_value, df, digits = 4, prec = 100) {
   log_p_value <- pchisq(chisq_value, df, lower.tail = FALSE, log.p = TRUE)
   p_value <- exp(mpfr(log_p_value, prec = prec))
