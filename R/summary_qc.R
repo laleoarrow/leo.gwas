@@ -210,6 +210,7 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #' }
 #'
 #' @examples
+#' \dontrun{
 #' # Small demo dataset
 #' df <- data.frame(
 #'   SNP = c("rs1","rs2","rs3","rs2"),
@@ -218,11 +219,9 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #'   OR  = c(1.2, 0.9, 1.1, 1.1)
 #' )
 #'
-#' \dontrun{
 #' # Complementary alleles
 #' is_complementary("A","T")  # TRUE
 #' is_complementary("A","G")  # FALSE
-#' }
 #'
 #' # Indels and non-indels
 #' fetch_indel(df, "both")
@@ -238,6 +237,7 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #'
 #' # Count NA by column
 #' any_na(df)
+#' }
 #'
 #' @name gwas_qc_helpers
 #' @keywords internal

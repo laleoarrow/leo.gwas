@@ -58,6 +58,7 @@ Internal utilities used in the GWAS QC pipeline.
 }
 
 \examples{
+\dontrun{
 # Small demo dataset
 df <- data.frame(
   SNP = c("rs1","rs2","rs3","rs2"),
@@ -66,11 +67,9 @@ df <- data.frame(
   OR  = c(1.2, 0.9, 1.1, 1.1)
 )
 
-\dontrun{
 # Complementary alleles
 is_complementary("A","T")  # TRUE
 is_complementary("A","G")  # FALSE
-}
 
 # Indels and non-indels
 fetch_indel(df, "both")
@@ -86,6 +85,7 @@ fetch_same_direcrtion(df, df2)
 
 # Count NA by column
 any_na(df)
+}
 
 }
 \keyword{internal}

@@ -282,10 +282,10 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
 
 
 #' combine two rank
-#' @param rank1 Data frame containing rank information for the first stage.
-#' @param rank2 Data frame containing rank information for the second stage.
-#' @param auc1 Numeric. AUC for the first stage.
-#' @param auc2 Numeric. AUC for the second stage.
+#' @param rank1 rank1
+#' @param rank2 rank2
+#' @param auc1 auc1
+#' @param auc2 auc2
 #' @export
 #' @rdname dr.prs
 combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){

@@ -14,12 +14,14 @@ leo_smr_adjust_loop(
 )
 }
 \arguments{
-\item{dir}{Character. The directory containing SMR result files. Files should have the \code{.smr} extension and follow the naming convention \code{exposure@outcome.smr}.}
+\item{dir}{Character. The directory containing SMR result files. Files
+should have the \code{.smr} extension and follow the naming convention \code{exposure@outcome.smr}.}
 
 \item{out_dir}{Character. The output directory where the adjusted SMR files will be saved.
 If not specified, defaults to creating a \code{fdr} directory within the input directory.}
 
-\item{pattern}{Character. A regular expression pattern to match SMR result files. Default is \code{"\\.smr$"} (i.e., files ending with \code{.smr}).}
+\item{pattern}{Character. A regular expression pattern to match SMR result files.
+Default is \code{"\\.smr$"} (i.e., files ending with \code{.smr}).}
 
 \item{QTL_type}{Character. Type of QTL (e.g., "eQTL", "sQTL").}
 
@@ -31,11 +33,12 @@ If not specified, defaults to creating a \code{fdr} directory within the input d
 NULL.
 }
 \description{
-This function applies FDR/Bonferroni corrections to all SMR results within a specified directory.
+This function applies FDR/Bonferroni corrections to all SMR results
+within a specified directory.
 }
 \examples{
 \dontrun{
-leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/chr_combined",
-                    out_dir = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/fdr")
+leo_smr_adjust_loop(dir     = "./output/smr/sqtl/GTEx49/chr_combined",
+                    out_dir = "./output/smr/sqtl/GTEx49/fdr")
 }
 }

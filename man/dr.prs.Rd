@@ -65,13 +65,13 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{seed}{Random seed (Default: 725).}
 
-\item{rank1}{Data frame containing rank information for the first stage.}
+\item{rank1}{rank1}
 
-\item{rank2}{Data frame containing rank information for the second stage.}
+\item{rank2}{rank2}
 
-\item{auc1}{Numeric. AUC for the first stage.}
+\item{auc1}{auc1}
 
-\item{auc2}{Numeric. AUC for the second stage.}
+\item{auc2}{auc2}
 }
 \value{
 A list with:
