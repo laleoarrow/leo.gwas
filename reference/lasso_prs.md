@@ -76,5 +76,5 @@ Each function returns a list:
 
 ## See also
 
-[`cv.glmnet`](https://rdrr.io/pkg/glmnet/man/cv.glmnet.html),
+[`cv.glmnet`](https://glmnet.stanford.edu/reference/cv.glmnet.html),
 [`roc`](https://rdrr.io/pkg/pROC/man/roc.html)
