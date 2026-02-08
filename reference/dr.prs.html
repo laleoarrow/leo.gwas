@@ -115,6 +115,10 @@ It also calculated PRS with plink using traditional additive model.</p></li>
 <dd><p>Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.</p></dd>
 
 
+<dt id="arg-dr-optimazation">dr_optimazation<a class="anchor" aria-label="anchor" href="#arg-dr-optimazation"></a></dt>
+<dd><p>Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).</p></dd>
+
+
 <dt id="arg-snp-col">snp_col<a class="anchor" aria-label="anchor" href="#arg-snp-col"></a></dt>
 <dd><p>Column name in the summary statistics for SNP IDs (default: "SNP.meta").</p></dd>
 
@@ -139,6 +143,10 @@ It also calculated PRS with plink using traditional additive model.</p></li>
 <dd><p>Number of iterations for iLasso model (default: 1000).</p></dd>
 
 
+<dt id="arg-nfolds">nfolds<a class="anchor" aria-label="anchor" href="#arg-nfolds"></a></dt>
+<dd><p>Number of folds for cross-validation (default: 10).</p></dd>
+
+
 <dt id="arg-plink-bin">plink_bin<a class="anchor" aria-label="anchor" href="#arg-plink-bin"></a></dt>
 <dd><p>Path to the PLINK binary executable (default: <code>plinkbinr::get_plink_exe()</code>).</p></dd>
 
@@ -157,10 +165,6 @@ It also calculated PRS with plink using traditional additive model.</p></li>
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed (Default: 725).</p></dd>
-
-
-<dt id="arg-dr-optimazation">dr.optimazation<a class="anchor" aria-label="anchor" href="#arg-dr-optimazation"></a></dt>
-<dd><p>Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).</p></dd>
 
 </dl></div>
     <div class="section level2">

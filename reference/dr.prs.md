@@ -64,6 +64,11 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
   Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost,
   3=iLasso. Default is all three methods.
 
+- dr_optimazation:
+
+  Logical, whether to perform greedy search to optimize PRS based on
+  combined rank from CatBoost and iLasso (default: TRUE).
+
 - snp_col:
 
   Column name in the summary statistics for SNP IDs (default:
@@ -92,6 +97,10 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
   Number of iterations for iLasso model (default: 1000).
 
+- nfolds:
+
+  Number of folds for cross-validation (default: 10).
+
 - plink_bin:
 
   Path to the PLINK binary executable (default:
@@ -112,11 +121,6 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 - seed:
 
   Random seed (Default: 725).
-
-- dr.optimazation:
-
-  Logical, whether to perform greedy search to optimize PRS based on
-  combined rank from CatBoost and iLasso (default: TRUE).
 
 ## Value
 
