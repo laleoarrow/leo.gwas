@@ -8,18 +8,18 @@
 #' - BP/POS: Base pair position (It can be any in c("pos", "POS", "position", "BP", "Position", "Bp"))
 #' - A2: Reference allele/non-effect allele (It can be any in c("A2", "Allele2", "allele2", "a2", "REF", "Ref", "ref", "Non-effect"))
 #' - A1: Alternative allele/effect allele (It can be any in c("A1", "Allele1", "allele1", "a1", "ALT", "Alt", "alt", "Effect"))
-#' @param count_A1_A2 If T, will count the number of characters in A1 and A2
+#' @param count_A1_A2 If TRUE, will count the number of characters in A1 and A2
 #'
-#' @return A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique identifiers and character counts of A1 and A2)
+#' @return A data.frame with an additional 'ID' column (if count_A1_A2=TRUE, containing unique identifiers and character counts of A1 and A2)
 #' @importFrom dplyr mutate filter select pull group_by summarise left_join inner_join everything .data
 #' @importFrom stats complete.cases cor.test median p.adjust pchisq t.test
 #' @importFrom grDevices dev.off pdf
 #' @examples
 #' df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111),
 #'                  A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
-#' get_id(df); get_id(df, count_A1_A2 = T)
+#' get_id(df); get_id(df, count_A1_A2 = TRUE)
 #' @export
-get_id <- function(x, count_A1_A2 = F) {
+get_id <- function(x, count_A1_A2 = FALSE) {
   # require(dplyr)
   # possible colnames for CHR and POS
   chrom_cols <- c("chrom", "CHR", "Chromosome", "chromosome", "Chr")
