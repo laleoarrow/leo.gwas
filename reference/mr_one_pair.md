@@ -9,7 +9,7 @@ mr_one_pair(
   dat_h,
   exp = "",
   out = "",
-  save_plot = T,
+  save_plot = TRUE,
   res_dir = "./output/tsmr",
   fig_dir = "./figure/tsmr"
 )
@@ -31,11 +31,11 @@ mr_one_pair(
 
 - save_plot:
 
-  only save the plot if T, defaut T.
+  only save the plot if TRUE, default TRUE.
 
 - res_dir:
 
-  dir path where the result fo MR analysis stored
+  dir path where the result of MR analysis stored
 
 - fig_dir:
 

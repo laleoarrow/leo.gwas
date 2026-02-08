@@ -59,8 +59,8 @@ A list with:
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 library(patchwork)
-#> Error in library(patchwork): there is no package called 'patchwork'
 library(ggplot2)
 # Simulate a small dataframe
 df <- data.frame(sx = rnorm(30), sy = rnorm(30),
@@ -72,19 +72,16 @@ cm <- plot_gsMap_color(annos = unique(df$annotation),
                        anno_colors = c(TissueA = "#F2B701"),
                        highlight_tissue = "TissueB",
                        highlight_color  = "#FF0000")
-#> Error in plot_gsMap_color(annos = unique(df$annotation), anno_colors = c(TissueA = "#F2B701"),     highlight_tissue = "TissueB", highlight_color = "#FF0000"): could not find function "plot_gsMap_color"
 
 # Full plot (manual scale with final_map)
 gg <- ggplot2::ggplot(df, ggplot2::aes(sx, sy, color = annotation)) +
   ggplot2::geom_point() +
   ggplot2::scale_color_manual(values = cm$final_map)
-#> Error in cm$final_map: object of type 'closure' is not subsettable
 
 # Highlight-only plot (only highlight levels mapped)
 gg_hi <- ggplot2::ggplot(df, ggplot2::aes(sx, sy, color = annotation)) +
   ggplot2::geom_point() +
   ggplot2::scale_color_manual(values = cm$hi_map, name = "Highlight")
-#> Error in cm$hi_map: object of type 'closure' is not subsettable
 gg | gg_hi
-#> Error: object 'gg' not found
+} # }
 ```

@@ -52,7 +52,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_id</span><span class="op">(</span><span class="va">x</span>, count_A1_A2 <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_id</span><span class="op">(</span><span class="va">x</span>, count_A1_A2 <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,19 +69,19 @@ Each column represents:</p><ul><li><p>CHR: Chromosome (It can be any in c("chrom
 
 
 <dt id="arg-count-a-a-">count_A1_A2<a class="anchor" aria-label="anchor" href="#arg-count-a-a-"></a></dt>
-<dd><p>If T, will count the number of characters in A1 and A2</p></dd>
+<dd><p>If TRUE, will count the number of characters in A1 and A2</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique identifiers and character counts of A1 and A2)</p>
+    <p>A data.frame with an additional 'ID' column (if count_A1_A2=TRUE, containing unique identifiers and character counts of A1 and A2)</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>chrom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, pos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12345</span>, <span class="fl">54321</span>, <span class="fl">11111</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 A1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"G"</span><span class="op">)</span>, A2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"C"</span>, <span class="st">"A"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">get_id</span><span class="op">(</span><span class="va">df</span><span class="op">)</span>; <span class="fu">get_id</span><span class="op">(</span><span class="va">df</span>, count_A1_A2 <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_id</span><span class="op">(</span><span class="va">df</span><span class="op">)</span>; <span class="fu">get_id</span><span class="op">(</span><span class="va">df</span>, count_A1_A2 <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   chrom   pos A1 A2          ID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     1 12345  A  G 1:12345:G:A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2     1 54321  T  C 1:54321:C:T</span>

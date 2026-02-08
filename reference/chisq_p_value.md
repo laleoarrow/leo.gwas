@@ -35,12 +35,11 @@ A precise p-value in scientific format
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # install.packages("Rmpfr")
 library(Rmpfr)
-#> Error in library(Rmpfr): there is no package called 'Rmpfr'
 chisq_value <- 2629; df <- 1
 p_value <- chisq_p_value(chisq_value, df)
-#> Error in mpfr(log_p_value, prec = prec): could not find function "mpfr"
 print(p_value)
-#> Error: object 'p_value' not found
+} # }
 ```

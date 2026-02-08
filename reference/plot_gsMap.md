@@ -78,6 +78,7 @@ plot_gsMap(
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Simulate & write a small CSV
 set.seed(1)
 df <- data.frame(sx = rnorm(60), sy = rnorm(60),
@@ -92,5 +93,5 @@ plot_gsMap(path = fp, width1 = 5, height1 = 3.5, width2 = 7, height2 = 3.5,
            anno_colors = anno_cols, reverse_x = FALSE, reverse_y = TRUE,
            save_folder = tempdir(), basename = "Demo.Base", traitname = "trait",
            highlight_tissue = "Brain", highlight_color = "#FFD700", other_grey = "grey60")
-#> Error in plot_gsMap(path = fp, width1 = 5, height1 = 3.5, width2 = 7,     height2 = 3.5, anno_colors = anno_cols, reverse_x = FALSE,     reverse_y = TRUE, save_folder = tempdir(), basename = "Demo.Base",     traitname = "trait", highlight_tissue = "Brain", highlight_color = "#FFD700",     other_grey = "grey60"): could not find function "plot_gsMap"
+} # }
 ```

@@ -5,7 +5,7 @@ Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
 ## Usage
 
 ``` r
-get_id(x, count_A1_A2 = F)
+get_id(x, count_A1_A2 = FALSE)
 ```
 
 ## Arguments
@@ -29,11 +29,11 @@ get_id(x, count_A1_A2 = F)
 
 - count_A1_A2:
 
-  If T, will count the number of characters in A1 and A2
+  If TRUE, will count the number of characters in A1 and A2
 
 ## Value
 
-A data.frame with an additional 'ID' column (if count_A1_A2=T,
+A data.frame with an additional 'ID' column (if count_A1_A2=TRUE,
 containing unique identifiers and character counts of A1 and A2)
 
 ## Examples
@@ -41,7 +41,7 @@ containing unique identifiers and character counts of A1 and A2)
 ``` r
 df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111),
                  A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
-get_id(df); get_id(df, count_A1_A2 = T)
+get_id(df); get_id(df, count_A1_A2 = TRUE)
 #>   chrom   pos A1 A2          ID
 #> 1     1 12345  A  G 1:12345:G:A
 #> 2     1 54321  T  C 1:54321:C:T

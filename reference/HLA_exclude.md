@@ -52,8 +52,9 @@ example_data <- data.frame(
   CHR = c(6, 6, 6, 7),
   POS = c(26000000, 33000000, 35000000, 29000000)
 )
-result_data <- exclude_HLA(example_data, chromosome_col="CHR", position_col="POS")
-#> Error in exclude_HLA(example_data, chromosome_col = "CHR", position_col = "POS"): could not find function "exclude_HLA"
+result_data <- HLA_exclude(example_data, chromosome_col="CHR", position_col="POS")
 print(result_data)
-#> Error: object 'result_data' not found
+#>   SNP CHR     POS
+#> 1 rs3   6 3.5e+07
+#> 2 rs4   7 2.9e+07
 ```

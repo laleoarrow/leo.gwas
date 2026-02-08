@@ -5,7 +5,7 @@ Train, apply, and rank CatBoost polygenic risk score (PRS) models.
 ## Usage
 
 ``` r
-catboost_prs(a1_matrix, divide = F, divide_ratio = 0.5)
+catboost_prs(a1_matrix, divide = FALSE, divide_ratio = 0.5)
 
 catboost_prs_target(a1_matrix, model)
 

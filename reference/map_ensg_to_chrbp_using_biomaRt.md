@@ -10,7 +10,7 @@ map_ensg_to_chrbp_using_biomaRt(
   ensembl_ids,
   ensembl_col = NULL,
   genome = c("hg19", "hg38"),
-  verbose = F
+  verbose = FALSE
 )
 ```
 

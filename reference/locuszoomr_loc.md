@@ -5,7 +5,7 @@ Loci_plot: prepare the locus data for locuszoomr
 ## Usage
 
 ``` r
-locuszoomr_loc(loci_data, gene, online_ld = F, index_snp, flank)
+locuszoomr_loc(loci_data, gene, online_ld = FALSE, index_snp, flank)
 ```
 
 ## Arguments
@@ -20,7 +20,7 @@ locuszoomr_loc(loci_data, gene, online_ld = F, index_snp, flank)
 
 - online_ld:
 
-  whether to use online LD; default is F
+  whether to use online LD; default is FALSE
 
 - index_snp:
 
