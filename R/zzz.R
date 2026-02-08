@@ -35,9 +35,9 @@
 
 .leo_startup_message <- function(text) {
   if (.leo_supports_truecolor()) {
-    message(.leo_gradient(text))
+    packageStartupMessage(.leo_gradient(text))
   } else {
-    leo_message(text, color = "33")
+    packageStartupMessage(text)
   }
 }
 

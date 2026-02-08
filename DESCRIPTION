@@ -39,7 +39,12 @@ Imports:
     tibble,
     tidyr,
     TwoSampleMR,
-    vroom
+    vroom,
+    S4Vectors,
+    ggbeeswarm,
+    org.Hs.eg.db,
+    plyr,
+    scales
 Suggests: 
     caret,
     catboost,

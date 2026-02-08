@@ -47,6 +47,11 @@ leo_scale_color <- function(plot, color_palette = "npg") {
   return(plot)
 }
 
+# Global variables for R CMD check
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(
+  "sx", "sy", "annotation", "logp", "BP", "CHR", "P", "SNP", "color", "label", "y"
+))
+
 #' Draw Correlation between Two Vectors
 #'
 #' This function creates a scatter plot to visualize the correlation between two vectors, displaying the correlation coefficient and p-value on the plot.
@@ -61,7 +66,7 @@ leo_scale_color <- function(plot, color_palette = "npg") {
 #' @param point_color Fill color for points (shape 21). Default \code{"#BB7CD8"}.
 #' @param point_stroke Numeric stroke width for point outline. If \code{NA}, treated as \code{0}. Default \code{1}.
 #' @param alpha Point transparency. Default \code{0.75}.
-#' @param line_color, line_type, line_size Trend line color, type, size. Defaults \code{"#BB7CD8"}, \code{"dashed"}, \code{1.2}.
+#' @param line_color,line_type,line_size Trend line color, type, size. Defaults \code{"#BB7CD8"}, \code{"dashed"}, \code{1.2}.
 #' @param ci_alpha Confidence ribbon alpha. Default \code{0.2}.
 #' @param title_size,xlab_size,ylab_size,axis_text_size Font sizes. Defaults \code{16}, \code{14}, \code{14}, \code{14}.
 #' @param ... Additional arguments passed to \code{correlation_calculate()}.
@@ -252,6 +257,7 @@ ld_ps_index <- function(gwas, index = "rs999", # ps for pre-select
 #' @param online_ld whether to use online LD; default is F
 #' @param flank flank size for the locus plot
 #' @return prepared data which could be pass to save_regional_plot
+#' @importFrom rtracklayer import.bw
 #' @export
 locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
   #   ----- loc_plot using `locuszoomr`
@@ -270,7 +276,7 @@ locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
   #  ----- LD
   if (online_ld) {loc <- link_LD(loc, pop = "EUR", token = "8866c6877cb8", method = "matrix")}
   #  ----- recomb
-  library(rtracklayer)
+  # library(rtracklayer)
   local_recomb_19 <- "/Users/leoarrow/project/ref/recombMap/hapMapRelease24CombinedRecombMap.bw"
   recomb.hg19 <- import.bw(local_recomb_19)
   loc <- link_recomb(loc, recomb = recomb.hg19)

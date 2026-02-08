@@ -26,7 +26,7 @@ clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                              clump_kb = 10000,
                              clump_r2 = 0.001,
                              plink_bin = plinkbinr::get_plink_exe()) {
-  require(ieugwasr); require(plinkbinr)
+  # require(ieugwasr); require(plinkbinr)
   if (is.null(pop) & is.null(bfile)) { stop("Must indicate LD method") }
   if (!is.null(pop) & is.null(bfile)) { leo_log("Performing LD online") }
   if (is.null(pop) & !is.null(bfile)) { leo_log("Performing LD locally") }
@@ -233,13 +233,14 @@ format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
 #' @examples
 #' # This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
 #' @examples
-#' miss_iv <- iv[!iv$SNP %in% dat_h$SNP,] # iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
+#' # iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
+#' miss_iv <- iv[!iv$SNP %in% dat_h$SNP,]
 #' miss_snp <- miss_iv$SNP
 #' outcome_snp <- iri_nc$SNP
 #' proxy_output_path <- "Full path to where you wanna store the LDlinkR output"
 #'  proxy_iv <- find_proxy(miss_iv, miss_snp, outcome_snp,
-#'              proxy_file = "/Users/leoarrow/project/iridocyclitis/output/tsmr//combined_query_snp_list_grch38.txt",
-#'              proxy_output_path = NULL)
+#'                         proxy_file = "./combined_query_snp_list_grch38.txt",
+#'                         proxy_output_path = NULL)
 #'  # bak
 #'  proxy_iv$target.snp <- proxy_iv$SNP # target snp
 #'  proxy_iv$target.A1 <- proxy_iv$effect_allele.exposure
@@ -252,7 +253,7 @@ format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
 #'  dat_h_proxy <- harmonise_data(iv_f, out_nc_proxy)
 #'  mr(dat_h_proxy) # nailed it!
 find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_output_path=NULL, pop="EUR", gb="grch38", token="") {
- require(LDlinkR); require(tidyverse); require(data.table)
+ # require(LDlinkR); require(tidyverse); require(data.table)
  # sub-part 1: using ldlink to find proxy ---------
  # this part can be skipped if the file can be provided in advance.
  if (is.null(proxy_file)) {
@@ -350,8 +351,8 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
  return(miss_iv_with_proxy)
 }
 
-# F5
-#' perform_mr_for_one_pair
+
+#'  One-Click Perform 2SMR
 #'
 #' `perform_mr_for_one_pair` perform a MR for one pair of exp and out
 #'
@@ -669,3 +670,14 @@ mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_n
   )
   return(res_lap_pair)
 }
+
+# Global variables for R CMD check
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(
+  "Outcome", "id.exposure", "id.outcome", "mr_keep", "beta.exposure", "beta.outcome",
+  "se.outcome", "se.exposure", "a", "b", "method", "eaf.exposure", "samplesize.exposure",
+  "R2", "maf.exposure", "eaf.outcome", "maf.outcome", "outcome", "SNP", "Neff",
+  "proxy.snp", "effect_allele.exposure", "other_allele.exposure", "proxy.A1",
+  "proxy.A2", "target.snp", "target.A1", "target.A2", "RS_Number", "Correlated_Alleles",
+  "query_snp", "proxy_snp", "proxy_A1", "proxy_A2", "query_A1", "query_A2",
+  "dat_h", "iri_nc"
+))

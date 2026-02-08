@@ -1,5 +1,11 @@
 # This contains need-to-have functions for making BESD files for SMR and HEIDI
-
+# Global variables for R CMD check
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(
+  "files", "exposures", "outcomes", "full_paths", "QTL_type", "Source", "Tissue", "Outcome", 
+  "HLA_Probe", "ProbeChr", "Probe_bp", "p_HEIDI", "p_SMR", "N_probe", "FDR", "Pass_FDR", 
+  "Bonferroni", "Pass_Bonferroni", "Pass_HEIDI", "Gene", "probeID", "pass_type",
+  "Pass_Bonferroni"
+))
 
 
 #' Filter Chromosomes Based on SNP P-value Threshold
@@ -101,7 +107,7 @@ filter_chr_basedonSNP_p_qtltools <- function(df,
 #' Combine SMR Results for All Chromosomes
 #'
 #' This function combines SMR (Summary-data-based Mendelian Randomization) result files across all chromosomes
-#' for each unique exposure and outcome pair (Yes, we can deal with multiple exposure in one dir [for say, the 49 sqtl from GTEx]).
+#' for each unique exposure and outcome pair (Yes, we can deal with multiple exposure in one dir (for say, the 49 sqtl from GTEx)).
 #' The combined results are saved to a specified output directory.
 #'
 #' @param dir Character. The directory containing SMR result files. Files should follow the naming convention
@@ -168,13 +174,13 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @param out_dir Character. The output directory where adjusted files will be saved.
 #'                If not specified, defaults to create a dir named `fdr` within dir-name (smr_result_path).
 #' @param writePath Character. The path to write the adjusted results.
-#' ----
+#'
 #' @param add_info_cols Logical. Whether to add information columns for: QTL_type, Source, Tissue and Outcome. Default is `TRUE`.
 #' @param QTL_type Character. The type of the QTL for SMR analysis.
 #' @param Source Character. The name of the Source.
 #' @param Tissue Character. The name of the Tissue.
 #' @param Outcome_name Character. The name of the Outcome.
-#' ----
+#'
 #' @param hla Logical. Whether to pre-exclude the HLA region probes. Default is `False`.
 #' @param write_out Logical. Whether to write the adjusted results to a file. Default is `TRUE`.
 #' @param drop_non_heidi Logical. Whether to drop Probes without HEIDI test information. Default is `TRUE`.
@@ -182,10 +188,14 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @return NULL
 #' @examples
 #' \dontrun{
-#' leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-#'                writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
-#' leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-#'                writePath = "./haha.fdr", out_dir = "")
+#' leo_smr_adjust(
+#'   "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+#'   writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
+#' )
+#' leo_smr_adjust(
+#'   "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+#'   writePath = "./haha.fdr", out_dir = ""
+#' )
 #' }
 #' @importFrom cli cli_alert_info
 #' @importFrom vroom vroom vroom_write

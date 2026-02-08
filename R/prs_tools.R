@@ -2,8 +2,8 @@
 #'
 #' Dr.PRS is designed to rank the importance for PRS inputs and futher optimazation.
 #' It takes two none-overlap stage plink file (bfile) for machine learning modeling:
-#' * lasso [to capture linear relationship]
-#' * catboost [to capture non-linear relationship]
+#' * lasso (to capture linear relationship)
+#' * catboost (to capture non-linear relationship)
 #' It also calculated PRS with plink using traditional additive model.
 #'
 #' @param stage1_bfile Path to the stage1 PLINK binary files. Normally it is the one generates summary data. If only 1 source of individual data is available, you can split it into 2 non-overlap datasets.
@@ -43,7 +43,7 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
                    plink_bin = plinkbinr::get_plink_exe(),
                    clump = T, clump_include_hla = F, clump_param = NULL, # Yet to be implemented
                    seed = 725){
-  require("data.table"); require("dplyr")
+  # require("data.table"); require("dplyr")
   # method switch: 1=PLINK, 2=CatBoost, 3=iLasso
   method <- sort(unique(as.integer(method))); if (length(method) == 0L) method <- 1L
   stopifnot(all(method %in% c(1,2,3)))
@@ -1152,3 +1152,12 @@ ggcvlasso <- function(cv_lasso, pos = "right", guide_cols = 1) {
 .check_caret <- function(context = NULL){
   if (!requireNamespace("caret", quietly = TRUE)) stop(paste0("Package 'caret' is required", if (is.null(context)) "." else paste0(" (", context, ")."), " Install with install.packages('caret')."), call. = FALSE)
 }
+
+# Global variables for R CMD check
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(
+  "CHR", "SNP", "BP", "P", "A1", "A2", "output_dir", "PHENO", "FPR", "TPR", 
+  "Phenotype", "PRS", "median", "BETA", "TEST", "pred", "y", "obs", "y_pred",
+  "FID", "IID", "MAT", "NZERO", "PAT", "PHENOTYPE", "SEX", "geno", "pheno",
+  "score", "id", "snp_col", "a1_col", "weight_col", "weight_type", "plink_bin",
+  "clump", "clump_include_hla", "clump_param", "seed", "keep"
+))

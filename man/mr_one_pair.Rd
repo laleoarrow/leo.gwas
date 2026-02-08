@@ -2,7 +2,7 @@
 % Please edit documentation in R/tsmr_tools.R
 \name{mr_one_pair}
 \alias{mr_one_pair}
-\title{perform_mr_for_one_pair}
+\title{One-Click Perform 2SMR}
 \usage{
 mr_one_pair(
   dat_h,

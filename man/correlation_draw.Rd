@@ -48,7 +48,7 @@ correlation_draw(
 
 \item{alpha}{Point transparency. Default \code{0.75}.}
 
-\item{line_color, }{line_type, line_size Trend line color, type, size. Defaults \code{"#BB7CD8"}, \code{"dashed"}, \code{1.2}.}
+\item{line_color, line_type, line_size}{Trend line color, type, size. Defaults \code{"#BB7CD8"}, \code{"dashed"}, \code{1.2}.}
 
 \item{ci_alpha}{Confidence ribbon alpha. Default \code{0.2}.}
 

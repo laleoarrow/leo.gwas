@@ -21,8 +21,7 @@ leo_smr_adjust(
 \arguments{
 \item{smr_result_path}{Character. The path containing SMR result file. Files should have the \code{.smr} extension.}
 
-\item{writePath}{\subsection{Character. The path to write the adjusted results.}{
-}}
+\item{writePath}{Character. The path to write the adjusted results.}
 
 \item{out_dir}{Character. The output directory where adjusted files will be saved.
 If not specified, defaults to create a dir named \code{fdr} within dir-name (smr_result_path).}
@@ -33,8 +32,7 @@ If not specified, defaults to create a dir named \code{fdr} within dir-name (smr
 
 \item{Tissue}{Character. The name of the Tissue.}
 
-\item{Outcome_name}{\subsection{Character. The name of the Outcome.}{
-}}
+\item{Outcome_name}{Character. The name of the Outcome.}
 
 \item{add_info_cols}{Logical. Whether to add information columns for: QTL_type, Source, Tissue and Outcome. Default is \code{TRUE}.}
 
@@ -50,9 +48,13 @@ The corrected results are saved in an \code{fdr} subdirectory within the output 
 }
 \examples{
 \dontrun{
-#' smr_file <- "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr"
-#' out_dir <- "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
-#' leo_smr_adjust(smr_result_path = smr_file, writePath = "", out_dir = out_dir)
-#' leo_smr_adjust(smr_result_path = smr_file, writePath = "./haha.fdr", out_dir = "")
+leo_smr_adjust(
+  "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+  writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
+)
+leo_smr_adjust(
+  "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+  writePath = "./haha.fdr", out_dir = ""
+)
 }
 }

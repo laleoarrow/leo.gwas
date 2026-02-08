@@ -11,9 +11,12 @@
 #' @param count_A1_A2 If T, will count the number of characters in A1 and A2
 #'
 #' @return A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique identifiers and character counts of A1 and A2)
-#' @import dplyr
+#' @importFrom dplyr mutate filter select pull group_by summarise left_join inner_join everything .data
+#' @importFrom stats complete.cases cor.test median p.adjust pchisq t.test
+#' @importFrom grDevices dev.off pdf
 #' @examples
-#' df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111), A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
+#' df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111),
+#'                  A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
 #' get_id(df); get_id(df, count_A1_A2 = T)
 #' @export
 get_id <- function(x, count_A1_A2 = F) {
