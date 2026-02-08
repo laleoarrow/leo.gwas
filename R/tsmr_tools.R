@@ -622,10 +622,16 @@ mr_scatter_plot_modified <- function(mr_results, dat) {
 #' @param log_path path to where you wanna store the ldsc log
 #' @param log Logical, whether to save the log file (default: TRUE).
 #' @param wd working directory.
-#' @importFrom MRlap MRlap
 #' @return A data frame containing the results of the MR-lap analysis.
 #' @export
 mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_name, ld_path, hm3_path, log_path, log = TRUE, wd = getwd()) {
+  # Check if MRlap is available (it's in Suggests, not Imports)
+  if (!requireNamespace("MRlap", quietly = TRUE)) {
+    stop("Package 'MRlap' is required for this function but is not installed.\n",
+         "Please install it from GitHub: remotes::install_github('n-mounier/MRlap')",
+         call. = FALSE)
+  }
+  
   leo_message(paste0(" - MR-lap for: ", exposure_name, " VS ", outcome_name))
   if (log) {leo_message(paste0("log file would be stored at >>>"), log_path)}
   # locate iv_mrlap snps
@@ -654,7 +660,7 @@ mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_n
   # MR-lap
   wd <- getwd()
   if (log) {setwd(log_path)}
-  A <- MRlap(exposure = exposure_data,
+  A <- MRlap::MRlap(exposure = exposure_data,
              exposure_name = exposure_name,
              outcome = outcome_data,
              outcome_name = outcome_name,
