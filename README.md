@@ -9,6 +9,8 @@
 [![R](https://img.shields.io/badge/R-language-red.svg)](https://www.r-project.org/)
 [![R-CMD-check](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml)
+[![r-universe](https://laleoarrow.r-universe.dev/badges/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
+[![Version](https://laleoarrow.r-universe.dev/badges/:version/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
 [![Downloads](https://img.shields.io/github/downloads/laleoarrow/leo.gwas/total.svg)](https://github.com/laleoarrow/leo.gwas/releases)
 [![Repo Size](https://img.shields.io/github/repo-size/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas)
 [![Last Commit](https://img.shields.io/github/last-commit/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/commits/main)
@@ -25,6 +27,19 @@
 **LEO is currently in the early stages of development**. We welcome feedback from developers, researchers, and users to help improve the product. Please note that some features may not be fully stable yet, and interfaces may change based on user feedback.
 
 ### Download
+
+**Method 1: via r-universe (Recommended)**
+```r
+# Enable the r-universe repository
+options(repos = c(
+    laleoarrow = 'https://laleoarrow.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+# Install leo.gwas
+install.packages('leo.gwas')
+```
+
+**Method 2: via GitHub**
 ```r
 devtools::install_github("laleoarrow/leo.gwas", dependencies = TRUE)
 # or
