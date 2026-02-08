@@ -10,7 +10,7 @@
 [![R-CMD-check](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/laleoarrow/leo.gwas/actions/workflows/test-coverage.yaml)
 [![r-universe](https://laleoarrow.r-universe.dev/badges/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
-[![Version](https://laleoarrow.r-universe.dev/badges/:version/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
+[![Version](https://laleoarrow.r-universe.dev/badges/version/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
 [![Repo Size](https://img.shields.io/github/repo-size/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas)
 [![Last Commit](https://img.shields.io/github/last-commit/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/commits/main)
 [![Issues](https://img.shields.io/github/issues/laleoarrow/leo.gwas.svg)](https://github.com/laleoarrow/leo.gwas/issues)
