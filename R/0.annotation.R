@@ -414,7 +414,7 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
 #' @return A data frame with mapping results.
 #' @importFrom dplyr %>% mutate left_join select filter pull
 #' @importFrom rlang sym
-#' @importFrom GenomicFeatures makeTxDbFromGFF genes
+#' @importFrom GenomicFeatures genes
 #' @importFrom rtracklayer import
 #' @examples
 #' \dontrun{
