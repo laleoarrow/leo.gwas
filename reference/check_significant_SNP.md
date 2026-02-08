@@ -32,29 +32,29 @@ conditional analysis
 ## Examples
 
 ``` r
-con_dir <- "/Users/leoarrow/project/VKH2024/data/zuo/con_su" # specify the directory to store the HLA original data and subsequent conditional analysis results data
-files <- list.files(con_dir,full.names = T) %>% as.vector(); files # update it each time
-#> Error in list.files(con_dir, full.names = T) %>% as.vector(): could not find function "%>%"
-x1 <- fread(files[1]) %>% arrange(desc(CHISQ)); head(x1) # ! for the first one, just read the data and sort it by CHISQ/P value
-#> Error in fread(files[1]) %>% arrange(desc(CHISQ)): could not find function "%>%"
-x2 <- fread(files[2]) %>% arrange(P) # repeat it until no more independent signal can be found.
-#> Error in fread(files[2]) %>% arrange(P): could not find function "%>%"
-x3 <- fread(files[3]) %>% arrange(P)
-#> Error in fread(files[3]) %>% arrange(P): could not find function "%>%"
-x4 <- fread(files[4]) %>% arrange(P)
-#> Error in fread(files[4]) %>% arrange(P): could not find function "%>%"
-x5 <- fread(files[5]) %>% arrange(P)
-#> Error in fread(files[5]) %>% arrange(P): could not find function "%>%"
-x6 <- fread(files[6]) %>% arrange(P)
-#> Error in fread(files[6]) %>% arrange(P): could not find function "%>%"
-x7 <- fread(files[7]) %>% arrange(P)
-#> Error in fread(files[7]) %>% arrange(P): could not find function "%>%"
-x8 <- fread(files[8]) %>% arrange(P)
-#> Error in fread(files[8]) %>% arrange(P): could not find function "%>%"
+#' con_dir <- "/Users/leoarrow/project/VKH2024/data/zuo/con_su" # specify the directory
+#' # to store the HLA original data and subsequent conversion datal analysis results data
+files <- list.files(con_dir,full.names = T) 
+#> Error: object 'con_dir' not found
+#' x1 <- fread(files[1]) %>% arrange(desc(CHISQ)); head(x1) # ! for the first one, just read the data
+#' # and sort it by CHISQ/P value
+x2 <- fread(files[2]) 
+#> Error in fread(files[2]): could not find function "fread"
+x3 <- fread(files[3]) 
+#> Error in fread(files[3]): could not find function "fread"
+x4 <- fread(files[4]) 
+#> Error in fread(files[4]): could not find function "fread"
+x5 <- fread(files[5]) 
+#> Error in fread(files[5]): could not find function "fread"
+x6 <- fread(files[6]) 
+#> Error in fread(files[6]): could not find function "fread"
+x7 <- fread(files[7]) 
+#> Error in fread(files[7]): could not find function "fread"
+x8 <- fread(files[8]) 
+#> Error in fread(files[8]): could not find function "fread"
 
 env <- ls() # get the environment; this line if were put in main func will lead to error.
-environment.list <- tibble(item = as.vector(grep("^x[0-9]+$", x = env, value = TRUE))) # load the environment
-#> Error in tibble(item = as.vector(grep("^x[0-9]+$", x = env, value = TRUE))): could not find function "tibble"
+#' environment.list <- tibble(item = as.vector(grep("^x[0-9]+$", x = env, value = TRUE))) # load the environment
 check_significant_SNP(x8, environment.list, significance_level = 5e-8)
 #> Error: object 'environment.list' not found
 

@@ -89,7 +89,7 @@ Annotation and mapping workflows from `R/0.annotation.R`.
 - [`map_gene_class_using_biomarRt()`](https://laleoarrow.github.io/leo.gwas/reference/map_gene_class_using_biomarRt.md)
   :
 
-  Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 →
+  Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 -\>
   GRCh37 fallback)
 
 ## Visualization

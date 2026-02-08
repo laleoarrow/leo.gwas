@@ -49,6 +49,8 @@ ensembl_ids <- c("ENSG00000141510", "ENSG00000012048", "ENSG00000146648")
 map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
 
 ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInfo = c(1, 2, 3))
-map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID", genome = "hg38")
+map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids_df,
+                              ensembl_col = "EnsemblID",
+                              genome = "hg38")
 } # }
 ```

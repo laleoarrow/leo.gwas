@@ -100,7 +100,7 @@ slice1_SNP_lines(df, dup_columns = "SNP")
 # Same-direction effects between two datasets
 df2 <- transform(df, OR = c(1.1, 1.3, 0.8, 1.1))
 fetch_same_direcrtion(df, df2)
-#> The number with opposite effect size：2
+#> The number with opposite effect size (diff): 2
 #>   SNP A1 A2  OR
 #> 1 rs1  A  T 1.2
 #> 2 rs2  C  G 1.1

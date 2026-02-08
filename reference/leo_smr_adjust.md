@@ -79,9 +79,9 @@ leo_smr_adjust(
 
 ``` r
 if (FALSE) { # \dontrun{
-leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-               writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49")
-leo_smr_adjust("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-               writePath = "./haha.fdr", out_dir = "")
+#' smr_file <- "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr"
+#' out_dir <- "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
+#' leo_smr_adjust(smr_result_path = smr_file, writePath = "", out_dir = out_dir)
+#' leo_smr_adjust(smr_result_path = smr_file, writePath = "./haha.fdr", out_dir = "")
 } # }
 ```

@@ -98,7 +98,9 @@ It uses biomaRt for the specified genome assembly ("hg19" or "hg38").</p>
 <span class="r-in"><span><span class="fu">map_ensg_to_tss_using_biomaRt</span><span class="op">(</span>ensembl_ids <span class="op">=</span> <span class="va">ensembl_ids</span>, genome <span class="op">=</span> <span class="st">"hg19"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ensembl_ids_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>EnsemblID <span class="op">=</span> <span class="va">ensembl_ids</span>, OtherInfo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">map_ensg_to_tss_using_biomaRt</span><span class="op">(</span>ensembl_ids <span class="op">=</span> <span class="va">ensembl_ids_df</span>, ensembl_col <span class="op">=</span> <span class="st">"EnsemblID"</span>, genome <span class="op">=</span> <span class="st">"hg38"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">map_ensg_to_tss_using_biomaRt</span><span class="op">(</span>ensembl_ids <span class="op">=</span> <span class="va">ensembl_ids_df</span>,</span></span>
+<span class="r-in"><span>                              ensembl_col <span class="op">=</span> <span class="st">"EnsemblID"</span>,</span></span>
+<span class="r-in"><span>                              genome <span class="op">=</span> <span class="st">"hg38"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

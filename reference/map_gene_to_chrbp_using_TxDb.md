@@ -44,7 +44,10 @@ if (FALSE) { # \dontrun{
 gene_symbols <- c("TP53", "BRCA1", "EGFR") # Example with gene symbol vector
 map_gene_to_chrbp_using_TxDb(genes = gene_symbols, genome = "hg19")
 
-gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInformation = c(1,2,3)) # Example with data frame input
-map_gene_to_chrbp_using_TxDb(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
+gene_symbols_df <- data.frame(GeneName = gene_symbols,
+                            OtherInformation = c(1,2,3)) # Example with data frame input
+map_gene_to_chrbp_using_TxDb(genes = gene_symbols_df,
+                             gene_col = "GeneName",
+                             genome = "hg19")
 } # }
 ```

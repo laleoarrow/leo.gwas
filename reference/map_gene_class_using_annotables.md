@@ -1,11 +1,11 @@
 # Map Gene Symbols to biotype & description via **annotables**
 
-使用离线数据框
+Use local dataframes
 [`annotables::grch38`](https://rdrr.io/pkg/annotables/man/grch38.html)
-与
+and
 [`annotables::grch37`](https://rdrr.io/pkg/annotables/man/grch37.html)
-为基因符号添加 *biotype*、*description*，并给出来源列
-`infer_version`（"grch38" / "grch37" / "unmapped"）。
+to add *biotype* and *description* to gene symbols, providing a source
+column `infer_version` ("grch38" / "grch37" / "unmapped").
 
 ## Usage
 
@@ -17,29 +17,33 @@ map_gene_class_using_annotables(genes, gene_col = "Gene", quiet = FALSE)
 
 - genes:
 
-  Character vector of gene symbols，或包含基因符号的数据框/ tibble
+  Character vector of gene symbols, or data frame/tibble containing gene
+  symbols
 
 - gene_col:
 
-  列名（当 `genes` 为表格时），默认 `"Gene"`
+  Column name (when `genes` is a table), default `"Gene"`
 
 - quiet:
 
-  逻辑值；`TRUE` 时不显示进度信息
+  Logical; if `TRUE`, suppress progress messages
 
 ## Value
 
-与输入同结构的数据，附加 `biotype`、`description`、`infer_version`
+Data frame with same structure as input, plus `biotype`, `description`,
+`infer_version`
 
 ## Details
 
-逻辑：
+Logic:
 
-1.  先左连接 **grch38**；命中则 `infer_version = "grch38"`
+1.  Left join with **grch38**; if matched, `infer_version = "grch38"`
 
-2.  未命中者再补 **grch37**；命中则 `infer_version = "grch37"`
+2.  If not matched, fill with **grch37**; if matched,
+    `infer_version = "grch37"`
 
-3.  仍未命中者三列均填占位，如上所述
+3.  If still not matched, fill columns with placeholders as described
+    above
 
 ## Examples
 
