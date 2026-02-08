@@ -389,7 +389,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' names(out)
 #' }
 #' @importFrom TwoSampleMR mr harmonise_data mr_scatter_plot mr_forest_plot mr_funnel_plot mr_heterogeneity mr_leaveoneout mr_pleiotropy_test mr_singlesnp mr_egger_regression mr_egger_regression_bootstrap default_parameters mr_leaveoneout_plot
-mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
+mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = TRUE, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
   # Initialize
   pairname <- paste0(exp, " VS ", out); leo_message(paste0(" - MR Pair: ", pairname))
   if (!dir.exists(res_dir)) {dir.create(res_dir, recursive = T)}; leo_message(paste0(" - Setting Check: `res_dir` using ", res_dir))

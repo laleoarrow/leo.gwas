@@ -272,7 +272,7 @@ ld_ps_index <- function(gwas, index = "rs999", # ps for pre-select
 #' @return prepared data which could be pass to save_regional_plot
 #' @importFrom rtracklayer import.bw
 #' @export
-locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
+locuszoomr_loc <- function(loci_data, gene, online_ld = FALSE, index_snp, flank) {
   #   ----- loc_plot using `locuszoomr`
   loc <- locus(data = loci_data,
                gene = gene,
@@ -310,8 +310,8 @@ locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
 #' @param filter_gene_biotype Character vector of gene biotypes to filter.
 #'
 #' @export
-save_regional_plot <- function(path, loc, gene, save = T, title = expression(paste(italic("CLPSL1"), " (T1D)")),
-                               labels = c("index"), filter_gene_biotype = c("protein_coding"), border = F, width = 7.5, height = 5.5){
+save_regional_plot <- function(path, loc, gene, save = TRUE, title = expression(paste(italic("CLPSL1"), " (T1D)")),
+                               labels = c("index"), filter_gene_biotype = c("protein_coding"), border = FALSE, width = 7.5, height = 5.5){
   # Check if the path exists; interactively create the path if not
   if (!dir.exists(dirname(path))) {
     create_dir <- readline(prompt = "Directory does not exist. Do you want to create it? (yes/no): ")

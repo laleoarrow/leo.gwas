@@ -324,7 +324,7 @@ combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){
 #' @export
 #' @rdname catboost_prs
 #' @importFrom dplyr mutate select across
-catboost_prs <- function(a1_matrix, divide = F, divide_ratio = 0.5){
+catboost_prs <- function(a1_matrix, divide = FALSE, divide_ratio = 0.5){
   .check_catboost()
   .check_caret()
   df <- a1_matrix %>% mutate(PHENOTYPE = ifelse(PHENOTYPE == 1, 0L, 1L)) %>% select(-c(FID, IID, PAT, MAT, SEX))  # 0 is ctrl/ 1 is control

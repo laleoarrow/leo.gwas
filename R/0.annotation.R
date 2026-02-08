@@ -663,7 +663,7 @@ map_gene_to_chrbp_using_biomaRt <- function(genes, gene_col = NULL, genome = c("
 #' map_ensg_to_chrbp_using_biomaRt(ensembl_ids = gene_df, ensembl_col = "ensembl_id", genome = "hg19")
 #' }
 #' @export
-map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), verbose = F) {
+map_ensg_to_chrbp_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), verbose = FALSE) {
   # Load required package
   if (!requireNamespace("biomaRt", quietly = TRUE)) {
     stop("Package 'biomaRt' is required. Please install it using BiocManager::install('biomaRt').")

@@ -8,7 +8,7 @@ mr_one_pair(
   dat_h,
   exp = "",
   out = "",
-  save_plot = T,
+  save_plot = TRUE,
   res_dir = "./output/tsmr",
   fig_dir = "./figure/tsmr"
 )

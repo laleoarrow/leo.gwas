@@ -8,11 +8,11 @@ save_regional_plot(
   path,
   loc,
   gene,
-  save = T,
+  save = TRUE,
   title = expression(paste(italic("CLPSL1"), " (T1D)")),
   labels = c("index"),
   filter_gene_biotype = c("protein_coding"),
-  border = F,
+  border = FALSE,
   width = 7.5,
   height = 5.5
 )
