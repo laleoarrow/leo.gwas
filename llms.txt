@@ -27,8 +27,8 @@ interfaces may change based on user feedback.
 ``` r
 # Enable the r-universe repository
 options(repos = c(
-    laleoarrow = 'https://laleoarrow.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
+        laleoarrow = 'https://laleoarrow.r-universe.dev',
+        CRAN = 'https://cloud.r-project.org'))
 
 # Install leo.gwas
 install.packages('leo.gwas')
