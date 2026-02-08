@@ -8,6 +8,12 @@ log/
 .DS_Store
 .vscode/
 
+# AI assistant configurations (do not sync)
+.claude/
+.gemini/
+.cursor/
+.windsurf/
+
 # History files
 .Rhistory
 .Rapp.history
