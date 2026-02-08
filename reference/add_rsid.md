@@ -32,15 +32,15 @@ rsIDs.
 
 ``` r
 pacman::p_load(data.table, BSgenome, leo.gwas)
-#> Error in loadNamespace(x): there is no package called ‘pacman’
+#> Error in loadNamespace(x): there is no package called 'pacman'
 library("SNPlocs.Hsapiens.dbSNP155.GRCh37") # for GRCh37
-#> Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh37"): there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh37’
+#> Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh37"): there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh37'
 library("SNPlocs.Hsapiens.dbSNP155.GRCh38") # for GRCh38
-#> Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh38"): there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh38’
+#> Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh38"): there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh38'
 df <- data.frame(
   CHR = c(1, 1),
   BP = c(15211, 15820)
 )
 result <- add_rsid(df); result
-#> Error in loadNamespace(x): there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh37’
+#> Error in loadNamespace(x): there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh37'
 ```

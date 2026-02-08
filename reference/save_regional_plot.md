@@ -23,32 +23,40 @@ save_regional_plot(
 
 - path:
 
-  path to store the plot; make sure the path is exist
+  Path to the directory containing summary statistics.
 
 - loc:
 
-  output from locuszoomr_loc
+  Locus string (e.g., "1:1000-2000").
 
 - gene:
 
-  gene
+  Gene name to highlight.
 
 - save:
 
-  if T, will save plot to path; if F, return the plot only
+  Logical. Whether to save the plot (default: TRUE).
+
+- title:
+
+  Title of the plot.
 
 - labels:
 
-  labels; in case you need to indicate the index SNP and other SNP
+  Labels to indicate index SNP and other SNPs.
+
+- filter_gene_biotype:
+
+  Character vector of gene biotypes to filter.
 
 - border:
 
-  border for gene track
+  Logical. Whether to add a border for gene track.
 
 - width:
 
-  width
+  Plot width.
 
 - height:
 
-  height
+  Plot height.

@@ -60,7 +60,7 @@ A list with:
 
 ``` r
 library(patchwork)
-#> Error in library(patchwork): there is no package called ‘patchwork’
+#> Error in library(patchwork): there is no package called 'patchwork'
 library(ggplot2)
 # Simulate a small dataframe
 df <- data.frame(sx = rnorm(30), sy = rnorm(30),

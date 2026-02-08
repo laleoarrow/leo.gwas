@@ -79,11 +79,11 @@ df <- data.frame(
   OR  = c(1.2, 0.9, 1.1, 1.1)
 )
 
+if (FALSE) { # \dontrun{
 # Complementary alleles
 is_complementary("A","T")  # TRUE
-#> Error in is_complementary("A", "T"): could not find function "is_complementary"
 is_complementary("A","G")  # FALSE
-#> Error in is_complementary("A", "G"): could not find function "is_complementary"
+} # }
 
 # Indels and non-indels
 fetch_indel(df, "both")

@@ -36,10 +36,9 @@ A dataframe with additional 'CHR' and 'POS' columns.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 pacman::p_load(data.table, dplyr, BSgenome, SNPlocs.Hsapiens.dbSNP155.GRCh37)
-#> Error in loadNamespace(x): there is no package called ‘pacman’
 zuo_ref <- fread("/path/to/1KG-EAS-EAF.txt.gz") # Input dataset with rsID (SNP column)
-#> Error in fread("/path/to/1KG-EAS-EAF.txt.gz"): could not find function "fread"
 result <- add_chrpos(zuo_ref, snp_col = "SNP", ref = "GRCh37")
-#> Error: object 'zuo_ref' not found
+} # }
 ```

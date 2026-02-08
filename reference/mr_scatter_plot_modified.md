@@ -36,8 +36,8 @@ library(ggplot2);library(ggsci);library(TwoSampleMR);library(dplyr)
 #>       Please take 2 minutes to give us feedback -
 #>       https://forms.office.com/e/eSr7EFAfCG
 #> 
-#> Attaching package: ‘TwoSampleMR’
-#> The following object is masked from ‘package:ieugwasr’:
+#> Attaching package: 'TwoSampleMR'
+#> The following object is masked from 'package:ieugwasr':
 #> 
 #>     ld_matrix
 ```

@@ -83,17 +83,17 @@ The function returns a dataframe with the rsIDs included.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu">p_load</span><span class="op">(</span><span class="va">data.table</span>, <span class="va">BSgenome</span>, <span class="va">leo.gwas</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘pacman’</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called 'pacman'</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"SNPlocs.Hsapiens.dbSNP155.GRCh37"</span><span class="op">)</span> <span class="co"># for GRCh37</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh37"):</span> there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh37’</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh37"):</span> there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh37'</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"SNPlocs.Hsapiens.dbSNP155.GRCh38"</span><span class="op">)</span> <span class="co"># for GRCh38</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh38"):</span> there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh38’</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in library("SNPlocs.Hsapiens.dbSNP155.GRCh38"):</span> there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh38'</span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  CHR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  BP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15211</span>, <span class="fl">15820</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">add_rsid</span><span class="op">(</span><span class="va">df</span><span class="op">)</span>; <span class="va">result</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘SNPlocs.Hsapiens.dbSNP155.GRCh37’</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called 'SNPlocs.Hsapiens.dbSNP155.GRCh37'</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -43,10 +43,6 @@ ld_ps_index(
 
   plinkbinr::get_plink_exe()
 
-- pop:
-
-  only applicable under 500 snps; dont use it anyway
-
 ## Value
 
 loci data with calculated r2

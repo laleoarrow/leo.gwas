@@ -22,6 +22,7 @@ a data frame with the number of NA values in each column
 
 ``` r
 df <- data.frame(a = c(1, 2, NA, 4), b = c(NA, 2, 3, 4))
-summarize_na(df)
-#> Error in summarize_na(df): could not find function "summarize_na"
+across_df_na(df)
+#>   a b
+#> 1 1 1
 ```

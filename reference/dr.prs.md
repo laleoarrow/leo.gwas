@@ -57,7 +57,7 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 - output_dir:
 
-  Directory to save the output files.
+  Directory to save output files.
 
 - method:
 
@@ -121,6 +121,22 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 - seed:
 
   Random seed (Default: 725).
+
+- rank1:
+
+  Data frame containing rank information for the first stage.
+
+- rank2:
+
+  Data frame containing rank information for the second stage.
+
+- auc1:
+
+  Numeric. AUC for the first stage.
+
+- auc2:
+
+  Numeric. AUC for the second stage.
 
 ## Value
 

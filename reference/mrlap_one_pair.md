@@ -13,8 +13,9 @@ mrlap_one_pair(
   outcome_name,
   ld_path,
   hm3_path,
-  log = F,
-  log_path = "."
+  log_path,
+  log = TRUE,
+  wd = getwd()
 )
 ```
 
@@ -44,10 +45,18 @@ mrlap_one_pair(
 
   ldsc required file; tutorial use nomhc version list
 
-- log:
-
-  logi, if T, would save ldsc log to log_path, defaut F
-
 - log_path:
 
   path to where you wanna store the ldsc log
+
+- log:
+
+  Logical, whether to save the log file (default: TRUE).
+
+- wd:
+
+  working directory.
+
+## Value
+
+A data frame containing the results of the MR-lap analysis.

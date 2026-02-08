@@ -35,6 +35,14 @@ leo_smr_adjust_loop(
   Character. A regular expression pattern to match SMR result files.
   Default is `"\.smr$"` (i.e., files ending with `.smr`).
 
+- QTL_type:
+
+  Character. Type of QTL (e.g., "eQTL", "sQTL").
+
+- Source:
+
+  Character. Source of the data (e.g., "GTEx", "Westra").
+
 - ...:
 
   Additional arguments to be passed to `leo_smr_adjust`.

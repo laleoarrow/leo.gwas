@@ -61,9 +61,9 @@ library(ieugwasr)
 #>   [>] It will help directly shape our emerging roadmap
 #>   [>] https://forms.office.com/e/eSr7EFAfCG
 library(plinkbinr) # devtools::install_github("explodecomputer/plinkbinr")
-#> Error in library(plinkbinr): there is no package called ‘plinkbinr’
+#> Error in library(plinkbinr): there is no package called 'plinkbinr'
 plinkbinr::get_plink_exe()
-#> Error in loadNamespace(x): there is no package called ‘plinkbinr’
+#> Error in loadNamespace(x): there is no package called 'plinkbinr'
 
 # Note: after using this, please check `leo_clump` column to see if they are all TRUE
 # If it's contains F, it means no SNPs remained after clumping or something bad happened
