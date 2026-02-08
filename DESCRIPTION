@@ -36,6 +36,7 @@ Imports:
     rlang,
     rtracklayer,
     stringr,
+    tibble,
     tidyr,
     TwoSampleMR,
     vroom

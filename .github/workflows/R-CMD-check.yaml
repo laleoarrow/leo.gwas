@@ -12,6 +12,8 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    env:
+      _R_CHECK_FORCE_SUGGESTS_: false
 
     strategy:
       fail-fast: false
