@@ -386,6 +386,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #' )
 #' names(out)
 #' })
+#' @importFrom TwoSampleMR mr harmonise_data mr_scatter_plot mr_forest_plot mr_funnel_plot mr_heterogeneity mr_leaveoneout mr_pleiotropy_test mr_singlesnp mr_egger_regression mr_egger_regression_bootstrap default_parameters mr_leaveoneout_plot
 mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
   # Initialize
   pairname <- paste0(exp, " VS ", out); leo_message(paste0(" - MR Pair: ", pairname))
@@ -614,12 +615,13 @@ mr_scatter_plot_modified <- function(mr_results, dat) {
 #' @param outcome_data outcome_data
 #' @param ld_path ldsc required file
 #' @param hm3_path ldsc required file; tutorial use nomhc version list
-#' @param log logi, if T, would save ldsc log to log_path, defaut F
 #' @param log_path path to where you wanna store the ldsc log
-#'
-#' @keywords tsmr:
+#' @param log Logical, whether to save the log file (default: TRUE).
+#' @param wd working directory.
+#' @importFrom MRlap MRlap
+#' @return A data frame containing the results of the MR-lap analysis.
 #' @export
-mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_name, ld_path, hm3_path, log = F, log_path = ".") {
+mrlap_one_pair <- function(exposure_data, outcome_data, exposure_name, outcome_name, ld_path, hm3_path, log_path, log = TRUE, wd = getwd()) {
   leo_message(paste0(" - MR-lap for: ", exposure_name, " VS ", outcome_name))
   if (log) {leo_message(paste0("log file would be stored at >>>"), log_path)}
   # locate iv_mrlap snps
@@ -685,7 +687,16 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(
   "proxy.snp", "effect_allele.exposure", "other_allele.exposure", "proxy.A1",
   "proxy.A2", "target.snp", "target.A1", "target.A2", "RS_Number", "Correlated_Alleles",
   "query_snp", "proxy_snp", "proxy_A1", "proxy_A2", "query_A1", "query_A2",
-  "dat_h", "iri_nc", "CHR_BP", "DAF", "Exposure", "POS", "mr", "harmonise_data",
-  "mr_scatter_plot", "Phenotype", "data", ".", "n_snp", "lo_ci", "up_ci", "or",
-  "or_lci95", "or_uci95", "nsnp", "pval"
+  "dat_h", "iri_nc", "CHR_BP", "DAF", "Exposure", "POS", "mr", "harmonise_data", 
+  "mr_scatter_plot", "Phenotype", "data", ".", "n_snp", "lo_ci", "up_ci", "or", 
+  "or_lci95", "or_uci95", "nsnp", "pval", "F_U", "Feature", "GI", "GRanges", "ID", 
+  "Importance", "MAF", "Occurence", "RAF", "RefSNP_id", "SNP_in_outcome", "biotype",
+  "bp_end", "bp_start", "chr", "clean_symbol", "count", "cvlo", "cvm", "cvup", "description",
+  "ensembl_gene_id", "entrez_id", "exposure", "external_gene_name", "feature",
+  "feature1", "feature1_index", "feature2", "feature2_index", "first", "gd", "gene_id",
+  "gene_name", "gene_symbol", "generate_odds_ratios", "genotyped_count",
+  "hgnc_symbol", "idx", "imputed_count", "infer_version", "iteration", "iv", "lambda",
+  "link_LD", "link_recomb", "ll", "locus", "mpfr", "n", "n_feat", "p_delong", "p_u_test", 
+  "pos", "query_symbol", "r", "ranges", "rank_censor", "ratio", "row_number", "rsID", 
+  "run_mr_presso", "s", "seqnames", "shap", "snpsById", "strand", "symbol", "top_n", "value"
 ))

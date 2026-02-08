@@ -16,6 +16,7 @@
 #' @return A ggplot object with the applied color palette.
 #' @importFrom ggsci scale_color_npg scale_color_lancet scale_color_jama scale_color_nejm scale_color_d3 scale_color_tron scale_color_igv scale_color_ucscgb scale_color_aaas scale_color_futurama scale_color_rickandmorty scale_color_simpsons
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom locuszoomr locus_plot
 #' @import ggplot2
 leo_scale_color <- function(plot, color_palette = "npg") {
   # Check if color_palette is a recognized ggsci palette
@@ -45,6 +46,19 @@ leo_scale_color <- function(plot, color_palette = "npg") {
     warning("Color palette not recognized. Default ggplot2 colors will be used.")
   }
   return(plot)
+}
+
+#' Generate a blank plot with a message
+#' 
+#' @param message Text to display on the blank plot
+#' @return A ggplot object
+#' @keywords internal
+#' @importFrom ggplot2 ggplot aes geom_text labs theme element_blank
+blank_plot <- function(message) {
+    ggplot2::ggplot(data.frame(a = 0, b = 0, n = message)) + 
+        ggplot2::geom_text(ggplot2::aes(x = a, y = b, label = n)) + 
+        ggplot2::labs(x = NULL, y = NULL) + ggplot2::theme(axis.text = ggplot2::element_blank(), 
+        axis.ticks = ggplot2::element_blank())
 }
 
 # Global variables for R CMD check
@@ -216,7 +230,6 @@ group_comparison_draw <- function(df, x_col, y_col, vector_x = NULL, vector_y = 
 #' @param gwas gwas summary data that needs to select loci and calculate r2
 #' @param index index snp
 #' @param win window size to locally calculate the r2; set it larger than that you want to plot; # default calculate 1MB
-#' @param pop only applicable under 500 snps; dont use it anyway
 #' @param ld_calculation if calculate the LD locally, defaut T; use F if the index snp is a rare variant (MAF<0.01)
 #' @param bfile bfile
 #' @param plink_bin plinkbinr::get_plink_exe()
@@ -285,14 +298,16 @@ locuszoomr_loc <- function(loci_data, gene, online_ld = F, index_snp, flank) {
 
 #' Loci_plot: save_regional_plot
 #'
-#' @param path path to store the plot; make sure the path is exist
-#' @param loc output from locuszoomr_loc
-#' @param gene gene
-#' @param width width
-#' @param save if T, will save plot to path; if F, return the plot only
-#' @param labels labels; in case you need to indicate the index SNP and other SNP
-#' @param border border for gene track
-#' @param height height
+#' @param path Path to the directory containing summary statistics.
+#' @param loc Locus string (e.g., "1:1000-2000").
+#' @param gene Gene name to highlight.
+#' @param save Logical. Whether to save the plot (default: TRUE).
+#' @param title Title of the plot.
+#' @param labels Labels to indicate index SNP and other SNPs.
+#' @param border Logical. Whether to add a border for gene track.
+#' @param height Plot height.
+#' @param width Plot width.
+#' @param filter_gene_biotype Character vector of gene biotypes to filter.
 #'
 #' @export
 save_regional_plot <- function(path, loc, gene, save = T, title = expression(paste(italic("CLPSL1"), " (T1D)")),

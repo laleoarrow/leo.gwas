@@ -25,8 +25,6 @@ ld_ps_index(
 \item{bfile}{bfile}
 
 \item{plink_bin}{plinkbinr::get_plink_exe()}
-
-\item{pop}{only applicable under 500 snps; dont use it anyway}
 }
 \value{
 loci data with calculated r2

@@ -180,9 +180,11 @@ add_rsid_using_ref <- function(dat, local_ref, chr_col = "CHR", pos_col = "BP", 
 #' @return A dataframe with additional 'CHR' and 'POS' columns.
 #' @importFrom data.table ":="
 #' @examples
+#' \dontrun{
 #' pacman::p_load(data.table, dplyr, BSgenome, SNPlocs.Hsapiens.dbSNP155.GRCh37)
 #' zuo_ref <- fread("/path/to/1KG-EAS-EAF.txt.gz") # Input dataset with rsID (SNP column)
 #' result <- add_chrpos(zuo_ref, snp_col = "SNP", ref = "GRCh37")
+#' }
 #' @export
 add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 

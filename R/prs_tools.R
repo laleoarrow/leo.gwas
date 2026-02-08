@@ -10,7 +10,7 @@
 #' @param stage1_bfile Path to the stage1 PLINK binary files. Normally it is the one generates summary data. If only 1 source of individual data is available, you can split it into 2 non-overlap datasets.
 #' @param stage2_bfile Path to the stage2 PLINK binary files, i.e., the target dataset for PRS calculation.
 #' @param summary_file Path to the summary statistics file or a data frame containing SNPs, alleles, and weights. Note this summary only contains refined SNP for PRS calculation.
-#' @param output_dir Directory to save the output files.
+#' @param output_dir Directory to save output files.
 #' @param method Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.
 #' @param dr_optimazation Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).
 #' @param snp_col Column name in the summary statistics for SNP IDs (default: "SNP.meta").
@@ -282,6 +282,10 @@ dr.prs <- function(stage1_bfile="./data/zuo/bed/SNP_for_PRS/VKH-zhonghua-for_prs
 
 
 #' combine two rank
+#' @param rank1 Data frame containing rank information for the first stage.
+#' @param rank2 Data frame containing rank information for the second stage.
+#' @param auc1 Numeric. AUC for the first stage.
+#' @param auc2 Numeric. AUC for the second stage.
 #' @export
 #' @rdname dr.prs
 combine_rank <- function(rank1, rank2, auc1 = NULL, auc2 = NULL){

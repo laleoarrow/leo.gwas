@@ -21,6 +21,10 @@ If not specified, defaults to creating a \code{fdr} directory within the input d
 
 \item{pattern}{Character. A regular expression pattern to match SMR result files. Default is \code{"\\.smr$"} (i.e., files ending with \code{.smr}).}
 
+\item{QTL_type}{Character. Type of QTL (e.g., "eQTL", "sQTL").}
+
+\item{Source}{Character. Source of the data (e.g., "GTEx", "Westra").}
+
 \item{...}{Additional arguments to be passed to \code{leo_smr_adjust}.}
 }
 \value{

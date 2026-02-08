@@ -148,7 +148,7 @@ count_duplicate_element <- function(vector, return = "count") {
 #' @export
 #' @examples
 #' df <- data.frame(a = c(1, 2, NA, 4), b = c(NA, 2, 3, 4))
-#' summarize_na(df)
+#' across_df_na(df)
 across_df_na <- function(df){
   df %>% dplyr::summarise(across(everything(), ~sum(is.na(.))))
 }

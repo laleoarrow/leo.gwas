@@ -11,8 +11,9 @@ mrlap_one_pair(
   outcome_name,
   ld_path,
   hm3_path,
-  log = F,
-  log_path = "."
+  log_path,
+  log = TRUE,
+  wd = getwd()
 )
 }
 \arguments{
@@ -28,12 +29,16 @@ mrlap_one_pair(
 
 \item{hm3_path}{ldsc required file; tutorial use nomhc version list}
 
-\item{log}{logi, if T, would save ldsc log to log_path, defaut F}
-
 \item{log_path}{path to where you wanna store the ldsc log}
+
+\item{log}{Logical, whether to save the log file (default: TRUE).}
+
+\item{wd}{working directory.}
+}
+\value{
+A data frame containing the results of the MR-lap analysis.
 }
 \description{
 \code{mrlap_one_pair} perform the MR-lap for one pair of exposure and outcome
 \href{https://github.com/n-mounier/MRlap?tab=readme-ov-file}{MR-lap}
 }
-\keyword{tsmr:}

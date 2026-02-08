@@ -17,5 +17,5 @@ This function summarize NA values in each column of a data frame.
 }
 \examples{
 df <- data.frame(a = c(1, 2, NA, 4), b = c(NA, 2, 3, 4))
-summarize_na(df)
+across_df_na(df)
 }

@@ -29,6 +29,7 @@ Imports:
     LDlinkR,
     leo.basic (>= 0.0.1),
     magrittr,
+    MRlap,
     MungeSumstats,
     pROC,
     purrr,
@@ -42,6 +43,7 @@ Imports:
     vroom,
     S4Vectors,
     ggbeeswarm,
+    locuszoomr,
     org.Hs.eg.db,
     plyr,
     scales
@@ -62,7 +64,8 @@ Remotes:
     github::MRCIEU/TwoSampleMR,
     github::catboost/catboost/catboost/R-package,
     github::laleoarrow/leo.basic,
-    github::stephenturner/annotables
+    github::stephenturner/annotables,
+    github::n-mounier/MRlap
 Config/leo.gwas/suggests_usage: caret -> dr.prs(), catboost_prs(),
     lasso_prs(); catboost -> dr.prs(), catboost_prs(),
     catboost_prs_target(), catboost_prs_rank(); minfi ->

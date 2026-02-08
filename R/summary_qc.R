@@ -218,9 +218,11 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #'   OR  = c(1.2, 0.9, 1.1, 1.1)
 #' )
 #'
+#' \dontrun{
 #' # Complementary alleles
 #' is_complementary("A","T")  # TRUE
 #' is_complementary("A","G")  # FALSE
+#' }
 #'
 #' # Indels and non-indels
 #' fetch_indel(df, "both")

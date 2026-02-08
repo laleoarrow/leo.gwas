@@ -189,8 +189,8 @@ combine_smr_res_chr <- function(dir, out_dir="") {
 #' @examples
 #' \dontrun{
 #' leo_smr_adjust(
-#'   "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
-#'   writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
+#'   file = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+#'   out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/fdr"
 #' )
 #' leo_smr_adjust(
 #'   paste0("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/",
@@ -276,6 +276,8 @@ leo_smr_adjust <- function(smr_result_path, writePath = "", out_dir = "",
 #' @param out_dir Character. The output directory where the adjusted SMR files will be saved.
 #'                If not specified, defaults to creating a `fdr` directory within the input directory.
 #' @param pattern Character. A regular expression pattern to match SMR result files. Default is `"\.smr$"` (i.e., files ending with `.smr`).
+#' @param QTL_type Character. Type of QTL (e.g., "eQTL", "sQTL").
+#' @param Source Character. Source of the data (e.g., "GTEx", "Westra").
 #' @param ... Additional arguments to be passed to `leo_smr_adjust`.
 #'
 #' @return NULL.

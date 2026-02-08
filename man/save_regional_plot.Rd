@@ -18,21 +18,25 @@ save_regional_plot(
 )
 }
 \arguments{
-\item{path}{path to store the plot; make sure the path is exist}
+\item{path}{Path to the directory containing summary statistics.}
 
-\item{loc}{output from locuszoomr_loc}
+\item{loc}{Locus string (e.g., "1:1000-2000").}
 
-\item{gene}{gene}
+\item{gene}{Gene name to highlight.}
 
-\item{save}{if T, will save plot to path; if F, return the plot only}
+\item{save}{Logical. Whether to save the plot (default: TRUE).}
 
-\item{labels}{labels; in case you need to indicate the index SNP and other SNP}
+\item{title}{Title of the plot.}
 
-\item{border}{border for gene track}
+\item{labels}{Labels to indicate index SNP and other SNPs.}
 
-\item{width}{width}
+\item{filter_gene_biotype}{Character vector of gene biotypes to filter.}
 
-\item{height}{height}
+\item{border}{Logical. Whether to add a border for gene track.}
+
+\item{width}{Plot width.}
+
+\item{height}{Plot height.}
 }
 \description{
 Loci_plot: save_regional_plot

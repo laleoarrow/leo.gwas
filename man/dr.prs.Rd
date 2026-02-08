@@ -35,7 +35,7 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{summary_file}{Path to the summary statistics file or a data frame containing SNPs, alleles, and weights. Note this summary only contains refined SNP for PRS calculation.}
 
-\item{output_dir}{Directory to save the output files.}
+\item{output_dir}{Directory to save output files.}
 
 \item{method}{Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.}
 
@@ -64,6 +64,14 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 \item{clump_param}{Place holder for future clumping function.}
 
 \item{seed}{Random seed (Default: 725).}
+
+\item{rank1}{Data frame containing rank information for the first stage.}
+
+\item{rank2}{Data frame containing rank information for the second stage.}
+
+\item{auc1}{Numeric. AUC for the first stage.}
+
+\item{auc2}{Numeric. AUC for the second stage.}
 }
 \value{
 A list with:

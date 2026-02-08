@@ -23,7 +23,9 @@ It queries the SNPlocs.Hsapiens.dbSNP155.GRCh37 database (or GRCh38 if specified
 The function returns a dataframe with the additional 'CHR' and 'POS' columns appended.
 }
 \examples{
+\dontrun{
 pacman::p_load(data.table, dplyr, BSgenome, SNPlocs.Hsapiens.dbSNP155.GRCh37)
 zuo_ref <- fread("/path/to/1KG-EAS-EAF.txt.gz") # Input dataset with rsID (SNP column)
 result <- add_chrpos(zuo_ref, snp_col = "SNP", ref = "GRCh37")
+}
 }
