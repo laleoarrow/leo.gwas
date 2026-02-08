@@ -231,8 +231,9 @@ format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
 #' @keywords tsmr:
 #' @return a updated missiv with `proxy.snp` `proxy.effect.allele` `proxy.other.allele` `r2` col
 #' @examples
-#' # This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis
-#' @examples
+#' # This function can be used when many iv can not locate corresponding snp in the outcome
+#' # in tsmr analysis
+#' \dontrun{
 #' # iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()
 #' miss_iv <- iv[!iv$SNP %in% dat_h$SNP,]
 #' miss_snp <- miss_iv$SNP
@@ -252,6 +253,11 @@ format_outcome <- function(dat, snp = iv$SNP, N = "Neff") {
 #'  iv_f <- bind_rows(non_miss_iv, proxy_iv) # f for final
 #'  dat_h_proxy <- harmonise_data(iv_f, out_nc_proxy)
 #'  mr(dat_h_proxy) # nailed it!
+#' }
+#' 
+#' @importFrom stats start end
+#' @importFrom TwoSampleMR mr harmonise_data mr_scatter_plot 
+#' @importFrom TwoSampleMR mr_forest_plot mr_funnel_plot mr_heterogeneity mr_leaveoneout mr_pleiotropy_test mr_singlesnp
 find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_output_path=NULL, pop="EUR", gb="grch38", token="") {
  # require(LDlinkR); require(tidyverse); require(data.table)
  # sub-part 1: using ldlink to find proxy ---------
@@ -679,5 +685,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(
   "proxy.snp", "effect_allele.exposure", "other_allele.exposure", "proxy.A1",
   "proxy.A2", "target.snp", "target.A1", "target.A2", "RS_Number", "Correlated_Alleles",
   "query_snp", "proxy_snp", "proxy_A1", "proxy_A2", "query_A1", "query_A2",
-  "dat_h", "iri_nc"
+  "dat_h", "iri_nc", "CHR_BP", "DAF", "Exposure", "POS", "mr", "harmonise_data",
+  "mr_scatter_plot", "Phenotype", "data", ".", "n_snp", "lo_ci", "up_ci", "or",
+  "or_lci95", "or_uci95", "nsnp", "pval"
 ))
