@@ -71,6 +71,7 @@ any_na(df)
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Small demo dataset
 df <- data.frame(
   SNP = c("rs1","rs2","rs3","rs2"),
@@ -79,34 +80,23 @@ df <- data.frame(
   OR  = c(1.2, 0.9, 1.1, 1.1)
 )
 
-if (FALSE) { # \dontrun{
 # Complementary alleles
 is_complementary("A","T")  # TRUE
 is_complementary("A","G")  # FALSE
-} # }
 
 # Indels and non-indels
 fetch_indel(df, "both")
-#> Error in fetch_indel(df, "both"): could not find function "fetch_indel"
 fetch_non_indel(df)
-#> Error in fetch_non_indel(df): could not find function "fetch_non_indel"
 
 # Duplicates by SNP
 duplicated_SNP_lines(df, "get", dup_columns = "SNP")
-#> Error in duplicated_SNP_lines(df, "get", dup_columns = "SNP"): could not find function "duplicated_SNP_lines"
 slice1_SNP_lines(df, dup_columns = "SNP")
-#> Error in slice1_SNP_lines(df, dup_columns = "SNP"): could not find function "slice1_SNP_lines"
 
 # Same-direction effects between two datasets
 df2 <- transform(df, OR = c(1.1, 1.3, 0.8, 1.1))
 fetch_same_direcrtion(df, df2)
-#> The number with opposite effect size (diff): 2
-#>   SNP A1 A2  OR
-#> 1 rs1  A  T 1.2
-#> 2 rs2  C  G 1.1
 
 # Count NA by column
 any_na(df)
-#> SNP  A1  A2  OR 
-#>   0   0   0   0 
+} # }
 ```

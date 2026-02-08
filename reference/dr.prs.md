@@ -124,19 +124,19 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 - rank1:
 
-  Data frame containing rank information for the first stage.
+  rank1
 
 - rank2:
 
-  Data frame containing rank information for the second stage.
+  rank2
 
 - auc1:
 
-  Numeric. AUC for the first stage.
+  auc1
 
 - auc2:
 
-  Numeric. AUC for the second stage.
+  auc2
 
 ## Value
 

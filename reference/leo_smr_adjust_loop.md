@@ -55,7 +55,7 @@ NULL.
 
 ``` r
 if (FALSE) { # \dontrun{
-leo_smr_adjust_loop(dir     = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/chr_combined",
-                    out_dir = "~/project/iridocyclitis/output/smr/sqtl/GTEx49/fdr")
+leo_smr_adjust_loop(dir     = "./output/smr/sqtl/GTEx49/chr_combined",
+                    out_dir = "./output/smr/sqtl/GTEx49/fdr")
 } # }
 ```

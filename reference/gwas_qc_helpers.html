@@ -112,7 +112,8 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Small demo dataset</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Small demo dataset</span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  SNP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rs1"</span>,<span class="st">"rs2"</span>,<span class="st">"rs3"</span>,<span class="st">"rs2"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  A1  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"AT"</span>,<span class="st">"C"</span>,<span class="st">"C"</span><span class="op">)</span>,</span></span>
@@ -120,36 +121,25 @@
 <span class="r-in"><span>  OR  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">0.9</span>, <span class="fl">1.1</span>, <span class="fl">1.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Complementary alleles</span></span></span>
 <span class="r-in"><span><span class="fu">is_complementary</span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"T"</span><span class="op">)</span>  <span class="co"># TRUE</span></span></span>
 <span class="r-in"><span><span class="fu">is_complementary</span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"G"</span><span class="op">)</span>  <span class="co"># FALSE</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Indels and non-indels</span></span></span>
 <span class="r-in"><span><span class="fu">fetch_indel</span><span class="op">(</span><span class="va">df</span>, <span class="st">"both"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fetch_indel(df, "both"):</span> could not find function "fetch_indel"</span>
 <span class="r-in"><span><span class="fu">fetch_non_indel</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fetch_non_indel(df):</span> could not find function "fetch_non_indel"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Duplicates by SNP</span></span></span>
 <span class="r-in"><span><span class="fu">duplicated_SNP_lines</span><span class="op">(</span><span class="va">df</span>, <span class="st">"get"</span>, dup_columns <span class="op">=</span> <span class="st">"SNP"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in duplicated_SNP_lines(df, "get", dup_columns = "SNP"):</span> could not find function "duplicated_SNP_lines"</span>
 <span class="r-in"><span><span class="fu">slice1_SNP_lines</span><span class="op">(</span><span class="va">df</span>, dup_columns <span class="op">=</span> <span class="st">"SNP"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in slice1_SNP_lines(df, dup_columns = "SNP"):</span> could not find function "slice1_SNP_lines"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Same-direction effects between two datasets</span></span></span>
 <span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform</a></span><span class="op">(</span><span class="va">df</span>, OR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">1.3</span>, <span class="fl">0.8</span>, <span class="fl">1.1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">fetch_same_direcrtion</span><span class="op">(</span><span class="va">df</span>, <span class="va">df2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number with opposite effect size (diff): 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   SNP A1 A2  OR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 rs1  A  T 1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 rs2  C  G 1.1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Count NA by column</span></span></span>
 <span class="r-in"><span><span class="fu">any_na</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SNP  A1  A2  OR </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0   0   0   0 </span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
