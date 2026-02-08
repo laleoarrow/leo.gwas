@@ -85,26 +85,26 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
   summary_x2_qc %>% duplicated_SNP_lines(., "get", dup_columns = c("CHR_BP")) %>% arrange(CHR, BP) %>% nrow() -> n
   leo.basic::leo_log("Check duplicated SNP after combining genotyped and imputed: {n}")
 
-  ##########  step 1: 按CHR_BP来分组，如果组内genotyped和imputed都有，那么排除所有imputed
+  ##########  step 1: Group by CHR_BP, if both genotyped and imputed exist, exclude all imputed
   summary_x2_qc <- summary_x2_qc %>%
     group_by(CHR_BP) %>%
     filter(!(any(GI == "genotyped") & GI == "imputed")) %>%
     ungroup()
 
-  ########## step 2/3: For有重复的SNP，执行下面的qc（zh8不用2/3步）
-  # 步骤 2：如果有多个 genotyped，保留 P 最小的
-  # 步骤 3：如果有多个 imputed，全部排除
+  ########## step 2/3: For duplicated SNPs, execute the following QC (zh8 does not need steps 2/3)
+  # Step 2: If there are multiple genotyped, keep the one with the smallest P
+  # Step 3: If there are multiple imputed, exclude all
   qc_step23 <- function(summary_x2_qc){
     summary_x2_qc <- summary_x2_qc %>%
       group_by(CHR_BP) %>%
       mutate(genotyped_count = sum(GI == "genotyped"),
              imputed_count = sum(GI == "imputed")) %>%
       ungroup()
-    summary_x2_qc_single <- summary_x2_qc %>% filter(genotyped_count == 1 | imputed_count == 1) # 已经合格，保留
-    summary_x2_qc_genotyped_qc <- summary_x2_qc %>% filter(genotyped_count > 1) %>% # 多个genotyped的，保留P最小的
+    summary_x2_qc_single <- summary_x2_qc %>% filter(genotyped_count == 1 | imputed_count == 1) # Qualified, keep
+    summary_x2_qc_genotyped_qc <- summary_x2_qc %>% filter(genotyped_count > 1) %>% # Multiple genotyped, keep smallest P
       group_by(CHR_BP) %>% arrange(P) %>% dplyr::slice(1) %>% ungroup()
-    # summary_x2_qc_imputed_qc <- summary_qc %>% filter(imputed_count > 1) # 多个imputed的，这组都不要，所以不运行
-    # 合并single的和多genotyped中P最小一个
+    # summary_x2_qc_imputed_qc <- summary_qc %>% filter(imputed_count > 1) # Multiple imputed, discard group, so skip
+    # Merge single and the one with smallest P from multiple genotyped
     summary_qc <- rbind(summary_x2_qc_single, summary_x2_qc_genotyped_qc) %>%
       select(-genotyped_count, -imputed_count) %>%
       arrange(CHR, BP)
@@ -301,17 +301,17 @@ duplicated_SNP_lines <- function(df, type = "rm", dup_columns = c("SNP"), group_
 slice1_SNP_lines <- function(df, dup_columns = c("SNP"), group_columns = dup_columns) {
   if (is.data.table(df)) { df <- as.data.frame(df) }
 
-  # 计算重复的索引
+  # Calculate duplicated index
   duplicated_index <- duplicated(df[dup_columns]) | duplicated(df[dup_columns], fromLast = TRUE)
 
-  # 处理重复行，按group_columns分组并只保留第一行
+  # Process duplicated rows, group by group_columns and keep only the first row
   df_duplicated <- df %>%
     filter(duplicated_index) %>%
     group_by(across(all_of(group_columns))) %>%
     slice_head(n = 1) %>%
     ungroup()
 
-  # 保留非重复行并合并结果
+  # Keep non-duplicated rows and merge result
   df_new <- bind_rows(
     df %>% filter(!duplicated_index),
     df_duplicated
@@ -324,7 +324,7 @@ slice1_SNP_lines <- function(df, dup_columns = c("SNP"), group_columns = dup_col
 #' @export
 fetch_same_direcrtion <- function(df_x2, df_lg){
   logi <- (df_lg$OR > 1 & df_x2$OR < 1) | (df_lg$OR < 1 & df_x2$OR > 1)
-  message(paste0("The number with opposite effect size：", sum(logi)))
+  message(paste0("The number with opposite effect size (diff): ", sum(logi)))
   return(df_x2 %>% filter(!logi)) # return x2 data
 }
 

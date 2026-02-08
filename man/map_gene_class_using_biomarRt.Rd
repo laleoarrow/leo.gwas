@@ -2,28 +2,28 @@
 % Please edit documentation in R/0.annotation.R
 \name{map_gene_class_using_biomarRt}
 \alias{map_gene_class_using_biomarRt}
-\title{Map Gene Symbols to biotype & description via \strong{biomaRt} (GRCh38 → GRCh37 fallback)}
+\title{Map Gene Symbols to biotype & description via \strong{biomaRt} (GRCh38 -> GRCh37 fallback)}
 \usage{
 map_gene_class_using_biomarRt(genes, gene_col = "Gene", quiet = FALSE)
 }
 \arguments{
-\item{genes}{Character vector of gene symbols，或包含基因符号的数据框 / tibble}
+\item{genes}{Character vector of gene symbols, or data frame/tibble containing gene symbols}
 
-\item{gene_col}{列名（当 \code{genes} 为表格时），默认 \code{"Gene"}}
+\item{gene_col}{Column name (when \code{genes} is a table), default \code{"Gene"}}
 
-\item{quiet}{逻辑值；\code{TRUE} 时不显示进度信息}
+\item{quiet}{Logical; if \code{TRUE}, suppress progress messages}
 }
 \value{
-输入同结构的数据，附加 \code{biotype}、\code{description}、\code{infer_version}
+Data frame with same structure as input, plus \code{biotype}, \code{description}, \code{infer_version}
 }
 \description{
-先连接 \strong{Ensembl GRCh38}（www.ensembl.org）批量查询 \emph{gene_biotype} 与
-\emph{description}；未命中的基因再自动回退到 \strong{GRCh37}（grch37.ensembl.org）。
-最终为每个基因追加三列：
+First connect to \strong{Ensembl GRCh38} (www.ensembl.org) to query \emph{gene_biotype} and
+\emph{description} in batch; for unmapped genes, automatically fallback to \strong{GRCh37} (grch37.ensembl.org).
+Finally append three columns for each gene:
 \itemize{
 \item \strong{biotype}
 \item \strong{description}
-\item \strong{infer_version} — "GRCh38" / "GRCh37" / "unmapped"
+\item \strong{infer_version} -- "GRCh38" / "GRCh37" / "unmapped"
 }
 }
 \examples{

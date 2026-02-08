@@ -194,10 +194,10 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
   # Load SNP reference data
   if (ref == "GRCh37") {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh37::SNPlocs.Hsapiens.dbSNP155.GRCh37
-    leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh37 database.")
+    leo_message("i Loading SNPlocs.Hsapiens.dbSNP155.GRCh37 database.")
   } else if (ref == "GRCh38") {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh38::SNPlocs.Hsapiens.dbSNP155.GRCh38
-    leo_message("ℹ Loading SNPlocs.Hsapiens.dbSNP155.GRCh38 database.")
+    leo_message("i Loading SNPlocs.Hsapiens.dbSNP155.GRCh38 database.")
   } else {
     stop("Invalid reference version. Please choose 'GRCh37' or 'GRCh38'.")
   }
@@ -296,8 +296,11 @@ leo_map_GtoCP <- function(genes,
 #' gene_symbols <- c("TP53", "BRCA1", "EGFR") # Example with gene symbol vector
 #' map_gene_to_chrbp_using_TxDb(genes = gene_symbols, genome = "hg19")
 #'
-#' gene_symbols_df <- data.frame(GeneName = gene_symbols, OtherInformation = c(1,2,3)) # Example with data frame input
-#' map_gene_to_chrbp_using_TxDb(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
+#' gene_symbols_df <- data.frame(GeneName = gene_symbols,
+#'                             OtherInformation = c(1,2,3)) # Example with data frame input
+#' map_gene_to_chrbp_using_TxDb(genes = gene_symbols_df,
+#'                              gene_col = "GeneName",
+#'                              genome = "hg19")
 #' }
 #' @export
 map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg19", "hg38")) {
@@ -382,7 +385,7 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
   # Inform about genes that could not be mapped
   unmapped_genes <- setdiff(unique_gene_symbols, result_df$gene_symbol)
   if (length(unmapped_genes) > 0) {
-    message(paste0("⬇ A total of ", length(unmapped_genes), " could not be mapped ⬇"))
+    message(paste0("\u2b07 A total of ", length(unmapped_genes), " could not be mapped \u2b07"))
     message("The following genes could not be mapped: ", paste(unmapped_genes, collapse = ", "))
   }
 
@@ -525,7 +528,7 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
   mapped_genes <- result_df$gene_symbol
   unmapped_genes <- setdiff(unique_gene_symbols, mapped_genes)
   if (length(unmapped_genes) > 0) {
-    message(paste0("⬇ A total of ", length(unmapped_genes), " could not be mapped ⬇"))
+    message(paste0("\u2b07 A total of ", length(unmapped_genes), " could not be mapped \u2b07"))
     message("The following genes could not be mapped: ", paste(unmapped_genes, collapse = ", "))
   }
 
@@ -868,11 +871,14 @@ map_ensg_to_gene_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL,
 #' @importFrom AnnotationDbi mapIds
 #' @examples
 #' \dontrun{
-#' ensembl_ids <- c("ENSG00000141510.1", "ENSG00000012048", "ENSG00000146648") # Example with Ensembl ID vector
+#' ensembl_ids <- c("ENSG00000141510.1", "ENSG00000012048",
+#'                  "ENSG00000146648") # Example with Ensembl ID vector
 #' map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids)
 #'
-#' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInformation = c(1,2,3)) # Example with data frame input
-#' map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID")
+#' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids,
+#'                              OtherInformation = c(1,2,3)) # Example with data frame input
+#' map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids_df,
+#'                                       ensembl_col = "EnsemblID")
 #' }
 #' @export
 map_ensg_to_gene_using_org.Hs.eg.db <- function(ensembl_ids, ensembl_col = NULL) {
@@ -984,7 +990,7 @@ map_gene_to_tss_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19",
     dplyr::pull(!!rlang::sym(ifelse(is.null(gene_col), "gene_symbol", gene_col)))
 
   if (length(genes_no_strand) > 0) {
-    message("\n⚠️ The following genes were mapped but lack strand information (TSS could not be determined):")
+    message("\n[WARN] The following genes were mapped but lack strand information (TSS could not be determined):")
     message(paste(genes_no_strand, collapse = ", "))
   }
 
@@ -1010,7 +1016,9 @@ map_gene_to_tss_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19",
 #' map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids, genome = "hg19")
 #'
 #' ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInfo = c(1, 2, 3))
-#' map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID", genome = "hg38")
+#' map_ensg_to_tss_using_biomaRt(ensembl_ids = ensembl_ids_df,
+#'                               ensembl_col = "EnsemblID",
+#'                               genome = "hg38")
 #' }
 #' @export
 map_ensg_to_tss_using_biomaRt <- function(ensembl_ids, ensembl_col = NULL, genome = c("hg19", "hg38"), ...) {
@@ -1395,20 +1403,20 @@ annotate_cpg_sites <- function(cpg_vector,
 # Gene class annotation -----
 #' Map Gene Symbols to biotype & description via **annotables**
 #'
-#' 使用离线数据框 `annotables::grch38` 与 `annotables::grch37`
-#' 为基因符号添加 *biotype*、*description*，并给出来源列
-#' `infer_version`（"grch38" / "grch37" / "unmapped"）。
+#' Use local dataframes `annotables::grch38` and `annotables::grch37`
+#' to add *biotype* and *description* to gene symbols, providing a source column
+#' `infer_version` ("grch38" / "grch37" / "unmapped").
 #'
-#' 逻辑：
-#' 1. 先左连接 **grch38**；命中则 `infer_version = "grch38"`
-#' 2. 未命中者再补 **grch37**；命中则 `infer_version = "grch37"`
-#' 3. 仍未命中者三列均填占位，如上所述
+#' Logic:
+#' 1. Left join with **grch38**; if matched, `infer_version = "grch38"`
+#' 2. If not matched, fill with **grch37**; if matched, `infer_version = "grch37"`
+#' 3. If still not matched, fill columns with placeholders as described above
 #'
-#' @param genes    Character vector of gene symbols，或包含基因符号的数据框/ tibble
-#' @param gene_col 列名（当 `genes` 为表格时），默认 `"Gene"`
-#' @param quiet    逻辑值；`TRUE` 时不显示进度信息
+#' @param genes    Character vector of gene symbols, or data frame/tibble containing gene symbols
+#' @param gene_col Column name (when `genes` is a table), default `"Gene"`
+#' @param quiet    Logical; if `TRUE`, suppress progress messages
 #'
-#' @return 与输入同结构的数据，附加 `biotype`、`description`、`infer_version`
+#' @return Data frame with same structure as input, plus `biotype`, `description`, `infer_version`
 #' @import annotables
 #' @importFrom dplyr %>% select filter distinct mutate left_join bind_rows
 #' @importFrom tibble tibble as_tibble
@@ -1428,7 +1436,7 @@ map_gene_class_using_annotables <- function(genes,
   if (!requireNamespace("annotables", quietly = TRUE))
     stop("Package 'annotables' is required. Install via remotes::install_github('stephenturner/annotables').")
 
-  ## ── 处理输入 ──────────────────────────────────────
+  ## -- Process Input --------------------------------------
   if (is.data.frame(genes)) {
     if (!gene_col %in% names(genes))
       stop("Column '", gene_col, "' not found.")
@@ -1442,9 +1450,9 @@ map_gene_class_using_annotables <- function(genes,
     stop("`genes` must be a character vector or data.frame / tibble.")
   }
 
-  if (!quiet) message("ℹ Total unique genes: ", length(gene_vec))
+  if (!quiet) message("i Total unique genes: ", length(gene_vec))
 
-  ## ── grch38 注释 ───────────────────────────────────
+  ## -- grch38 Annotation -----------------------------------
   anno38 <- annotables::grch38 %>%
     dplyr::select(symbol, biotype, description) %>%
     dplyr::distinct() %>%
@@ -1453,18 +1461,18 @@ map_gene_class_using_annotables <- function(genes,
 
   remaining <- setdiff(gene_vec, anno38$symbol)
 
-  ## ── grch37 补充 ───────────────────────────────────
+  ## -- grch37 Supplement -----------------------------------
   anno37 <- annotables::grch37 %>%
     dplyr::select(symbol, biotype, description) %>%
     dplyr::distinct() %>%
     dplyr::filter(symbol %in% remaining) %>%
     dplyr::mutate(infer_version = "grch37")
 
-  ## ── 合并两张表 ───────────────────────────────────
+  ## -- Merge Two Tables -----------------------------------
   ann_all <- dplyr::bind_rows(anno38, anno37) %>%
     dplyr::rename(!!gene_col := symbol)
 
-  ## ── 与输入左连接 ──────────────────────────────────
+  ## -- Left Join with Input ----------------------------------
   out <- df_in %>%
     dplyr::left_join(ann_all, by = gene_col) %>%
     dplyr::mutate(
@@ -1473,10 +1481,10 @@ map_gene_class_using_annotables <- function(genes,
       infer_version = ifelse(is.na(infer_version),"NA",  infer_version)
     )
 
-  ## ── 汇报 ──────────────────────────────────────────
+  ## -- Report ------------------------------------------
   if (!quiet) {
     unmapped <- sum(out$infer_version == "unmapped")
-    message("✔ grch38 hits: ", sum(out$infer_version == "grch38"),
+    message("* grch38 hits: ", sum(out$infer_version == "grch38"),
             "; grch37 hits: ", sum(out$infer_version == "grch37"),
             "; unmapped: ", unmapped)
   }
@@ -1485,22 +1493,22 @@ map_gene_class_using_annotables <- function(genes,
 }
 
 
-#' Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 → GRCh37 fallback)
+#' Map Gene Symbols to biotype & description via **biomaRt** (GRCh38 -> GRCh37 fallback)
 #'
-#' 先连接 **Ensembl GRCh38**（www.ensembl.org）批量查询 *gene_biotype* 与
-#' *description*；未命中的基因再自动回退到 **GRCh37**（grch37.ensembl.org）。
-#' 最终为每个基因追加三列：
+#' First connect to **Ensembl GRCh38** (www.ensembl.org) to query *gene_biotype* and
+#' *description* in batch; for unmapped genes, automatically fallback to **GRCh37** (grch37.ensembl.org).
+#' Finally append three columns for each gene:
 #' \itemize{
 #'   \item \strong{biotype}
 #'   \item \strong{description}
-#'   \item \strong{infer_version} — "GRCh38" / "GRCh37" / "unmapped"
+#'   \item \strong{infer_version} -- "GRCh38" / "GRCh37" / "unmapped"
 #' }
 #'
-#' @param genes    Character vector of gene symbols，或包含基因符号的数据框 / tibble
-#' @param gene_col 列名（当 `genes` 为表格时），默认 `"Gene"`
-#' @param quiet    逻辑值；`TRUE` 时不显示进度信息
+#' @param genes    Character vector of gene symbols, or data frame/tibble containing gene symbols
+#' @param gene_col Column name (when `genes` is a table), default `"Gene"`
+#' @param quiet    Logical; if `TRUE`, suppress progress messages
 #'
-#' @return 输入同结构的数据，附加 `biotype`、`description`、`infer_version`
+#' @return Data frame with same structure as input, plus `biotype`, `description`, `infer_version`
 #'
 #' @importFrom biomaRt useMart getBM
 #' @importFrom dplyr %>% distinct select filter mutate bind_rows left_join tibble as_tibble case_when
@@ -1522,7 +1530,7 @@ map_gene_class_using_biomarRt <- function(genes,
   if (!requireNamespace("biomaRt", quietly = TRUE))
     stop("Package 'biomaRt' is required. Install via BiocManager::install('biomaRt').")
 
-  ## ── 输入整理 ─────────────────────────────────────
+  ## -- Input Prep -------------------------------------
   if (is.data.frame(genes)) {
     if (!gene_col %in% names(genes))
       stop("Column '", gene_col, "' not found.")
@@ -1534,9 +1542,9 @@ map_gene_class_using_biomarRt <- function(genes,
     gene_col <- "Gene"
   } else stop("`genes` must be character vector or data.frame/tibble.")
 
-  if (!quiet) message("ℹ Total unique genes: ", length(gene_vec))
+  if (!quiet) message("i Total unique genes: ", length(gene_vec))
 
-  ## ── 辅助函数：一次查询 ───────────────────────────
+  ## -- Helper: Single Query ---------------------------
   bm_fetch <- function(host, tag){
     ens <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL",
                             dataset = "hsapiens_gene_ensembl",
@@ -1555,18 +1563,18 @@ map_gene_class_using_biomarRt <- function(genes,
     res
   }
 
-  ## ── Step 1: GRCh38 ───────────────────────────────
+  ## -- Step 1: GRCh38 -------------------------------
   ann38 <- bm_fetch("https://www.ensembl.org", "GRCh38")
   remaining <- if (is.null(ann38)) gene_vec else setdiff(gene_vec, ann38[[gene_col]])
 
-  ## ── Step 2: GRCh37（只查缺失） ───────────────────
+  ## -- Step 2: GRCh37 (Check Missing) -------------------
   ann37 <- NULL
   if (length(remaining) > 0) {
-    gene_vec <- remaining          # 覆盖查询目标
+    gene_vec <- remaining          # Overwrite target
     ann37 <- bm_fetch("https://grch37.ensembl.org", "GRCh37")
   }
 
-  ## ── 合并注释 & 回补 ──────────────────────────────
+  ## -- Merge Annotation & Backfill ----------------------
   ann_all <- dplyr::bind_rows(ann38, ann37)
 
   out <- df_in %>%
@@ -1578,7 +1586,7 @@ map_gene_class_using_biomarRt <- function(genes,
     )
 
   if (!quiet) {
-    message("✔ GRCh38 hits: ", sum(out$infer_version == "GRCh38"),
+    message("* GRCh38 hits: ", sum(out$infer_version == "GRCh38"),
             "; GRCh37 hits: ", sum(out$infer_version == "GRCh37"),
             "; unmapped: ",   sum(out$infer_version == "NA"))
   }

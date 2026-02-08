@@ -25,6 +25,7 @@ A data.frame with an additional 'ID' column (if count_A1_A2=T, containing unique
 Get ID using CHR, BP, A2 (REF/Non-effect), A1 (ALT/Effect)
 }
 \examples{
-df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111), A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
+#' df <- data.frame(chrom = c(1, 1, 2), pos = c(12345, 54321, 11111),
+#'                  A1 = c("A", "T", "G"), A2 = c("G", "C", "A"))
 get_id(df); get_id(df, count_A1_A2 = T)
 }

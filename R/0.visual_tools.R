@@ -461,7 +461,7 @@ plot_gsMap <- function(path, width1 = 6, height1 = 4, width2 = 8, height2 = 4,
   combined <- p_highlight | p_logp
   out2 <- file.path(save_folder, glue::glue("{basename}_{traitname}_highlight_logp.pdf"))
   ggplot2::ggsave(out2, combined, width = width2, height = height2); leo.basic::leo_log("Save: {.path {out2}}")
-  leo.basic::leo_log("Done ✅")
+  leo.basic::leo_log("Done \u2705")
 }
 
 #' Build color maps for gsMap plots (helper function)

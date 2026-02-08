@@ -7,26 +7,26 @@
 map_gene_class_using_annotables(genes, gene_col = "Gene", quiet = FALSE)
 }
 \arguments{
-\item{genes}{Character vector of gene symbols，或包含基因符号的数据框/ tibble}
+\item{genes}{Character vector of gene symbols, or data frame/tibble containing gene symbols}
 
-\item{gene_col}{列名（当 \code{genes} 为表格时），默认 \code{"Gene"}}
+\item{gene_col}{Column name (when \code{genes} is a table), default \code{"Gene"}}
 
-\item{quiet}{逻辑值；\code{TRUE} 时不显示进度信息}
+\item{quiet}{Logical; if \code{TRUE}, suppress progress messages}
 }
 \value{
-与输入同结构的数据，附加 \code{biotype}、\code{description}、\code{infer_version}
+Data frame with same structure as input, plus \code{biotype}, \code{description}, \code{infer_version}
 }
 \description{
-使用离线数据框 \code{annotables::grch38} 与 \code{annotables::grch37}
-为基因符号添加 \emph{biotype}、\emph{description}，并给出来源列
-\code{infer_version}（"grch38" / "grch37" / "unmapped"）。
+Use local dataframes \code{annotables::grch38} and \code{annotables::grch37}
+to add \emph{biotype} and \emph{description} to gene symbols, providing a source column
+\code{infer_version} ("grch38" / "grch37" / "unmapped").
 }
 \details{
-逻辑：
+Logic:
 \enumerate{
-\item 先左连接 \strong{grch38}；命中则 \code{infer_version = "grch38"}
-\item 未命中者再补 \strong{grch37}；命中则 \code{infer_version = "grch37"}
-\item 仍未命中者三列均填占位，如上所述
+\item Left join with \strong{grch38}; if matched, \code{infer_version = "grch38"}
+\item If not matched, fill with \strong{grch37}; if matched, \code{infer_version = "grch37"}
+\item If still not matched, fill columns with placeholders as described above
 }
 }
 \examples{

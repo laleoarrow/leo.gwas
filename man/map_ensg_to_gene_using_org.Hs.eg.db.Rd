@@ -19,10 +19,13 @@ This function maps Ensembl IDs to their corresponding gene symbols using the \co
 }
 \examples{
 \dontrun{
-ensembl_ids <- c("ENSG00000141510.1", "ENSG00000012048", "ENSG00000146648") # Example with Ensembl ID vector
+ensembl_ids <- c("ENSG00000141510.1", "ENSG00000012048",
+                 "ENSG00000146648") # Example with Ensembl ID vector
 map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids)
 
-ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids, OtherInformation = c(1,2,3)) # Example with data frame input
-map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids_df, ensembl_col = "EnsemblID")
+ensembl_ids_df <- data.frame(EnsemblID = ensembl_ids,
+                             OtherInformation = c(1,2,3)) # Example with data frame input
+map_ensg_to_gene_using_org.Hs.eg.db(ensembl_ids = ensembl_ids_df,
+                                      ensembl_col = "EnsemblID")
 }
 }
