@@ -385,7 +385,7 @@ find_proxy <- function(miss_iv, miss_snp, outcome_snp, proxy_file=NULL, proxy_ou
 #'   fig_dir = "./figure/tsmr"
 #' )
 #' names(out)
-#' })
+#' }
 #' @importFrom TwoSampleMR mr harmonise_data mr_scatter_plot mr_forest_plot mr_funnel_plot mr_heterogeneity mr_leaveoneout mr_pleiotropy_test mr_singlesnp mr_egger_regression mr_egger_regression_bootstrap default_parameters mr_leaveoneout_plot
 mr_one_pair <- function(dat_h, exp = "", out = "", save_plot = T, res_dir= "./output/tsmr", fig_dir="./figure/tsmr") {
   # Initialize

@@ -30,7 +30,6 @@ Imports:
     leo.basic (>= 0.0.1),
     magrittr,
     MRlap,
-    MungeSumstats,
     pROC,
     purrr,
     RColorBrewer,
