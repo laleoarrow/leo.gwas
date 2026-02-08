@@ -107,39 +107,30 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This function can be used when many iv can not locate corresponding snp in the outcome in tsmr analysis</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This function can be used when many iv can not locate corresponding snp in the outcome</span></span></span>
+<span class="r-in"><span><span class="co"># in tsmr analysis</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># iv is estracted iv via tsmr package;dat_h is a standard output of harmonise_data()</span></span></span>
 <span class="r-in"><span><span class="va">miss_iv</span> <span class="op">&lt;-</span> <span class="va">iv</span><span class="op">[</span><span class="op">!</span><span class="va">iv</span><span class="op">$</span><span class="va">SNP</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">dat_h</span><span class="op">$</span><span class="va">SNP</span>,<span class="op">]</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'iv' not found</span>
 <span class="r-in"><span><span class="va">miss_snp</span> <span class="op">&lt;-</span> <span class="va">miss_iv</span><span class="op">$</span><span class="va">SNP</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'miss_iv' not found</span>
 <span class="r-in"><span><span class="va">outcome_snp</span> <span class="op">&lt;-</span> <span class="va">iri_nc</span><span class="op">$</span><span class="va">SNP</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'iri_nc' not found</span>
 <span class="r-in"><span><span class="va">proxy_output_path</span> <span class="op">&lt;-</span> <span class="st">"Full path to where you wanna store the LDlinkR output"</span></span></span>
 <span class="r-in"><span> <span class="va">proxy_iv</span> <span class="op">&lt;-</span> <span class="fu">find_proxy</span><span class="op">(</span><span class="va">miss_iv</span>, <span class="va">miss_snp</span>, <span class="va">outcome_snp</span>,</span></span>
 <span class="r-in"><span>                        proxy_file <span class="op">=</span> <span class="st">"./combined_query_snp_list_grch38.txt"</span>,</span></span>
 <span class="r-in"><span>                        proxy_output_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in find_proxy(miss_iv, miss_snp, outcome_snp, proxy_file = "./combined_query_snp_list_grch38.txt",     proxy_output_path = NULL):</span> could not find function "find_proxy"</span>
 <span class="r-in"><span> <span class="co"># bak</span></span></span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">target.snp</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">SNP</span> <span class="co"># target snp</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">target.A1</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">effect_allele.exposure</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">target.A2</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">other_allele.exposure</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="co"># replace for tsmr</span></span></span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">SNP</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">proxy.snp</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">effect_allele.exposure</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">proxy.A1</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">other_allele.exposure</span> <span class="op">&lt;-</span> <span class="va">proxy_iv</span><span class="op">$</span><span class="va">proxy.A2</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'proxy_iv' not found</span>
 <span class="r-in"><span> <span class="va">iv_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">non_miss_iv</span>, <span class="va">proxy_iv</span><span class="op">)</span> <span class="co"># f for final</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'non_miss_iv' not found</span>
 <span class="r-in"><span> <span class="va">dat_h_proxy</span> <span class="op">&lt;-</span> <span class="fu">harmonise_data</span><span class="op">(</span><span class="va">iv_f</span>, <span class="va">out_nc_proxy</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in harmonise_data(iv_f, out_nc_proxy):</span> could not find function "harmonise_data"</span>
 <span class="r-in"><span> <span class="fu">mr</span><span class="op">(</span><span class="va">dat_h_proxy</span><span class="op">)</span> <span class="co"># nailed it!</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mr(dat_h_proxy):</span> could not find function "mr"</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

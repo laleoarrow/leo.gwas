@@ -84,7 +84,8 @@ leo_smr_adjust(
   writePath = "", out_dir = "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49"
 )
 leo_smr_adjust(
-  "~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr",
+  paste0("~/project/iridocyclitis/output/smr-t2d/sqtl/GTEx49/chr_combined/",
+         "chr_combine_sQTL_Adipose_Subcutaneous@iri3.smr"),
   writePath = "./haha.fdr", out_dir = ""
 )
 } # }
