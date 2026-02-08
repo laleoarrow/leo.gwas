@@ -6,23 +6,25 @@
 #' * catboost (to capture non-linear relationship)
 #' It also calculated PRS with plink using traditional additive model.
 #'
+#'
 #' @param stage1_bfile Path to the stage1 PLINK binary files. Normally it is the one generates summary data. If only 1 source of individual data is available, you can split it into 2 non-overlap datasets.
 #' @param stage2_bfile Path to the stage2 PLINK binary files, i.e., the target dataset for PRS calculation.
 #' @param summary_file Path to the summary statistics file or a data frame containing SNPs, alleles, and weights. Note this summary only contains refined SNP for PRS calculation.
 #' @param output_dir Directory to save the output files.
+#' @param method Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.
+#' @param dr_optimazation Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).
 #' @param snp_col Column name in the summary statistics for SNP IDs (default: "SNP.meta").
 #' @param a1_col Column name in the summary statistics for effect allele (default: "A1").
 #' @param weight_col Column name in the summary statistics for weights (default: "OR_Final").
 #' @param weight_type Type of weights, either "OR" (default) or "Beta". If "OR", it will calculate Beta values.
-#' @param plink_bin Path to the PLINK binary executable (default: `plinkbinr::get_plink_exe()`).
 #' @param divide_ratio Proportion of stage1 data in iLasso (default: 0.7).
 #' @param iLasso_iteration Number of iterations for iLasso model (default: 1000).
-#' @param method Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.
-#' @param seed Random seed (Default: 725).
-#' @param dr.optimazation Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).
+#' @param nfolds Number of folds for cross-validation (default: 10).
+#' @param plink_bin Path to the PLINK binary executable (default: `plinkbinr::get_plink_exe()`).
 #' @param clump Place holder for future clumping function.
 #' @param clump_include_hla Place holder for future clumping function.
 #' @param clump_param Place holder for future clumping function.
+#' @param seed Random seed (Default: 725).
 #'
 #' @return A list with:
 #'   - lasso_importance, catboost_importance, combined_rank

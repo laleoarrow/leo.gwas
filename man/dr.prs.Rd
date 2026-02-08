@@ -39,6 +39,8 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{method}{Integer vector indicating which methods to use: 1=PLINK, 2=CatBoost, 3=iLasso. Default is all three methods.}
 
+\item{dr_optimazation}{Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).}
+
 \item{snp_col}{Column name in the summary statistics for SNP IDs (default: "SNP.meta").}
 
 \item{a1_col}{Column name in the summary statistics for effect allele (default: "A1").}
@@ -51,6 +53,8 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 
 \item{iLasso_iteration}{Number of iterations for iLasso model (default: 1000).}
 
+\item{nfolds}{Number of folds for cross-validation (default: 10).}
+
 \item{plink_bin}{Path to the PLINK binary executable (default: \code{plinkbinr::get_plink_exe()}).}
 
 \item{clump}{Place holder for future clumping function.}
@@ -60,8 +64,6 @@ combine_rank(rank1, rank2, auc1 = NULL, auc2 = NULL)
 \item{clump_param}{Place holder for future clumping function.}
 
 \item{seed}{Random seed (Default: 725).}
-
-\item{dr.optimazation}{Logical, whether to perform greedy search to optimize PRS based on combined rank from CatBoost and iLasso (default: TRUE).}
 }
 \value{
 A list with:
