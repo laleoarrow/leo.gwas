@@ -9,7 +9,7 @@ map_gene_to_chrbp_using_gtf(
   gene_col = NULL,
   genome = c("hg19", "hg38"),
   gtf_file = NULL,
-  download_dir = "~/project/ref/gtf"
+  download_dir = "~/Project/ref/gtf"
 )
 }
 \arguments{

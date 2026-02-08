@@ -262,7 +262,7 @@ add_chrpos <- function(dat, snp_col = "SNP", ref = "GRCh37") {
 #' leo_map_GtoCP(genes = data.frame(gene_name = c("TP53", "BRCA1", "EGFR"),
 #'                                  value = c(1.2, 3.4, 5.6)),
 #'               gene_col = "gene_name", method = "gtf", genome = "hg38",
-#'               download_dir = "~/project/ref/gtf")
+#'               download_dir = "~/Project/ref/gtf")
 #' }
 #' @export
 leo_map_GtoCP <- function(genes,
@@ -425,8 +425,16 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
 #' map_gene_to_chrbp_using_gtf(genes = gene_symbols_df, gene_col = "GeneName" , genome = "hg19")
 #' }
 #' @export
-map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gtf_file = NULL, download_dir = "~/project/ref/gtf") {
+map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gtf_file = NULL, download_dir = "~/Project/ref/gtf") {
   genome <- match.arg(genome)
+  
+  # Check dependencies at the beginning
+  if (!exists("makeTxDbFromGFF", where = asNamespace("GenomicFeatures"), mode = "function")) {
+    stop("GenomicFeatures::makeTxDbFromGFF is not available.\n",
+         "This function requires the 'txdbmaker' package as a backend.\n",
+         "Please install it: BiocManager::install('txdbmaker')",
+         call. = FALSE)
+  }
 
   # Process input genes
   if (is.data.frame(genes)) {
@@ -445,10 +453,25 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
   unique_gene_symbols <- unique(gene_symbols) # Use unique gene symbols for mapping
   message(sprintf("Total input genes: %d; Unique genes: %d", length(gene_symbols), length(unique_gene_symbols)))
 
-  # Set default download directory
-  if (is.null(download_dir)) { download_dir <- "~/project/ref/gtf" }
-  if (!dir.exists(download_dir)) { dir.create(download_dir, recursive = TRUE) }
-  message(paste0(">>> Setting the download_dir: ", download_dir, "\n"))
+  # Set download directory with fallback to temp directory
+  if (is.null(download_dir)) { 
+    download_dir <- "~/Project/ref/gtf" 
+  }
+  
+  # Expand tilde and check if directory exists or can be created
+  download_dir <- path.expand(download_dir)
+  if (!dir.exists(download_dir)) {
+    tryCatch({
+      dir.create(download_dir, recursive = TRUE)
+      message(paste0(">>> Created download_dir: ", download_dir))
+    }, error = function(e) {
+      # Fallback to temp directory if creation fails
+      download_dir <<- tempdir()
+      message(paste0("! Could not create ", download_dir, ", using temp directory: ", download_dir))
+    })
+  } else {
+    message(paste0(">>> Using download_dir: ", download_dir))
+  }
 
   # Download GTF file if not provided
   if (is.null(gtf_file)) {
@@ -467,19 +490,10 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
     }
   }
 
-
   # Create TxDb object from GTF file
   message("Creating TxDb object from GTF file...")
-  
-  # Check if makeTxDbFromGFF is available (requires txdbmaker backend)
-  if (!exists("makeTxDbFromGFF", where = asNamespace("GenomicFeatures"), mode = "function")) {
-    stop("GenomicFeatures::makeTxDbFromGFF is not available.\n",
-         "This function requires the 'txdbmaker' package as a backend.\n",
-         "Please install it: BiocManager::install('txdbmaker')",
-         call. = FALSE)
-  }
-  
   txdb <- suppressWarnings( GenomicFeatures::makeTxDbFromGFF(gtf_file, format = "gtf") )
+
 
 
   # Retrieve gene locations
@@ -978,7 +992,7 @@ map_ensg_to_gene_using_org.Hs.eg.db <- function(ensembl_ids, ensembl_col = NULL)
 #' }
 #' @export
 map_gene_to_tss_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"),
-                                      gtf_file = NULL, download_dir = "~/project/ref/gtf", ...) {
+                                      gtf_file = NULL, download_dir = "~/Project/ref/gtf", ...) {
 
   # Get full mapping results using existing function
   mapping_results <- map_gene_to_chrbp_using_gtf(
