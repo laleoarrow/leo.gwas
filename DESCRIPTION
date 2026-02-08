@@ -52,6 +52,7 @@ Suggests:
     knitr,
     minfi,
     pacman,
+    patchwork,
     plinkbinr,
     Rmpfr,
     rmarkdown,
