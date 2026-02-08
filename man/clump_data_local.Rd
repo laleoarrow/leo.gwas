@@ -31,6 +31,7 @@ This function performs LD clumping using either a local PLINK binary file (\code
 or a 1000 Genomes super population panel. Requires the \code{ieugwasr} and \code{plinkbinr} packages.
 }
 \examples{
+\dontrun{
 # Reference:
 # - https://github.com/MRCIEU/TwoSampleMR/issues/173
 # - https://blog.csdn.net/xiaozheng1213/article/details/126269969
@@ -40,5 +41,6 @@ plinkbinr::get_plink_exe()
 
 # Note: after using this, please check `leo_clump` column to see if they are all TRUE
 # If it's contains F, it means no SNPs remained after clumping or something bad happened
+}
 }
 \keyword{tsmr:}

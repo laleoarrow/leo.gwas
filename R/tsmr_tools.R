@@ -13,6 +13,7 @@
 #' @keywords tsmr:
 #' @export
 #' @examples
+#' \dontrun{
 #' # Reference:
 #' # - https://github.com/MRCIEU/TwoSampleMR/issues/173
 #' # - https://blog.csdn.net/xiaozheng1213/article/details/126269969
@@ -22,6 +23,7 @@
 #'
 #' # Note: after using this, please check `leo_clump` column to see if they are all TRUE
 #' # If it's contains F, it means no SNPs remained after clumping or something bad happened
+#' }
 clump_data_local <- function(dat, pop = NULL, bfile = NULL,
                              clump_kb = 10000,
                              clump_r2 = 0.001,
