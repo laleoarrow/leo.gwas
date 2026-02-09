@@ -5,7 +5,6 @@
 [![R](https://img.shields.io/badge/R-language-red.svg)](https://www.r-project.org/)
 [![Version](https://img.shields.io/badge/version-0.0.2-blue.svg)](https://github.com/laleoarrow/leo.gwas/releases)
 [![r-universe](https://laleoarrow.r-universe.dev/badges/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
-[![r-universe](https://laleoarrow.r-universe.dev/badges/leo.gwas)](https://laleoarrow.r-universe.dev/leo.gwas)
 [![Dev status](https://img.shields.io/badge/dev%20status-experimental-orange.svg)](https://github.com/laleoarrow/leo.gwas)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
@@ -72,6 +71,7 @@ citation("leo.gwas")
 ```
 
 **We look forward to collaborating with researchers and developers worldwide to advance innovation and progress in genomic data analysis!**
+
 
 
 
