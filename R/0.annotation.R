@@ -428,11 +428,21 @@ map_gene_to_chrbp_using_TxDb <- function(genes, gene_col = NULL, genome = c("hg1
 map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19", "hg38"), gtf_file = NULL, download_dir = "~/Project/ref/gtf") {
   genome <- match.arg(genome)
   
-  # Check dependencies at the beginning
-  if (!exists("makeTxDbFromGFF", where = asNamespace("GenomicFeatures"), mode = "function")) {
-    stop("GenomicFeatures::makeTxDbFromGFF is not available.\n",
-         "This function requires the 'txdbmaker' package as a backend.\n",
-         "Please install it: BiocManager::install('txdbmaker')",
+  # Resolve makeTxDbFromGFF: prefer txdbmaker (new), fall back to GenomicFeatures
+  if (requireNamespace("txdbmaker", quietly = TRUE) &&
+      exists("makeTxDbFromGFF", where = asNamespace("txdbmaker"),
+             mode = "function")) {
+    .makeTxDb <- get("makeTxDbFromGFF",
+                     envir = asNamespace("txdbmaker"))
+  } else if (exists("makeTxDbFromGFF",
+                     where = asNamespace("GenomicFeatures"),
+                     mode = "function")) {
+    .makeTxDb <- get("makeTxDbFromGFF",
+                     envir = asNamespace("GenomicFeatures"))
+  } else {
+    stop("makeTxDbFromGFF is not available.\n",
+         "Install 'txdbmaker': ",
+         "BiocManager::install('txdbmaker')",
          call. = FALSE)
   }
 
@@ -502,7 +512,7 @@ map_gene_to_chrbp_using_gtf <- function(genes, gene_col = NULL, genome = c("hg19
 
   # Create TxDb object from GTF file
   message("Creating TxDb object from GTF file...")
-  txdb <- suppressWarnings( GenomicFeatures::makeTxDbFromGFF(gtf_file, format = "gtf") )
+  txdb <- suppressWarnings(.makeTxDb(gtf_file, format = "gtf"))
 
 
 

@@ -59,7 +59,8 @@ Suggests:
     SNPlocs.Hsapiens.dbSNP155.GRCh37,
     SNPlocs.Hsapiens.dbSNP155.GRCh38,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
-    TxDb.Hsapiens.UCSC.hg38.knownGene
+    TxDb.Hsapiens.UCSC.hg38.knownGene,
+    txdbmaker
 Remotes: 
     github::MRCIEU/ieugwasr,
     github::MRCIEU/TwoSampleMR,
