@@ -14,10 +14,7 @@ csMR_env(
   conda = Sys.which("conda"),
   repo_url = "https://github.com/rhhao/csMR.git",
   ref = "main",
-  use_mamba = TRUE,
   overwrite = FALSE,
-  update_repo = TRUE,
-  install_plink = TRUE,
   verbose = TRUE
 )
 ```
@@ -46,22 +43,9 @@ csMR_env(
 
   Git branch/tag to checkout for csMR source code.
 
-- use_mamba:
-
-  Whether to prefer `mamba` for environment solving.
-
 - overwrite:
 
   Whether to remove an existing environment before recreating.
-
-- update_repo:
-
-  Whether to check remote csMR version and overwrite local repository
-  with a fresh clone when local is outdated/non-reproducible.
-
-- install_plink:
-
-  Whether to install PLINK 1.9 in the conda environment.
 
 - verbose:
 
@@ -91,6 +75,6 @@ cfg <- csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 cfg$run_snakemake_example
 
 # Fast health-check for an existing environment
-csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
+csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 } # }
 ```
