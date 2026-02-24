@@ -224,3 +224,10 @@ Summary statistics QC from `R/summary_qc.R`.
   : GWAS summary QC pipeline (chip + imputed)
 - [`check_significant_SNP()`](https://laleoarrow.github.io/leo.gwas/reference/check_significant_SNP.md)
   : locate the significant SNP for conditional analysis
+
+## csMR Workflow
+
+Environment setup helper for the csMR pipeline.
+
+- [`csMR_env()`](https://laleoarrow.github.io/leo.gwas/reference/csMR_env.md)
+  : Configure Conda Environment for csMR
