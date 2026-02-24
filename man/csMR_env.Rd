@@ -10,10 +10,7 @@ csMR_env(
   conda = Sys.which("conda"),
   repo_url = "https://github.com/rhhao/csMR.git",
   ref = "main",
-  use_mamba = TRUE,
   overwrite = FALSE,
-  update_repo = TRUE,
-  install_plink = TRUE,
   verbose = TRUE
 )
 }
@@ -30,14 +27,7 @@ example \verb{~/Project/software}, resolved to \verb{~/Project/software/csMR}).}
 
 \item{ref}{Git branch/tag to checkout for csMR source code.}
 
-\item{use_mamba}{Whether to prefer \code{mamba} for environment solving.}
-
 \item{overwrite}{Whether to remove an existing environment before recreating.}
-
-\item{update_repo}{Whether to check remote csMR version and overwrite local
-repository with a fresh clone when local is outdated/non-reproducible.}
-
-\item{install_plink}{Whether to install PLINK 1.9 in the conda environment.}
 
 \item{verbose}{Whether to print setup logs.}
 }
@@ -66,7 +56,7 @@ cfg <- csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 cfg$run_snakemake_example
 
 # Fast health-check for an existing environment
-csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
+csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 }
 
 }

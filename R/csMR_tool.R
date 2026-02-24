@@ -246,11 +246,7 @@
 #' @param conda Path to the conda executable. Defaults to `Sys.which("conda")`.
 #' @param repo_url GitHub URL of the csMR repository.
 #' @param ref Git branch/tag to checkout for csMR source code.
-#' @param use_mamba Whether to prefer `mamba` for environment solving.
 #' @param overwrite Whether to remove an existing environment before recreating.
-#' @param update_repo Whether to check remote csMR version and overwrite local
-#'   repository with a fresh clone when local is outdated/non-reproducible.
-#' @param install_plink Whether to install PLINK 1.9 in the conda environment.
 #' @param verbose Whether to print setup logs.
 #'
 #' @return A list containing `repo_dir`, `env_name`, `env_prefix`, `env_file`,
@@ -264,7 +260,7 @@
 #' cfg$run_snakemake_example
 #'
 #' # Fast health-check for an existing environment
-#' csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
+#' csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 #' }
 #'
 #' @export
@@ -274,10 +270,7 @@ csMR_env <- function(
     conda = Sys.which("conda"),
     repo_url = "https://github.com/rhhao/csMR.git",
     ref = "main",
-    use_mamba = TRUE,
     overwrite = FALSE,
-    update_repo = TRUE,
-    install_plink = TRUE,
     verbose = TRUE
 ) {
   repo_dir <- path.expand(repo_dir)
@@ -290,8 +283,8 @@ csMR_env <- function(
   }
 
   mamba_bin <- Sys.which("mamba")
-  solver_bin <- if (isTRUE(use_mamba) && nzchar(mamba_bin)) mamba_bin else conda
-  if (isTRUE(use_mamba) && !nzchar(mamba_bin) && isTRUE(verbose)) {
+  solver_bin <- if (nzchar(mamba_bin)) mamba_bin else conda
+  if (!nzchar(mamba_bin) && isTRUE(verbose)) {
     leo.basic::leo_log("`mamba` not detected, fallback to conda solver.", level = "warning")
   }
 
@@ -324,46 +317,36 @@ csMR_env <- function(
       verbose = verbose
     )
   } else {
-    if (isTRUE(update_repo)) {
-      refresh_repo <- FALSE
-      if (!dir.exists(file.path(repo_dir, ".git"))) {
-        refresh_repo <- TRUE
-        if (isTRUE(verbose)) {
-          leo.basic::leo_log("Local csMR has no git metadata; overwrite with fresh clone.", level = "warning")
-        }
-      } else {
-        refresh_repo <- tryCatch(
-          {
-            .csmr_run(git_bin, c("-C", repo_dir, "fetch", "origin", ref, "--depth", "1"), verbose = verbose)
-            local_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "HEAD"), verbose = FALSE)[1])
-            remote_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "FETCH_HEAD"), verbose = FALSE)[1])
-            !identical(local_head, remote_head)
-          },
-          error = function(e) {
-            warning("Failed to inspect local csMR version; overwrite with fresh clone: ", conditionMessage(e), call. = FALSE)
-            TRUE
-          }
-        )
+    refresh_repo <- FALSE
+    if (!dir.exists(file.path(repo_dir, ".git"))) {
+      refresh_repo <- TRUE
+      if (isTRUE(verbose)) {
+        leo.basic::leo_log("Local csMR has no git metadata; overwrite with fresh clone.", level = "warning")
       }
-      if (isTRUE(refresh_repo)) {
-        if (isTRUE(verbose)) {
-          leo.basic::leo_log("Detected older local csMR; overwrite with latest `{ref}`.", level = "warning")
+    } else {
+      refresh_repo <- tryCatch(
+        {
+          .csmr_run(git_bin, c("-C", repo_dir, "fetch", "origin", ref, "--depth", "1"), verbose = verbose)
+          local_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "HEAD"), verbose = FALSE)[1])
+          remote_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "FETCH_HEAD"), verbose = FALSE)[1])
+          !identical(local_head, remote_head)
+        },
+        error = function(e) {
+          warning("Failed to check remote csMR version; keep local repository: ", conditionMessage(e), call. = FALSE)
+          FALSE
         }
-        .csmr_replace_repo(
-          git_bin = git_bin,
-          repo_url = repo_url,
-          ref = ref,
-          repo_dir = repo_dir,
-          verbose = verbose
-        )
-      }
+      )
     }
-
-    env_file_existing <- file.path(repo_dir, "envs", "envpy3.yml")
-    if (!file.exists(env_file_existing)) {
-      stop(
-        "Target `repo_dir` exists but does not look like csMR repo (missing envs/envpy3.yml).",
-        call. = FALSE
+    if (isTRUE(refresh_repo)) {
+      if (isTRUE(verbose)) {
+        leo.basic::leo_log("Detected older local csMR; overwrite with latest `{ref}`.", level = "warning")
+      }
+      .csmr_replace_repo(
+        git_bin = git_bin,
+        repo_url = repo_url,
+        ref = ref,
+        repo_dir = repo_dir,
+        verbose = verbose
       )
     }
   }
@@ -402,44 +385,25 @@ csMR_env <- function(
   }
   r_lib <- file.path(env_prefix, "lib", "R", "library")
 
-  if (isTRUE(install_plink)) {
-    has_plink <- TRUE
-    tryCatch(
-      .csmr_run(conda, c("run", "-n", env_name, "plink", "--version"), verbose = FALSE),
-      error = function(e) {
-        has_plink <<- FALSE
-      }
-    )
-    if (!isTRUE(has_plink)) {
-      .csmr_run(
-        conda,
-        c("install", "-n", env_name, "-c", "bioconda", "plink=1.90b6.21", "--yes"),
-        verbose = verbose
-      )
+  has_plink <- TRUE
+  tryCatch(
+    .csmr_run(conda, c("run", "-n", env_name, "plink", "--version"), verbose = FALSE),
+    error = function(e) {
+      has_plink <<- FALSE
     }
+  )
+  if (!isTRUE(has_plink)) {
+    .csmr_run(
+      conda,
+      c("install", "-n", env_name, "-c", "bioconda", "plink=1.90b6.21", "--yes"),
+      verbose = verbose
+    )
   }
 
   .csmr_install_r_deps(conda = conda, env_name = env_name, r_lib = r_lib, verbose = verbose)
-  r_check_script <- c(
-    "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
-    "miss <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]",
-    "if (length(miss)) stop('Missing R packages: ', paste(miss, collapse = ', '))",
-    "cat('R dependencies OK\\n')"
-  )
-  tf_check <- tempfile(fileext = ".R")
-  on.exit(unlink(tf_check), add = TRUE)
-  writeLines(r_check_script, tf_check)
-  .csmr_run(
-    conda,
-    c("run", "-n", env_name, "Rscript", tf_check),
-    verbose = FALSE
-  )
 
   .csmr_run(conda, c("run", "-n", env_name, "snakemake", "--version"), verbose = FALSE)
-
-  if (isTRUE(install_plink)) {
-    .csmr_run(conda, c("run", "-n", env_name, "plink", "--version"), verbose = FALSE)
-  }
+  .csmr_run(conda, c("run", "-n", env_name, "plink", "--version"), verbose = FALSE)
 
   export_r_libs <- paste0("export R_LIBS=", r_lib, ":$R_LIBS")
   run_snakemake_example <- paste(
