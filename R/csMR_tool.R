@@ -23,13 +23,6 @@
   out
 }
 
-# Internal helper: check conda environment existence by name.
-.csmr_env_exists <- function(conda, env_name) {
-  out <- .csmr_run(conda, c("env", "list"), verbose = FALSE)
-  pattern <- paste0("^", env_name, "\\s")
-  any(grepl(pattern, trimws(out)))
-}
-
 # Internal helper: get env prefix path from `conda env list`.
 .csmr_env_prefix <- function(conda, env_name) {
   out <- .csmr_run(conda, c("env", "list"), verbose = FALSE)
@@ -61,6 +54,51 @@
     leo.basic::leo_log("Removed partial conda env `{env_name}` before retry.", level = "warning")
   }
   invisible(NULL)
+}
+
+# Internal helper: clone csMR repository to target directory.
+.csmr_clone_repo <- function(git_bin, repo_url, ref, repo_dir, verbose = TRUE) {
+  dir.create(dirname(repo_dir), recursive = TRUE, showWarnings = FALSE)
+  .csmr_run(
+    git_bin,
+    c("clone", "--depth", "1", "--branch", ref, repo_url, repo_dir),
+    verbose = verbose
+  )
+}
+
+# Internal helper: safely refresh repository via temp clone then atomic replace.
+.csmr_replace_repo <- function(git_bin, repo_url, ref, repo_dir, verbose = TRUE) {
+  tag <- format(as.integer(Sys.time()))
+  tmp_repo <- paste0(repo_dir, ".tmp.", tag)
+  bak_repo <- paste0(repo_dir, ".bak.", tag)
+  on.exit({
+    if (dir.exists(tmp_repo)) {
+      unlink(tmp_repo, recursive = TRUE, force = TRUE)
+    }
+  }, add = TRUE)
+
+  .csmr_clone_repo(
+    git_bin = git_bin,
+    repo_url = repo_url,
+    ref = ref,
+    repo_dir = tmp_repo,
+    verbose = verbose
+  )
+
+  had_old <- dir.exists(repo_dir)
+  if (isTRUE(had_old) && !file.rename(repo_dir, bak_repo)) {
+    stop("Failed to backup existing csMR repository before overwrite.", call. = FALSE)
+  }
+  if (!file.rename(tmp_repo, repo_dir)) {
+    if (isTRUE(had_old) && dir.exists(bak_repo)) {
+      file.rename(bak_repo, repo_dir)
+    }
+    stop("Failed to replace csMR repository with refreshed clone.", call. = FALSE)
+  }
+  if (isTRUE(had_old) && dir.exists(bak_repo)) {
+    unlink(bak_repo, recursive = TRUE, force = TRUE)
+  }
+  invisible(repo_dir)
 }
 
 # Internal helper: install csMR-required R packages inside a conda env.
@@ -204,14 +242,17 @@
 #' MR with sensitivity analyses. This function only prepares software/runtime
 #' dependencies; it does not execute the full csMR analysis.
 #'
-#' @param repo_dir Directory where the csMR repository is stored.
+#' @param repo_dir Directory where the csMR repository is stored. You can pass
+#'   either the csMR repository path itself or its parent directory (for
+#'   example `~/Project/software`, resolved to `~/Project/software/csMR`).
 #' @param env_name Name of the conda environment.
 #' @param conda Path to the conda executable. Defaults to `Sys.which("conda")`.
 #' @param repo_url GitHub URL of the csMR repository.
 #' @param ref Git branch/tag to checkout for csMR source code.
 #' @param use_mamba Whether to prefer `mamba` for environment solving.
 #' @param overwrite Whether to remove an existing environment before recreating.
-#' @param update_repo Whether to `git pull --ff-only` when repo already exists.
+#' @param update_repo Whether to check remote csMR version and overwrite local
+#'   repository with a fresh clone when local is outdated/non-reproducible.
 #' @param install_plink Whether to install PLINK 1.9 in the conda environment.
 #' @param install_r_pkgs Whether to install and verify required csMR R packages
 #'   in-env. If `FALSE`, skip R package installation/checks.
@@ -224,15 +265,30 @@
 #' @examples
 #' \dontrun{
 #' # First-time setup
-#' cfg <- csMR_env(repo_dir = "~/tools/csMR", env_name = "csMR")
+#' cfg <- csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 #' cfg$run_snakemake_example
 #'
 #' # Fast health-check for an existing environment
-#' csMR_env(repo_dir = "~/tools/csMR", env_name = "csMR", update_repo = FALSE)
+#' csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
+#'
+#' # Verify whether the environment is ready
+#' env <- "csMR"
+#' system2("conda", c("run", "-n", env, "snakemake", "--version"))
+#' system2("conda", c("run", "-n", env, "plink", "--version"))
+#' check_code <- paste(
+#'   c(
+#'     "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
+#'     "ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)",
+#'     "print(ok)",
+#'     "if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"
+#'   ),
+#'   collapse = "; "
+#' )
+#' system2("conda", c("run", "-n", env, "Rscript", "-e", check_code))
 #'
 #' # Quick solver smoke-test (skip heavy R package installation)
 #' csMR_env(
-#'   repo_dir = "~/tools/csMR",
+#'   repo_dir = "~/Project/software",
 #'   env_name = "csMR_smoke",
 #'   install_r_pkgs = FALSE
 #' )
@@ -240,7 +296,7 @@
 #'
 #' @export
 csMR_env <- function(
-    repo_dir = file.path(path.expand("~"), "tools", "csMR"),
+    repo_dir = file.path(path.expand("~"), "Project", "software"),
     env_name = "csMR",
     conda = Sys.which("conda"),
     repo_url = "https://github.com/rhhao/csMR.git",
@@ -267,31 +323,75 @@ csMR_env <- function(
     leo.basic::leo_log("`mamba` not detected, fallback to conda solver.", level = "warning")
   }
 
+  is_csmr_repo <- function(x) {
+    file.exists(file.path(x, "envs", "envpy3.yml"))
+  }
+  if (dir.exists(repo_dir)) {
+    if (!is_csmr_repo(repo_dir)) {
+      nested_repo <- file.path(repo_dir, "csMR")
+      if (is_csmr_repo(nested_repo) || basename(repo_dir) != "csMR") {
+        repo_dir <- nested_repo
+        if (isTRUE(verbose)) {
+          leo.basic::leo_log("Resolve `repo_dir` to `{repo_dir}`.", level = "info")
+        }
+      }
+    }
+  } else if (basename(repo_dir) != "csMR") {
+    repo_dir <- file.path(repo_dir, "csMR")
+    if (isTRUE(verbose)) {
+      leo.basic::leo_log("Resolve `repo_dir` to `{repo_dir}`.", level = "info")
+    }
+  }
+
   if (!dir.exists(repo_dir)) {
-    dir.create(dirname(repo_dir), recursive = TRUE, showWarnings = FALSE)
-    .csmr_run(
-      git_bin,
-      c("clone", "--depth", "1", "--branch", ref, repo_url, repo_dir),
+    .csmr_clone_repo(
+      git_bin = git_bin,
+      repo_url = repo_url,
+      ref = ref,
+      repo_dir = repo_dir,
       verbose = verbose
     )
   } else {
+    if (isTRUE(update_repo)) {
+      refresh_repo <- FALSE
+      if (!dir.exists(file.path(repo_dir, ".git"))) {
+        refresh_repo <- TRUE
+        if (isTRUE(verbose)) {
+          leo.basic::leo_log("Local csMR has no git metadata; overwrite with fresh clone.", level = "warning")
+        }
+      } else {
+        refresh_repo <- tryCatch(
+          {
+            .csmr_run(git_bin, c("-C", repo_dir, "fetch", "origin", ref, "--depth", "1"), verbose = verbose)
+            local_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "HEAD"), verbose = FALSE)[1])
+            remote_head <- trimws(.csmr_run(git_bin, c("-C", repo_dir, "rev-parse", "FETCH_HEAD"), verbose = FALSE)[1])
+            !identical(local_head, remote_head)
+          },
+          error = function(e) {
+            warning("Failed to inspect local csMR version; overwrite with fresh clone: ", conditionMessage(e), call. = FALSE)
+            TRUE
+          }
+        )
+      }
+      if (isTRUE(refresh_repo)) {
+        if (isTRUE(verbose)) {
+          leo.basic::leo_log("Detected older local csMR; overwrite with latest `{ref}`.", level = "warning")
+        }
+        .csmr_replace_repo(
+          git_bin = git_bin,
+          repo_url = repo_url,
+          ref = ref,
+          repo_dir = repo_dir,
+          verbose = verbose
+        )
+      }
+    }
+
     env_file_existing <- file.path(repo_dir, "envs", "envpy3.yml")
     if (!file.exists(env_file_existing)) {
       stop(
         "Target `repo_dir` exists but does not look like csMR repo (missing envs/envpy3.yml).",
         call. = FALSE
-      )
-    }
-    if (isTRUE(update_repo) && dir.exists(file.path(repo_dir, ".git"))) {
-      tryCatch(
-        {
-          .csmr_run(git_bin, c("-C", repo_dir, "fetch", "origin", ref, "--depth", "1"), verbose = verbose)
-          .csmr_run(git_bin, c("-C", repo_dir, "checkout", ref), verbose = verbose)
-          .csmr_run(git_bin, c("-C", repo_dir, "pull", "--ff-only", "origin", ref), verbose = verbose)
-        },
-        error = function(e) {
-          warning("Failed to update csMR repo, keep local copy: ", conditionMessage(e), call. = FALSE)
-        }
       )
     }
   }
@@ -301,7 +401,7 @@ csMR_env <- function(
     stop("Cannot find csMR environment file: ", env_file, call. = FALSE)
   }
 
-  env_exists <- .csmr_env_exists(conda, env_name)
+  env_exists <- nzchar(.csmr_env_prefix(conda = conda, env_name = env_name))
   if (isTRUE(env_exists) && isTRUE(overwrite)) {
     .csmr_run(conda, c("env", "remove", "-n", env_name, "--yes"), verbose = verbose)
     env_exists <- FALSE
