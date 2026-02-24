@@ -46,6 +46,7 @@ pak::pkg_install("laleoarrow/leo.gwas", dependencies = TRUE)
 
 ### How to Contribute
 We encourage and welcome contributions to LEO from the community. If you are interested in contributing code or documentation, please contact me by submitting a issue.
+Please follow the project development specification in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### License
 LEO is proprietary software. All rights reserved. Please refer to the LICENSE file for terms and restrictions.
