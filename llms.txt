@@ -46,7 +46,9 @@ pak::pkg_install("laleoarrow/leo.gwas", dependencies = TRUE)
 
 We encourage and welcome contributions to LEO from the community. If you
 are interested in contributing code or documentation, please contact me
-by submitting a issue.
+by submitting a issue. Please follow the project development
+specification in
+[CONTRIBUTING.md](https://laleoarrow.github.io/leo.gwas/CONTRIBUTING.md).
 
 ### License
 
