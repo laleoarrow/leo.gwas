@@ -18,7 +18,6 @@ csMR_env(
   overwrite = FALSE,
   update_repo = TRUE,
   install_plink = TRUE,
-  install_r_pkgs = TRUE,
   verbose = TRUE
 )
 ```
@@ -64,11 +63,6 @@ csMR_env(
 
   Whether to install PLINK 1.9 in the conda environment.
 
-- install_r_pkgs:
-
-  Whether to install and verify required csMR R packages in-env. If
-  `FALSE`, skip R package installation/checks.
-
 - verbose:
 
   Whether to print setup logs.
@@ -80,9 +74,6 @@ A list containing `repo_dir`, `env_name`, `env_prefix`, `env_file`,
 `run_snakemake_example`).
 
 ## Details
-
-Create and validate a reproducible runtime environment for the
-[csMR](https://github.com/rhhao/csMR) workflow.
 
 The method follows the csMR paper workflow (Nat Commun 2024, 15:4890):
 (1) locus-level precomputation from GWAS and single-cell eQTL summary
@@ -101,27 +92,5 @@ cfg$run_snakemake_example
 
 # Fast health-check for an existing environment
 csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
-
-# Verify whether the environment is ready
-env <- "csMR"
-system2("conda", c("run", "-n", env, "snakemake", "--version"))
-system2("conda", c("run", "-n", env, "plink", "--version"))
-check_code <- paste(
-  c(
-    "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
-    "ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)",
-    "print(ok)",
-    "if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"
-  ),
-  collapse = "; "
-)
-system2("conda", c("run", "-n", env, "Rscript", "-e", check_code))
-
-# Quick solver smoke-test (skip heavy R package installation)
-csMR_env(
-  repo_dir = "~/Project/software",
-  env_name = "csMR_smoke",
-  install_r_pkgs = FALSE
-)
 } # }
 ```

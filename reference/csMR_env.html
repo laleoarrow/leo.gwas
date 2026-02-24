@@ -71,7 +71,6 @@ csMR scripts, and runs basic command/package checks.</p>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  update_repo <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  install_plink <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  install_r_pkgs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -119,11 +118,6 @@ repository with a fresh clone when local is outdated/non-reproducible.</p></dd>
 <dd><p>Whether to install PLINK 1.9 in the conda environment.</p></dd>
 
 
-<dt id="arg-install-r-pkgs">install_r_pkgs<a class="anchor" aria-label="anchor" href="#arg-install-r-pkgs"></a></dt>
-<dd><p>Whether to install and verify required csMR R packages
-in-env. If <code>FALSE</code>, skip R package installation/checks.</p></dd>
-
-
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Whether to print setup logs.</p></dd>
 
@@ -136,9 +130,7 @@ in-env. If <code>FALSE</code>, skip R package installation/checks.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Create and validate a reproducible runtime environment for the
-<a href="https://github.com/rhhao/csMR" class="external-link">csMR</a> workflow.</p>
-<p>The method follows the csMR paper workflow (Nat Commun 2024, 15:4890):
+    <p>The method follows the csMR paper workflow (Nat Commun 2024, 15:4890):
 (1) locus-level precomputation from GWAS and single-cell eQTL summary data,
 (2) SuSiE-based fine-mapping and colocalization, and (3) cell-type-specific
 MR with sensitivity analyses. This function only prepares software/runtime
@@ -154,28 +146,6 @@ dependencies; it does not execute the full csMR analysis.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fast health-check for an existing environment</span></span></span>
 <span class="r-in"><span><span class="fu">csMR_env</span><span class="op">(</span>repo_dir <span class="op">=</span> <span class="st">"~/Project/software"</span>, env_name <span class="op">=</span> <span class="st">"csMR"</span>, update_repo <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Verify whether the environment is ready</span></span></span>
-<span class="r-in"><span><span class="va">env</span> <span class="op">&lt;-</span> <span class="st">"csMR"</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"conda"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"run"</span>, <span class="st">"-n"</span>, <span class="va">env</span>, <span class="st">"snakemake"</span>, <span class="st">"--version"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"conda"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"run"</span>, <span class="st">"-n"</span>, <span class="va">env</span>, <span class="st">"plink"</span>, <span class="st">"--version"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">check_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"pkgs &lt;- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"ok &lt;- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"print(ok)"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  collapse <span class="op">=</span> <span class="st">"; "</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"conda"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"run"</span>, <span class="st">"-n"</span>, <span class="va">env</span>, <span class="st">"Rscript"</span>, <span class="st">"-e"</span>, <span class="va">check_code</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Quick solver smoke-test (skip heavy R package installation)</span></span></span>
-<span class="r-in"><span><span class="fu">csMR_env</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  repo_dir <span class="op">=</span> <span class="st">"~/Project/software"</span>,</span></span>
-<span class="r-in"><span>  env_name <span class="op">=</span> <span class="st">"csMR_smoke"</span>,</span></span>
-<span class="r-in"><span>  install_r_pkgs <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
