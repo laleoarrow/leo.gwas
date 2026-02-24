@@ -226,9 +226,6 @@
 
 #' Configure Conda Environment for csMR
 #'
-#' Create and validate a reproducible runtime environment for the
-#' [csMR](https://github.com/rhhao/csMR) workflow.
-#'
 #' @description
 #' `csMR_env()` automates environment setup for the official csMR pipeline:
 #' it clones/updates the csMR repository, creates (or updates) a conda
@@ -254,8 +251,6 @@
 #' @param update_repo Whether to check remote csMR version and overwrite local
 #'   repository with a fresh clone when local is outdated/non-reproducible.
 #' @param install_plink Whether to install PLINK 1.9 in the conda environment.
-#' @param install_r_pkgs Whether to install and verify required csMR R packages
-#'   in-env. If `FALSE`, skip R package installation/checks.
 #' @param verbose Whether to print setup logs.
 #'
 #' @return A list containing `repo_dir`, `env_name`, `env_prefix`, `env_file`,
@@ -270,28 +265,6 @@
 #'
 #' # Fast health-check for an existing environment
 #' csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
-#'
-#' # Verify whether the environment is ready
-#' env <- "csMR"
-#' system2("conda", c("run", "-n", env, "snakemake", "--version"))
-#' system2("conda", c("run", "-n", env, "plink", "--version"))
-#' check_code <- paste(
-#'   c(
-#'     "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
-#'     "ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)",
-#'     "print(ok)",
-#'     "if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"
-#'   ),
-#'   collapse = "; "
-#' )
-#' system2("conda", c("run", "-n", env, "Rscript", "-e", check_code))
-#'
-#' # Quick solver smoke-test (skip heavy R package installation)
-#' csMR_env(
-#'   repo_dir = "~/Project/software",
-#'   env_name = "csMR_smoke",
-#'   install_r_pkgs = FALSE
-#' )
 #' }
 #'
 #' @export
@@ -305,7 +278,6 @@ csMR_env <- function(
     overwrite = FALSE,
     update_repo = TRUE,
     install_plink = TRUE,
-    install_r_pkgs = TRUE,
     verbose = TRUE
 ) {
   repo_dir <- path.expand(repo_dir)
@@ -447,25 +419,21 @@ csMR_env <- function(
     }
   }
 
-  if (isTRUE(install_r_pkgs)) {
-    .csmr_install_r_deps(conda = conda, env_name = env_name, r_lib = r_lib, verbose = verbose)
-    r_check_script <- c(
-      "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
-      "miss <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]",
-      "if (length(miss)) stop('Missing R packages: ', paste(miss, collapse = ', '))",
-      "cat('R dependencies OK\\n')"
-    )
-    tf_check <- tempfile(fileext = ".R")
-    on.exit(unlink(tf_check), add = TRUE)
-    writeLines(r_check_script, tf_check)
-    .csmr_run(
-      conda,
-      c("run", "-n", env_name, "Rscript", tf_check),
-      verbose = FALSE
-    )
-  } else if (isTRUE(verbose)) {
-    leo.basic::leo_log("Skip R package installation and R package check (`install_r_pkgs = FALSE`).", level = "info")
-  }
+  .csmr_install_r_deps(conda = conda, env_name = env_name, r_lib = r_lib, verbose = verbose)
+  r_check_script <- c(
+    "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
+    "miss <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]",
+    "if (length(miss)) stop('Missing R packages: ', paste(miss, collapse = ', '))",
+    "cat('R dependencies OK\\n')"
+  )
+  tf_check <- tempfile(fileext = ".R")
+  on.exit(unlink(tf_check), add = TRUE)
+  writeLines(r_check_script, tf_check)
+  .csmr_run(
+    conda,
+    c("run", "-n", env_name, "Rscript", tf_check),
+    verbose = FALSE
+  )
 
   .csmr_run(conda, c("run", "-n", env_name, "snakemake", "--version"), verbose = FALSE)
 

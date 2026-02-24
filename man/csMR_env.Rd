@@ -14,7 +14,6 @@ csMR_env(
   overwrite = FALSE,
   update_repo = TRUE,
   install_plink = TRUE,
-  install_r_pkgs = TRUE,
   verbose = TRUE
 )
 }
@@ -40,9 +39,6 @@ repository with a fresh clone when local is outdated/non-reproducible.}
 
 \item{install_plink}{Whether to install PLINK 1.9 in the conda environment.}
 
-\item{install_r_pkgs}{Whether to install and verify required csMR R packages
-in-env. If \code{FALSE}, skip R package installation/checks.}
-
 \item{verbose}{Whether to print setup logs.}
 }
 \value{
@@ -57,9 +53,6 @@ environment from \code{envs/envpy3.yml}, installs missing R dependencies used by
 csMR scripts, and runs basic command/package checks.
 }
 \details{
-Create and validate a reproducible runtime environment for the
-\href{https://github.com/rhhao/csMR}{csMR} workflow.
-
 The method follows the csMR paper workflow (Nat Commun 2024, 15:4890):
 (1) locus-level precomputation from GWAS and single-cell eQTL summary data,
 (2) SuSiE-based fine-mapping and colocalization, and (3) cell-type-specific
@@ -74,28 +67,6 @@ cfg$run_snakemake_example
 
 # Fast health-check for an existing environment
 csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
-
-# Verify whether the environment is ready
-env <- "csMR"
-system2("conda", c("run", "-n", env, "snakemake", "--version"))
-system2("conda", c("run", "-n", env, "plink", "--version"))
-check_code <- paste(
-  c(
-    "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
-    "ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)",
-    "print(ok)",
-    "if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"
-  ),
-  collapse = "; "
-)
-system2("conda", c("run", "-n", env, "Rscript", "-e", check_code))
-
-# Quick solver smoke-test (skip heavy R package installation)
-csMR_env(
-  repo_dir = "~/Project/software",
-  env_name = "csMR_smoke",
-  install_r_pkgs = FALSE
-)
 }
 
 }
