@@ -9,7 +9,7 @@ by csMR scripts, and runs basic command/package checks.
 
 ``` r
 csMR_env(
-  repo_dir = file.path(path.expand("~"), "tools", "csMR"),
+  repo_dir = file.path(path.expand("~"), "Project", "software"),
   env_name = "csMR",
   conda = Sys.which("conda"),
   repo_url = "https://github.com/rhhao/csMR.git",
@@ -27,7 +27,9 @@ csMR_env(
 
 - repo_dir:
 
-  Directory where the csMR repository is stored.
+  Directory where the csMR repository is stored. You can pass either the
+  csMR repository path itself or its parent directory (for example
+  `~/Project/software`, resolved to `~/Project/software/csMR`).
 
 - env_name:
 
@@ -55,7 +57,8 @@ csMR_env(
 
 - update_repo:
 
-  Whether to `git pull --ff-only` when repo already exists.
+  Whether to check remote csMR version and overwrite local repository
+  with a fresh clone when local is outdated/non-reproducible.
 
 - install_plink:
 
@@ -93,15 +96,30 @@ csMR analysis.
 ``` r
 if (FALSE) { # \dontrun{
 # First-time setup
-cfg <- csMR_env(repo_dir = "~/tools/csMR", env_name = "csMR")
+cfg <- csMR_env(repo_dir = "~/Project/software", env_name = "csMR")
 cfg$run_snakemake_example
 
 # Fast health-check for an existing environment
-csMR_env(repo_dir = "~/tools/csMR", env_name = "csMR", update_repo = FALSE)
+csMR_env(repo_dir = "~/Project/software", env_name = "csMR", update_repo = FALSE)
+
+# Verify whether the environment is ready
+env <- "csMR"
+system2("conda", c("run", "-n", env, "snakemake", "--version"))
+system2("conda", c("run", "-n", env, "plink", "--version"))
+check_code <- paste(
+  c(
+    "pkgs <- c('getopt','coloc','ieugwasr','TwoSampleMR','phenoscanner','mr.raps','RadialMR','MRMix','MRPRESSO')",
+    "ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)",
+    "print(ok)",
+    "if (!all(ok)) stop('Missing R packages: ', paste(pkgs[!ok], collapse = ', '))"
+  ),
+  collapse = "; "
+)
+system2("conda", c("run", "-n", env, "Rscript", "-e", check_code))
 
 # Quick solver smoke-test (skip heavy R package installation)
 csMR_env(
-  repo_dir = "~/tools/csMR",
+  repo_dir = "~/Project/software",
   env_name = "csMR_smoke",
   install_r_pkgs = FALSE
 )
