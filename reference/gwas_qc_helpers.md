@@ -23,6 +23,8 @@ slice1_SNP_lines(df, dup_columns = c("SNP"), group_columns = dup_columns)
 fetch_same_direcrtion(df_x2, df_lg)
 
 any_na(df)
+
+get_biallelic_snp(df, A1_col = "A1", A2_col = "A2")
 ```
 
 ## Functions
@@ -38,6 +40,10 @@ any_na(df)
 - `fetch_non_indel(df)`:
 
   Keep SNPs with single-base alleles.
+
+- `get_biallelic_snp(df)`:
+
+  Keep SNPs with single-base alleles in both `A1` and `A2`.
 
 - `duplicated_SNP_lines(df, type, dup_columns, group_columns)`:
 
@@ -59,14 +65,14 @@ any_na(df)
 
 - `is_complementary`: logical vector.
 
-- `fetch_indel`, `fetch_non_indel`, `slice1_SNP_lines`,
-  `duplicated_SNP_lines("rm")`: data frame.
+- `fetch_indel`, `fetch_non_indel`, `get_biallelic_snp`,
+  `slice1_SNP_lines`, `duplicated_SNP_lines("rm")`: data frame.
 
 - `duplicated_SNP_lines("get")`: data frame with `count` column.
 
 - `fetch_same_direcrtion`: filtered data frame (`df_x2` subset).
 
-- `any_na`: named numeric vector of NA counts.
+- `any_na`: data frame with `column`, `n_na`, and `prop_na`.
 
 ## Examples
 
@@ -98,5 +104,8 @@ fetch_same_direcrtion(df, df2)
 
 # Count NA by column
 any_na(df)
+
+# Keep only biallelic SNP rows
+get_biallelic_snp(df)
 } # }
 ```

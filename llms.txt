@@ -100,6 +100,7 @@ Core helper functions from `R/0.basic_tools.R`.
   [`slice1_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   [`fetch_same_direcrtion()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   [`any_na()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`get_biallelic_snp()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   :
 
   Helper functions for `leo.gwas_qc`
@@ -239,6 +240,7 @@ MR data prep and analysis from `R/tsmr_tools.R`.
   [`slice1_SNP_lines()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   [`fetch_same_direcrtion()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   [`any_na()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
+  [`get_biallelic_snp()`](https://laleoarrow.github.io/leo.gwas/reference/gwas_qc_helpers.md)
   :
 
   Helper functions for `leo.gwas_qc`
@@ -310,10 +312,16 @@ Summary statistics QC from `R/summary_qc.R`.
 
 ## csMR Workflow
 
-Environment setup helper for the csMR pipeline.
+Cell-stratified MR (csMR) pipeline.
 
 - [`csMR_env()`](https://laleoarrow.github.io/leo.gwas/reference/csMR_env.md)
   : Configure Conda Environment for csMR
+- [`csMR_step1_prep()`](https://laleoarrow.github.io/leo.gwas/reference/csMR_step1_prep.md)
+  : Prepare csMR Step1 Input
+- [`csMR_step2_config.yml()`](https://laleoarrow.github.io/leo.gwas/reference/csMR_step2_config.yml.md)
+  : Build csMR config.yml
+- [`csMR_step3_run()`](https://laleoarrow.github.io/leo.gwas/reference/csMR_step3_run.md)
+  : Run csMR Step 3
 
 # Articles
 

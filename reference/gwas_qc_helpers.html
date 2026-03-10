@@ -69,7 +69,9 @@
 <span></span>
 <span><span class="fu">fetch_same_direcrtion</span><span class="op">(</span><span class="va">df_x2</span>, <span class="va">df_lg</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">any_na</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">any_na</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_biallelic_snp</span><span class="op">(</span><span class="va">df</span>, A1_col <span class="op">=</span> <span class="st">"A1"</span>, A2_col <span class="op">=</span> <span class="st">"A2"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -84,6 +86,9 @@
 
 <dt><code>fetch_non_indel(df)</code></dt>
 <dd><p>Keep SNPs with single-base alleles.</p></dd>
+
+<dt><code>get_biallelic_snp(df)</code></dt>
+<dd><p>Keep SNPs with single-base alleles in both <code>A1</code> and <code>A2</code>.</p></dd>
 
 <dt><code>duplicated_SNP_lines(df, type, dup_columns, group_columns)</code></dt>
 <dd><p>Get/remove duplicated SNP rows.</p></dd>
@@ -104,10 +109,10 @@
 
 
 <ul><li><p><code>is_complementary</code>: logical vector.</p></li>
-<li><p><code>fetch_indel</code>, <code>fetch_non_indel</code>, <code>slice1_SNP_lines</code>, <code>duplicated_SNP_lines("rm")</code>: data frame.</p></li>
+<li><p><code>fetch_indel</code>, <code>fetch_non_indel</code>, <code>get_biallelic_snp</code>, <code>slice1_SNP_lines</code>, <code>duplicated_SNP_lines("rm")</code>: data frame.</p></li>
 <li><p><code>duplicated_SNP_lines("get")</code>: data frame with <code>count</code> column.</p></li>
 <li><p><code>fetch_same_direcrtion</code>: filtered data frame (<code>df_x2</code> subset).</p></li>
-<li><p><code>any_na</code>: named numeric vector of NA counts.</p></li>
+<li><p><code>any_na</code>: data frame with <code>column</code>, <code>n_na</code>, and <code>prop_na</code>.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -139,6 +144,9 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Count NA by column</span></span></span>
 <span class="r-in"><span><span class="fu">any_na</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Keep only biallelic SNP rows</span></span></span>
+<span class="r-in"><span><span class="fu">get_biallelic_snp</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
