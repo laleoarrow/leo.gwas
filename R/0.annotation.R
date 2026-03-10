@@ -27,39 +27,25 @@ add_rsid <- function(dat, ref = "GRCh37") {
   if (!("CHR" %in% colnames(dat)) || !("BP" %in% colnames(dat))) {
     stop("DataFrame must contain 'CHR' and 'BP' columns")
   }
-
-  # Convert dat to data.table if it is not one already
-  # library(data.table)
-  if (!data.table::is.data.table(dat)) {data.table::setDT(dat)}
+  if (!data.table::is.data.table(dat)) data.table::setDT(dat)
+  dat[, CHR := suppressWarnings(as.integer(CHR))]
+  dat[, BP := suppressWarnings(as.integer(BP))]
+  dat <- dat[is.finite(CHR) & is.finite(BP) & BP > 0]
+  if (nrow(dat) == 0L) return(dat)
   dat[, ranges := paste0(CHR, ":", BP, "-", BP)]
-
-  # Load SNP data - assuming GRCh37, modify if using GRCh38
   if (ref == "GRCh37") {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh37::SNPlocs.Hsapiens.dbSNP155.GRCh37
   } else {
     snps <- SNPlocs.Hsapiens.dbSNP155.GRCh38::SNPlocs.Hsapiens.dbSNP155.GRCh38
   }
-
-  # Find overlaps
-  message(paste0("Translating RSID using: \n - BSgenome::snpsByOverlaps() \n - With ", snps@data_pkgname))
-  snp.res <- BSgenome::snpsByOverlaps(snps, GRanges(dat$ranges))
-
-  # Convert results to data.table
-  snp.res.dt <- as.data.table(snp.res)
+  snp.res <- BSgenome::snpsByOverlaps(snps, GenomicRanges::GRanges(dat$ranges))
+  snp.res.dt <- data.table::as.data.table(snp.res)
+  if (nrow(snp.res.dt) == 0L) return(dat[0])
   snp.res.dt[, ranges := stringr::str_c(seqnames, ":", pos, "-", pos)]
-
-  # Merge data
   trans.dat <- merge(snp.res.dt, dat, by = "ranges")
   columns_to_remove <- c("strand", "alleles_as_ambig", "ranges", "seqnames", "pos")
-  trans.dat[, (columns_to_remove) := NULL]; gc()
-
-  # Drop NA rsid and return
-  # trans.dat <- trans.dat %>% drop_na(RefSNP_id)
-  leo_message("Remember to check if there is any NA in the RefSNP_id column.")
-  leo_message(">>> table(is.na(dat$RefSNP_id))")
-  leo_message(">>> vkh_meta %>% map_dbl(~sum(is.na(.)))")
-
-  return(trans.dat)
+  trans.dat[, (columns_to_remove) := NULL]
+  trans.dat
 }
 
 #' Add rsID based on local reference file (recommended)

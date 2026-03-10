@@ -4,6 +4,8 @@
 ^\.DS_Store$
 ^\.Rhistory$
 ^\.vscode$
+^\.claude$
+^\.gemini$
 ^\.git$
 ^\.gitignore$
 ^README\.md$
@@ -11,3 +13,5 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^tmp$
+^tmp/.*

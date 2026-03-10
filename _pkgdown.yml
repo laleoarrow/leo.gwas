@@ -104,9 +104,12 @@ reference:
   - leo.gwas_qc
   - check_significant_SNP
 - title: csMR Workflow
-  desc: Environment setup helper for the csMR pipeline.
+  desc: Cell-stratified MR (csMR) pipeline.
   contents:
   - csMR_env
+  - csMR_step1_prep
+  - csMR_step2_config.yml
+  - csMR_step3_run
 
 
 articles:

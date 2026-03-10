@@ -73,3 +73,6 @@ Rplots.pdf
 *.png
 *.jpg
 *.jpeg
+
+# Local extraction/output temp files
+tmp/

@@ -20,6 +20,7 @@ Imports:
     data.table,
     dplyr,
     GenomicFeatures,
+    GenomicRanges,
     ggrastr,
     ggplot2,
     ggsci,

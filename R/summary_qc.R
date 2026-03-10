@@ -194,6 +194,7 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #'   \item{\code{is_complementary(a1st, a2nd)}}{Check if two alleles form an A/T or C/G pair.}
 #'   \item{\code{fetch_indel(df, type)}}{Filter indels by allele-string length.}
 #'   \item{\code{fetch_non_indel(df)}}{Keep SNPs with single-base alleles.}
+#'   \item{\code{get_biallelic_snp(df)}}{Keep SNPs with single-base alleles in both `A1` and `A2`.}
 #'   \item{\code{duplicated_SNP_lines(df, type, dup_columns, group_columns)}}{Get/remove duplicated SNP rows.}
 #'   \item{\code{slice1_SNP_lines(df, dup_columns, group_columns)}}{Within duplicated groups, keep first row.}
 #'   \item{\code{fetch_same_direcrtion(df_x2, df_lg)}}{Keep same-direction effects between datasets.}
@@ -203,10 +204,10 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #' @section Value:
 #' \itemize{
 #'   \item \code{is_complementary}: logical vector.
-#'   \item \code{fetch_indel}, \code{fetch_non_indel}, \code{slice1_SNP_lines}, \code{duplicated_SNP_lines("rm")}: data frame.
+#'   \item \code{fetch_indel}, \code{fetch_non_indel}, \code{get_biallelic_snp}, \code{slice1_SNP_lines}, \code{duplicated_SNP_lines("rm")}: data frame.
 #'   \item \code{duplicated_SNP_lines("get")}: data frame with \code{count} column.
 #'   \item \code{fetch_same_direcrtion}: filtered data frame (\code{df_x2} subset).
-#'   \item \code{any_na}: named numeric vector of NA counts.
+#'   \item \code{any_na}: data frame with `column`, `n_na`, and `prop_na`.
 #' }
 #'
 #' @examples
@@ -237,6 +238,9 @@ leo.gwas_qc <- function(summary_x2_p, summary_x2_chip_p,
 #'
 #' # Count NA by column
 #' any_na(df)
+#'
+#' # Keep only biallelic SNP rows
+#' get_biallelic_snp(df)
 #' }
 #'
 #' @name gwas_qc_helpers
@@ -333,4 +337,20 @@ fetch_same_direcrtion <- function(df_x2, df_lg){
 
 #' @rdname gwas_qc_helpers
 #' @export
-any_na <- function(df){ return(df %>% map_dbl(~sum(is.na(.)))) }
+any_na <- function(df) {
+  out <- data.frame(column = names(df),
+                    n_na = vapply(df, function(x) sum(is.na(x)), numeric(1)),
+                    prop_na = vapply(df, function(x) mean(is.na(x)), numeric(1)),
+                    stringsAsFactors = FALSE)
+  out[order(out$n_na, decreasing = TRUE), , drop = FALSE]
+}
+
+#' @rdname gwas_qc_helpers
+#' @export
+get_biallelic_snp <- function(df, A1_col = "A1", A2_col = "A2") {
+  if (!all(c(A1_col, A2_col) %in% names(df))) stop("`df` must contain columns `A1` and `A2`.")
+  df[[A1_col]] <- toupper(as.character(df[[A1_col]]))
+  df[[A2_col]] <- toupper(as.character(df[[A2_col]]))
+  keep <- !is.na(df[[A1_col]]) & !is.na(df[[A2_col]]) & grepl("^[ACGT]$", df[[A1_col]]) & grepl("^[ACGT]$", df[[A2_col]]) & df[[A1_col]] != df[[A2_col]]
+  df[keep, , drop = FALSE]
+}

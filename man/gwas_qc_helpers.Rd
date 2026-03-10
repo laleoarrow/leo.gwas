@@ -9,6 +9,7 @@
 \alias{slice1_SNP_lines}
 \alias{fetch_same_direcrtion}
 \alias{any_na}
+\alias{get_biallelic_snp}
 \title{Helper functions for \code{leo.gwas_qc}}
 \usage{
 is_complementary(a1st, a2nd)
@@ -29,6 +30,8 @@ slice1_SNP_lines(df, dup_columns = c("SNP"), group_columns = dup_columns)
 fetch_same_direcrtion(df_x2, df_lg)
 
 any_na(df)
+
+get_biallelic_snp(df, A1_col = "A1", A2_col = "A2")
 }
 \description{
 Internal utilities used in the GWAS QC pipeline.
@@ -39,6 +42,7 @@ Internal utilities used in the GWAS QC pipeline.
 \item{\code{is_complementary(a1st, a2nd)}}{Check if two alleles form an A/T or C/G pair.}
 \item{\code{fetch_indel(df, type)}}{Filter indels by allele-string length.}
 \item{\code{fetch_non_indel(df)}}{Keep SNPs with single-base alleles.}
+\item{\code{get_biallelic_snp(df)}}{Keep SNPs with single-base alleles in both \code{A1} and \code{A2}.}
 \item{\code{duplicated_SNP_lines(df, type, dup_columns, group_columns)}}{Get/remove duplicated SNP rows.}
 \item{\code{slice1_SNP_lines(df, dup_columns, group_columns)}}{Within duplicated groups, keep first row.}
 \item{\code{fetch_same_direcrtion(df_x2, df_lg)}}{Keep same-direction effects between datasets.}
@@ -50,10 +54,10 @@ Internal utilities used in the GWAS QC pipeline.
 
 \itemize{
 \item \code{is_complementary}: logical vector.
-\item \code{fetch_indel}, \code{fetch_non_indel}, \code{slice1_SNP_lines}, \code{duplicated_SNP_lines("rm")}: data frame.
+\item \code{fetch_indel}, \code{fetch_non_indel}, \code{get_biallelic_snp}, \code{slice1_SNP_lines}, \code{duplicated_SNP_lines("rm")}: data frame.
 \item \code{duplicated_SNP_lines("get")}: data frame with \code{count} column.
 \item \code{fetch_same_direcrtion}: filtered data frame (\code{df_x2} subset).
-\item \code{any_na}: named numeric vector of NA counts.
+\item \code{any_na}: data frame with \code{column}, \code{n_na}, and \code{prop_na}.
 }
 }
 
@@ -85,6 +89,9 @@ fetch_same_direcrtion(df, df2)
 
 # Count NA by column
 any_na(df)
+
+# Keep only biallelic SNP rows
+get_biallelic_snp(df)
 }
 
 }
