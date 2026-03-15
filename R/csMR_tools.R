@@ -651,13 +651,15 @@ csMR_step2_config.yml <- function(
 #' from the target csMR conda environment.
 #'
 #' @details
-#' The first three arguments (`repo_dir`, `config_file`, `jobs`) are the most
-#' commonly adjusted by users in routine runs.
+#' The first four arguments (`repo_dir`, `config_file`, `jobs`, `forcerun`)
+#' are the most commonly adjusted by users in routine runs.
 #'
 #' @param repo_dir csMR repository directory.
 #' @param config_file Config file path.
 #' @param jobs Number of Snakemake jobs. If `NULL`, run with bare `-j` and let
 #'   Snakemake use all available cores.
+#' @param forcerun Optional Snakemake targets/rules to force-run. Default
+#'   `NULL` means no `--forcerun` is added.
 #' @param work_flow.snakefile Snakemake workflow file path. If `NULL`, use
 #'   `file.path(repo_dir, "work_flow.snakefile")`.
 #' @param env_name Conda env name.
@@ -676,6 +678,7 @@ csMR_step3_run <- function(
     repo_dir = "~/Project/software/csMR",
     config_file = "./output/csMR/step2_config/config.yml",
     jobs = NULL,
+    forcerun = NULL,
     work_flow.snakefile = NULL,
     env_name = "csMR",
     conda = Sys.which("conda"),
@@ -762,6 +765,15 @@ csMR_step3_run <- function(
     if (!is.finite(jobs) || jobs < 1L) stop("`jobs` must be a positive integer.")
     args <- c(args, "-j", as.character(jobs))
   }
+  if (!is.null(forcerun)) {
+    forcerun <- as.character(forcerun)
+    forcerun <- unlist(strsplit(forcerun, "[,[:space:]]+"))
+    forcerun <- trimws(forcerun)
+    forcerun <- forcerun[nzchar(forcerun)]
+    if (length(forcerun) > 0L) {
+      args <- c(args, "--forcerun", forcerun)
+    }
+  }
   if (isTRUE(dry_run)) args <- c(args, "--dry-run")
   raw_cmd <- paste(paste(env_vars, collapse = " "), conda, paste(args, collapse = " "))
   leo.basic::leo_log("Copyable command:", level = "info")
@@ -785,6 +797,18 @@ csMR_step3_run <- function(
     rerun_args <- c(args, "--rerun-incomplete")
     fit <- run_cmd(rerun_args, log_file, append = TRUE)
     args <- rerun_args
+  }
+  if (!identical(fit$status, 0L) && any(grepl("LockException|Directory cannot be locked", fit$out, ignore.case = TRUE))) {
+    leo.basic::leo_log("Detected Snakemake lock after retry. Run `--unlock` and retry once.", level = "warning")
+    unlock_fit <- run_cmd(c(
+      "run", "--no-capture-output", "-n", env_name,
+      "snakemake", "--directory", repo_dir,
+      "-s", work_flow.snakefile,
+      "--configfile", config_file,
+      "--unlock"
+    ), log_file, append = TRUE)
+    if (!identical(unlock_fit$status, 0L)) stop("Snakemake unlock failed. Check log: ", log_file)
+    fit <- run_cmd(args, log_file, append = TRUE)
   }
   if (!identical(fit$status, 0L)) stop("csMR step 3 failed. Check log: ", log_file)
   leo.basic::leo_log("csMR step 3 completed successfully.", level = "success")

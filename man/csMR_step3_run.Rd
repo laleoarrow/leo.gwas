@@ -8,6 +8,7 @@ csMR_step3_run(
   repo_dir = "~/Project/software/csMR",
   config_file = "./output/csMR/step2_config/config.yml",
   jobs = NULL,
+  forcerun = NULL,
   work_flow.snakefile = NULL,
   env_name = "csMR",
   conda = Sys.which("conda"),
@@ -22,6 +23,9 @@ csMR_step3_run(
 
 \item{jobs}{Number of Snakemake jobs. If \code{NULL}, run with bare \code{-j} and let
 Snakemake use all available cores.}
+
+\item{forcerun}{Optional Snakemake targets/rules to force-run. Default
+\code{NULL} means no \code{--forcerun} is added.}
 
 \item{work_flow.snakefile}{Snakemake workflow file path. If \code{NULL}, use
 \code{file.path(repo_dir, "work_flow.snakefile")}.}
@@ -44,8 +48,8 @@ Run the csMR Snakemake workflow with \code{R_HOME} and \code{R_LIBS} explicitly 
 from the target csMR conda environment.
 }
 \details{
-The first three arguments (\code{repo_dir}, \code{config_file}, \code{jobs}) are the most
-commonly adjusted by users in routine runs.
+The first four arguments (\code{repo_dir}, \code{config_file}, \code{jobs}, \code{forcerun})
+are the most commonly adjusted by users in routine runs.
 }
 \examples{
 \dontrun{
