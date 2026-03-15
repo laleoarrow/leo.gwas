@@ -59,6 +59,7 @@ from the target csMR conda environment.</p>
 <span>  repo_dir <span class="op">=</span> <span class="st">"~/Project/software/csMR"</span>,</span>
 <span>  config_file <span class="op">=</span> <span class="st">"./output/csMR/step2_config/config.yml"</span>,</span>
 <span>  jobs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  forcerun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  work_flow.snakefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env_name <span class="op">=</span> <span class="st">"csMR"</span>,</span>
 <span>  conda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"conda"</span><span class="op">)</span>,</span>
@@ -82,6 +83,11 @@ from the target csMR conda environment.</p>
 <dt id="arg-jobs">jobs<a class="anchor" aria-label="anchor" href="#arg-jobs"></a></dt>
 <dd><p>Number of Snakemake jobs. If <code>NULL</code>, run with bare <code>-j</code> and let
 Snakemake use all available cores.</p></dd>
+
+
+<dt id="arg-forcerun">forcerun<a class="anchor" aria-label="anchor" href="#arg-forcerun"></a></dt>
+<dd><p>Optional Snakemake targets/rules to force-run. Default
+<code>NULL</code> means no <code>--forcerun</code> is added.</p></dd>
 
 
 <dt id="arg-work-flow-snakefile">work_flow.snakefile<a class="anchor" aria-label="anchor" href="#arg-work-flow-snakefile"></a></dt>
@@ -113,8 +119,8 @@ saved to <code>log_file</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The first three arguments (<code>repo_dir</code>, <code>config_file</code>, <code>jobs</code>) are the most
-commonly adjusted by users in routine runs.</p>
+    <p>The first four arguments (<code>repo_dir</code>, <code>config_file</code>, <code>jobs</code>, <code>forcerun</code>)
+are the most commonly adjusted by users in routine runs.</p>
     </div>
 
     <div class="section level2">

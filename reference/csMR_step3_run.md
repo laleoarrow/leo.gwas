@@ -10,6 +10,7 @@ csMR_step3_run(
   repo_dir = "~/Project/software/csMR",
   config_file = "./output/csMR/step2_config/config.yml",
   jobs = NULL,
+  forcerun = NULL,
   work_flow.snakefile = NULL,
   env_name = "csMR",
   conda = Sys.which("conda"),
@@ -32,6 +33,11 @@ csMR_step3_run(
 
   Number of Snakemake jobs. If `NULL`, run with bare `-j` and let
   Snakemake use all available cores.
+
+- forcerun:
+
+  Optional Snakemake targets/rules to force-run. Default `NULL` means no
+  `--forcerun` is added.
 
 - work_flow.snakefile:
 
@@ -62,8 +68,8 @@ also saved to `log_file`.
 
 ## Details
 
-The first three arguments (`repo_dir`, `config_file`, `jobs`) are the
-most commonly adjusted by users in routine runs.
+The first four arguments (`repo_dir`, `config_file`, `jobs`, `forcerun`)
+are the most commonly adjusted by users in routine runs.
 
 ## Examples
 
